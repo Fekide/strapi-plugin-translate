@@ -1,0 +1,26 @@
+{
+  "name": "deepl",
+  "version": "0.1.0",
+  "description": "Strapi plugin for semi-automated translation of content",
+  "strapi": {
+    "name": "DeepL",
+    "description": "Automatic content translation with DeepL",
+    "kind": "plugin"
+  },
+  "dependencies": {
+    "axios": "^0.26.0"
+  },
+  "peerDependencies": {
+    "@strapi/plugin-i18n": "^4.0.8"
+  },
+  "author": {
+    "name": "Felix Haase",
+    "email": "felix.haase@feki.de"
+  },
+  "maintainers": [],
+  "engines": {
+    "node": ">=12.x. <=16.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,9 @@
+{
+  "CMEditViewTranslateLocale.translate-success": "Erfolgreich von anderer Sprache kopiert und übersetzt!",
+  "CMEditViewTranslateLocale.translate-failure": "Übersetzung fehlgeschlagen",
+  "CMEditViewTranslateLocale.translate-text": "Von einer anderen Sprache übersetzen",
+  "CMEditViewTranslateLocale.ModalConfirm.content": "Ihr Inhalt wird gelöscht und mit der automatisch übersetzten Version der ausgewählten Sprache übersetzt:",
+  "CMEditViewTranslateLocale.submit-text": "Ja, übersetzen",
+  "plugin.name": "DeepL",
+  "Settings.locales.modal.locales.label": "Sprachen"
+}

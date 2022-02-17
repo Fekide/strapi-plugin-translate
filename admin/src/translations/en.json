@@ -1,0 +1,9 @@
+{
+  "CMEditViewTranslateLocale.translate-success": "Copied and translated from other locale!",
+  "CMEditViewTranslateLocale.translate-failure": "Failed to translate locale",
+  "CMEditViewTranslateLocale.translate-text": "Translate from another locale",
+  "CMEditViewTranslateLocale.ModalConfirm.content": "Your current content will be erased and filled by the translated content of the selected locale:",
+  "CMEditViewTranslateLocale.submit-text": "Yes, fill in",
+  "plugin.name": "DeepL",
+  "Settings.locales.modal.locales.label": "Locales"
+}
