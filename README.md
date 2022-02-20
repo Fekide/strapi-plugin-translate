@@ -1,8 +1,14 @@
+<p align="center">
+  <img src="assets/logo.svg" alt="Meilisearch-Strapi" width="300" height="150" />
+</p>
+
 # Strapi plugin DeepL
 
 > This plugin is still a work in progress
 
 This plugin integrates with the DeepL-API to provide quick automated translation of content fields.
+
+![plugin showcase](assets/showcase.gif)
 
 ## Setup
 
