@@ -6,5 +6,12 @@
   "CMEditViewTranslateLocale.submit-text": "Ja, übersetzen",
   "plugin.name": "DeepL",
   "Settings.locales.modal.locales.label": "Sprachen",
-  "popUpWarning.button.cancel": "Nein, abbrechen"
+  "popUpWarning.button.cancel": "Nein, abbrechen",
+  "deepl.error.badRequest": "Anfrage zur DeepL API nicht korrekt",
+  "deepl.error.forbidden": "Autorisierung bei DeepL API fehlgeschlagen",
+  "deepl.error.notFound": "Angeforderte Ressource nicht in der DeepL API gefunden",
+  "deepl.error.payloadTooLarge": "Die Anfragegröße überschreitet das Limit in DeepL API",
+  "deepl.error.uriTooLong": "URI zu lang in DeepL API",
+  "deepl.error.tooManyRequests": "Zu viele Anfragen an DeepL API",
+  "deepl.error.paymentRequired": "Das Kontingent von DeepL API ist überschritten"
 }

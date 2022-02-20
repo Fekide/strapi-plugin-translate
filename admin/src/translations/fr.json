@@ -1,1 +1,17 @@
-{}
+{
+  "CMEditViewTranslateLocale.translate-success": "Copié et traduit d'une autre locale!",
+  "CMEditViewTranslateLocale.translate-failure": "Échec de la traduction de la locale",
+  "CMEditViewTranslateLocale.translate-text": "Traduire d'une autre langue",
+  "CMEditViewTranslateLocale.ModalConfirm.content": "Votre contenu actuel sera effacé et remplacé par le contenu traduit de la région sélectionnée:",
+  "CMEditViewTranslateLocale.submit-text": "Oui, remplissez",
+  "plugin.name": "DeepL",
+  "Settings.locales.modal.locales.label": "Locales",
+  "popUpWarning.button.cancel": "Non, annuler",
+  "deepl.error.badRequest": "Mauvaise demande à l'API DeepL",
+  "deepl.error.forbidden": "L'autorisation à l'API DeepL a échoué",
+  "deepl.error.notFound": "La ressource demandée est introuvable dans l'API DeepL",
+  "deepl.error.payloadTooLarge": "La taille de la demande dépasse la limite dans l'API DeepL",
+  "deepl.error.uriTooLong": "URI à long terme dans DeepL API",
+  "deepl.error.tooManyRequests": "Trop de demandes à l'API DeepL",
+  "deepl.error.paymentRequired": "Le quota de DeepL API est dépassé"
+}

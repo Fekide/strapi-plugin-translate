@@ -146,12 +146,12 @@ const Content = ({
         },
       })
     } catch (err) {
-      console.error(err)
+      console.error(err.response)
 
       toggleNotification({
         type: 'warning',
         message: {
-          id: getTrad('CMEditViewTranslateLocale.translate-failure'),
+          id: getTrad(err.response.data.error.message),
           defaultMessage: 'Failed to translate locale',
         },
       })

@@ -83,13 +83,13 @@ module.exports = ({ strapi }) => ({
       ctx.request.body
 
     if (!targetLocale || !sourceLocale) {
-      ctx.send({ error: 'deepl.localeMissing' }, 400)
+      return ctx.badRequest('target and source locale are both required')
     }
 
     const contentType = strapi.contentTypes[contentTypeUid]
 
     if (!contentType) {
-      return ctx.send({ error: 'contentType.notFound' }, 404)
+      return ctx.notFound('corresponding content type not found')
     }
     const contentSchema = await strapi
       .plugin('content-type-builder')
@@ -119,15 +119,63 @@ module.exports = ({ strapi }) => ({
       )
     )
 
-    strapi.log.debug(JSON.stringify(translateFields))
+    try {
+      ctx.body = await strapi
+        .plugin('deepl')
+        .service('deeplService')
+        .translate({
+          data,
+          sourceLocale,
+          targetLocale,
+          translateFields,
+        })
+    } catch (error) {
+      strapi.log.error(JSON.stringify(error))
 
-    // ctx.body = data
-    ctx.body = await strapi.plugin('deepl').service('deeplService').translate({
-      data,
-      sourceLocale,
-      targetLocale,
-      translateFields,
-    })
+      if (error.response.status !== undefined) {
+        switch (error.response.status) {
+          case 400:
+            return ctx.badRequest('deepl.error.badRequest', {
+              message: error.message,
+            })
+          case 403:
+            return ctx.forbidden('deepl.error.forbidden', {
+              message: error.message,
+            })
+          case 404:
+            return ctx.notFound('deepl.error.notFound', {
+              message: error.message,
+            })
+          case 413:
+            return ctx.payloadTooLarge('deepl.error.payloadTooLarge', {
+              message: error.message,
+            })
+          case 414:
+            return ctx.uriTooLong('deepl.error.uriTooLong', {
+              message: error.message,
+            })
+          case 429:
+            return ctx.tooManyRequests('deepl.error.tooManyRequests', {
+              message: error.message,
+            })
+          case 456:
+            return ctx.paymentRequired('deepl.error.paymentRequired', {
+              message: error.message,
+            })
+          default:
+            return ctx.internalServerError(error.message)
+        }
+      } else if (error.message) {
+        return ctx.internalServerError(
+          'CMEditViewTranslateLocale.translate-failure',
+          { message: error.message }
+        )
+      } else {
+        return ctx.internalServerError(
+          'CMEditViewTranslateLocale.translate-failure'
+        )
+      }
+    }
   },
   async usage(ctx) {
     ctx.body = await strapi.plugin('deepl').service('deeplService').usage()
