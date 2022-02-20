@@ -4,11 +4,12 @@
  *
  */
 
-import React from 'react';
-import World from '@strapi/icons/World';
+import React from 'react'
+import World from '@strapi/icons/World'
 
-const PluginIcon = () => <World/>
-{/* <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="343.07544" width="343.07544" viewBox="0 0 266.95 343.07544">
+const PluginIcon = () => <World />
+{
+  /* <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="343.07544" width="343.07544" viewBox="0 0 266.95 343.07544">
   <defs id="defs4175">
     <clipPath clipPathUnits="userSpaceOnUse" id="clipPath4187">
       <path d="m 0,425.197 708.661,0 L 708.661,0 0,0 0,425.197 Z" id="path4189"/>
@@ -23,6 +24,7 @@ const PluginIcon = () => <World/>
       </g>
     </g>
   </g>
-</svg>; */}
+</svg>; */
+}
 
-export default PluginIcon;
+export default PluginIcon
