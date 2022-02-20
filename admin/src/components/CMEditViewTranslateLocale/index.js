@@ -1,25 +1,32 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import get from 'lodash/get';
-import { useDispatch, useSelector } from 'react-redux';
-import { useIntl } from 'react-intl';
-import { Dialog, DialogBody, DialogFooter } from '@strapi/design-system/Dialog';
-import { Select, Option } from '@strapi/design-system/Select';
-import { Button } from '@strapi/design-system/Button';
-import { Box } from '@strapi/design-system/Box';
-import { Divider } from '@strapi/design-system/Divider';
-import { Typography } from '@strapi/design-system/Typography';
-import { Flex } from '@strapi/design-system/Flex';
-import { Stack } from '@strapi/design-system/Stack';
-import ExclamationMarkCircle from '@strapi/icons/ExclamationMarkCircle';
-import Duplicate from '@strapi/icons/Duplicate';
-import { useCMEditViewDataManager, useNotification, useQueryParams } from '@strapi/helper-plugin';
-import { axiosInstance } from '@strapi/plugin-i18n/admin/src/utils';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import styled from 'styled-components'
+import get from 'lodash/get'
+import { useDispatch, useSelector } from 'react-redux'
+import { useIntl } from 'react-intl'
+import { Dialog, DialogBody, DialogFooter } from '@strapi/design-system/Dialog'
+import { Select, Option } from '@strapi/design-system/Select'
+import { Button } from '@strapi/design-system/Button'
+import { Box } from '@strapi/design-system/Box'
+import { Divider } from '@strapi/design-system/Divider'
+import { Typography } from '@strapi/design-system/Typography'
+import { Flex } from '@strapi/design-system/Flex'
+import { Stack } from '@strapi/design-system/Stack'
+import ExclamationMarkCircle from '@strapi/icons/ExclamationMarkCircle'
+import Duplicate from '@strapi/icons/Duplicate'
+import {
+  useCMEditViewDataManager,
+  useNotification,
+  useQueryParams,
+} from '@strapi/helper-plugin'
+import { axiosInstance } from '@strapi/plugin-i18n/admin/src/utils'
 import { getTrad } from '../../utils'
-import { cleanData, generateOptions } from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils';
+import {
+  cleanData,
+  generateOptions,
+} from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils'
 import useContentTypePermissions from '@strapi/plugin-i18n/admin/src/hooks/useContentTypePermissions'
-import selectI18NLocales from '@strapi/plugin-i18n/admin/src/selectors/selectI18nLocales';
+import selectI18NLocales from '@strapi/plugin-i18n/admin/src/selectors/selectI18nLocales'
 
 const StyledTypography = styled(Typography)`
   svg {
@@ -30,76 +37,106 @@ const StyledTypography = styled(Typography)`
       fill: ${({ theme }) => theme.colors.primary600};
     }
   }
-`;
+`
 
 const CenteredTypography = styled(Typography)`
   text-align: center;
-`;
+`
 
 const CMEditViewTranslateLocale = () => {
-  const [{ query }] = useQueryParams();
-  const locales = useSelector(selectI18NLocales);
-  const { layout, modifiedData, slug } = useCMEditViewDataManager();
-  const { readPermissions } = useContentTypePermissions(slug);
+  const [{ query }] = useQueryParams()
+  const locales = useSelector(selectI18NLocales)
+  const { layout, modifiedData, slug } = useCMEditViewDataManager()
+  const { readPermissions } = useContentTypePermissions(slug)
 
-  const defaultLocale = locales.find(loc => loc.isDefault);
-  const currentLocale = get(query, 'plugins.i18n.locale', defaultLocale.code);
-  const hasI18nEnabled = get(layout, ['pluginOptions', 'i18n', 'localized'], false);
-  const localizations = get(modifiedData, 'localizations', []);
+  const defaultLocale = locales.find((loc) => loc.isDefault)
+  const currentLocale = get(query, 'plugins.i18n.locale', defaultLocale.code)
+  const hasI18nEnabled = get(
+    layout,
+    ['pluginOptions', 'i18n', 'localized'],
+    false
+  )
+  const localizations = get(modifiedData, 'localizations', [])
 
   if (!hasI18nEnabled || !localizations.length) {
-    return null;
+    return null
   }
 
-  return <Content {...{appLocales: locales, currentLocale, localizations, readPermissions} } />;
-};
+  return (
+    <Content
+      {...{
+        appLocales: locales,
+        currentLocale,
+        localizations,
+        readPermissions,
+      }}
+    />
+  )
+}
 
-const Content = ({ appLocales, currentLocale, localizations, readPermissions }) => {
-  const { allLayoutData, initialData, slug } = useCMEditViewDataManager();
+const Content = ({
+  appLocales,
+  currentLocale,
+  localizations,
+  readPermissions,
+}) => {
+  const { allLayoutData, initialData, slug } = useCMEditViewDataManager()
 
+  const options = generateOptions(
+    appLocales,
+    currentLocale,
+    localizations,
+    readPermissions
+  )
 
-  const options = generateOptions(appLocales, currentLocale, localizations, readPermissions);
-
-
-  const toggleNotification = useNotification();
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [value, setValue] = useState(options[0]?.value || '');
+  const toggleNotification = useNotification()
+  const { formatMessage } = useIntl()
+  const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [value, setValue] = useState(options[0]?.value || '')
 
   const handleConfirmCopyLocale = async () => {
     if (!value) {
-      handleToggle();
+      handleToggle()
 
-      return;
+      return
     }
 
-    const requestDataURL = `/content-manager/collection-types/${slug}/${value}`;
-    const translateURL = `/deepl/translate`;
+    const requestDataURL = `/content-manager/collection-types/${slug}/${value}`
+    const translateURL = `/deepl/translate`
 
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      const { data: response } = await axiosInstance.get(requestDataURL);
+      const { data: response } = await axiosInstance.get(requestDataURL)
 
-      const cleanedData = cleanData(response, allLayoutData, localizations);
-      // TODO: get non-localized fields
-      // '/content-manager/actions/get-non-localized-fields'
+      const cleanedData = cleanData(response, allLayoutData, localizations)
 
-      const {locale: sourceLocale} = localizations.find(({id}) => id == value)
-      const {data: translatedData} = await axiosInstance.post(translateURL, {
+      const { locale: sourceLocale } = localizations.find(
+        ({ id }) => id == value
+      )
+      const { data: translatedData } = await axiosInstance.post(translateURL, {
         data: cleanedData,
         sourceLocale,
-        targetLocale: currentLocale
-      });
+        targetLocale: currentLocale,
+        contentTypeUid: slug,
+      })
 
-      ['createdBy', 'updatedBy', 'publishedAt', 'id', 'createdAt'].forEach(key => {
-        if (!initialData[key]) return;
-        translatedData[key] = initialData[key];
-      });
+      ;['createdBy', 'updatedBy', 'publishedAt', 'id', 'createdAt'].forEach(
+        (key) => {
+          if (!initialData[key]) return
+          translatedData[key] = initialData[key]
+        }
+      )
 
-
-      dispatch({ type: 'ContentManager/CrudReducer/GET_DATA_SUCCEEDED', data: translatedData });
+      // FIXME: Two issues here
+      // - Date/time field is only shown with value after save
+      // - The dispatch updates not just modified data but also the initial data
+      //   -> Saving is impossible until manual modification if object already existed
+      dispatch({
+        type: 'ContentManager/CrudReducer/GET_DATA_SUCCEEDED',
+        data: translatedData,
+      })
 
       toggleNotification({
         type: 'success',
@@ -107,9 +144,9 @@ const Content = ({ appLocales, currentLocale, localizations, readPermissions }) 
           id: getTrad('CMEditViewTranslateLocale.translate-success'),
           defaultMessage: 'Copied and translated from other locale!',
         },
-      });
+      })
     } catch (err) {
-      console.error(err);
+      console.error(err)
 
       toggleNotification({
         type: 'warning',
@@ -117,20 +154,20 @@ const Content = ({ appLocales, currentLocale, localizations, readPermissions }) 
           id: getTrad('CMEditViewTranslateLocale.translate-failure'),
           defaultMessage: 'Failed to translate locale',
         },
-      });
+      })
     } finally {
-      setIsLoading(false);
-      handleToggle();
+      setIsLoading(false)
+      handleToggle()
     }
-  };
+  }
 
-  const handleChange = value => {
-    setValue(value);
-  };
+  const handleChange = (value) => {
+    setValue(value)
+  }
 
   const handleToggle = () => {
-    setIsOpen(prev => !prev);
-  };
+    setIsOpen((prev) => !prev)
+  }
 
   return (
     <Box paddingTop={6}>
@@ -162,7 +199,9 @@ const Content = ({ appLocales, currentLocale, localizations, readPermissions }) 
               <Flex justifyContent="center">
                 <CenteredTypography id="confirm-description">
                   {formatMessage({
-                    id: getTrad('CMEditViewTranslateLocale.ModalConfirm.content'),
+                    id: getTrad(
+                      'CMEditViewTranslateLocale.ModalConfirm.content'
+                    ),
                     defaultMessage:
                       'Your current content will be erased and filled by the translated content of the selected locale:',
                   })}
@@ -181,7 +220,7 @@ const Content = ({ appLocales, currentLocale, localizations, readPermissions }) 
                       <Option key={value} value={value}>
                         {label}
                       </Option>
-                    );
+                    )
                   })}
                 </Select>
               </Box>
@@ -197,7 +236,11 @@ const Content = ({ appLocales, currentLocale, localizations, readPermissions }) 
               </Button>
             }
             endAction={
-              <Button variant="success" onClick={handleConfirmCopyLocale} loading={isLoading}>
+              <Button
+                variant="success"
+                onClick={handleConfirmCopyLocale}
+                loading={isLoading}
+              >
                 {formatMessage({
                   id: getTrad('CMEditViewTranslateLocale.submit-text'),
                   defaultMessage: 'Yes, fill in',
@@ -208,8 +251,8 @@ const Content = ({ appLocales, currentLocale, localizations, readPermissions }) 
         </Dialog>
       )}
     </Box>
-  );
-};
+  )
+}
 
 Content.propTypes = {
   appLocales: PropTypes.arrayOf(
@@ -221,6 +264,6 @@ Content.propTypes = {
   currentLocale: PropTypes.string.isRequired,
   localizations: PropTypes.array.isRequired,
   readPermissions: PropTypes.array.isRequired,
-};
+}
 
-export default CMEditViewTranslateLocale;
+export default CMEditViewTranslateLocale

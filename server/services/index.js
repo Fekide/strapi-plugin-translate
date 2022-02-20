@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const translateService = require('./translate-service');
+const deeplService = require('./deepl-service')
 
 module.exports = {
-  translateService,
-};
+  deeplService,
+}

@@ -5,5 +5,6 @@
   "CMEditViewTranslateLocale.ModalConfirm.content": "Your current content will be erased and filled by the translated content of the selected locale:",
   "CMEditViewTranslateLocale.submit-text": "Yes, fill in",
   "plugin.name": "DeepL",
-  "Settings.locales.modal.locales.label": "Locales"
+  "Settings.locales.modal.locales.label": "Locales",
+  "popUpWarning.button.cancel": "No, cancel"
 }

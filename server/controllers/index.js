@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const translateController = require('./translate-controller');
+const deeplController = require('./deepl-controller')
 
 module.exports = {
-  translateController,
-};
+  deeplController,
+}

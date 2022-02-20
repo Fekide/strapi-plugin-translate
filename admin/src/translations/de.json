@@ -5,5 +5,6 @@
   "CMEditViewTranslateLocale.ModalConfirm.content": "Ihr Inhalt wird gelöscht und mit der automatisch übersetzten Version der ausgewählten Sprache übersetzt:",
   "CMEditViewTranslateLocale.submit-text": "Ja, übersetzen",
   "plugin.name": "DeepL",
-  "Settings.locales.modal.locales.label": "Sprachen"
+  "Settings.locales.modal.locales.label": "Sprachen",
+  "popUpWarning.button.cancel": "Nein, abbrechen"
 }
