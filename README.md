@@ -54,6 +54,9 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 
 - Only the [deepl supported languages](https://www.deepl.com/docs-api/translating-text/request/) can be translated
 - Only up to 50 text fields can be translated at once
+- Relations are not translated
+  - if the relation does not have internationalization enabled, the source relation is reused (unless this doesn't work with the cardinalities)
+  - if the relation does have internationalization enabled, the source relation cannot be reused. It is hover not translated automatically (yet)
 
 ## TODOs
 
@@ -64,3 +67,5 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
   - [x] dynamic zones
 - [ ] Configuration of free Api and token also through admin
 - [ ] Overview of api usage in admin panel -> api done
+- [ ] batch translation (needs to also 'translate' uids)
+- [ ] translate relations as well
