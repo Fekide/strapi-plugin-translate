@@ -1,5 +1,5 @@
 {
-  "name": "deepl",
+  "name": "strapi-plugin-deepl",
   "version": "0.1.0",
   "description": "Strapi plugin for automated translation of content using DeepL",
   "strapi": {
