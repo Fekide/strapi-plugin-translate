@@ -11,7 +11,8 @@
     "axios": "^0.26.0"
   },
   "peerDependencies": {
-    "@strapi/plugin-i18n": "^4.0.8"
+    "@strapi/plugin-i18n": "^4.0.0",
+    "@strapi/strapi": "^4.0.0"
   },
   "author": {
     "name": "Felix Haase",
