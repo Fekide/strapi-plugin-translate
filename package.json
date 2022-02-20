@@ -1,7 +1,7 @@
 {
   "name": "deepl",
   "version": "0.1.0",
-  "description": "Strapi plugin for semi-automated translation of content",
+  "description": "Strapi plugin for automated translation of content using DeepL",
   "strapi": {
     "name": "DeepL",
     "description": "Automatic content translation with DeepL",
@@ -22,5 +22,19 @@
     "node": ">=12.x. <=16.x.x",
     "npm": ">=6.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "strapi",
+    "plugin",
+    "deepl",
+    "translation",
+    "i18n"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fekide/strapi-plugin-deepl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Fekide/strapi-plugin-deepl/issues"
+  }
 }
