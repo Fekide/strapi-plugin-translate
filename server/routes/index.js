@@ -6,10 +6,10 @@ module.exports = [
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
-        // {
-        //   name: 'plugin::content-manager.hasPermissions',
-        //   config: { actions: ['plugin::deepl.locale.translate'] },
-        // },
+        {
+          name: 'plugin::content-manager.hasPermissions',
+          config: { actions: ['plugin::deepl.translate'] },
+        },
       ],
     },
   },
@@ -20,10 +20,10 @@ module.exports = [
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
-        // {
-        //   name: 'plugin::content-manager.hasPermissions',
-        //   config: { actions: ['plugin::deepl.locale.translate'] },
-        // },
+        {
+          name: 'plugin::content-manager.hasPermissions',
+          config: { actions: ['plugin::deepl.usage'] },
+        },
       ],
     },
   },
