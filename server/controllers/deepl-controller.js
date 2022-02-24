@@ -2,80 +2,7 @@
 
 const _ = require('lodash')
 
-async function getTranslateFields(data, schema, attr, translatedFieldTypes) {
-  if (
-    translatedFieldTypes.includes(schema.type) &&
-    _.get(data, attr, undefined)
-  ) {
-    if (schema.type == 'component') {
-      return (
-        await recursiveComponentFieldsToTranslate(
-          schema,
-          _.get(data, attr, undefined),
-          translatedFieldTypes,
-          attr
-        )
-      ).map((path) => `${attr}.${path}`)
-    } else if (schema.type == 'dynamiczone') {
-      return await Promise.all(
-        data[attr].map(async (object, index) => {
-          return (
-            await recursiveComponentFieldsToTranslate(
-              schema,
-              object,
-              translatedFieldTypes,
-              attr
-            )
-          ).map((path) => `${attr}.${index}.${path}`)
-        })
-      )
-    } else {
-      return attr
-    }
-  }
-  return null
-}
-
-async function recursiveComponentFieldsToTranslate(
-  componentReference,
-  data,
-  translatedFieldTypes
-) {
-  const componentInfo =
-    componentReference.type == 'dynamiczone'
-      ? strapi.components[data.__component]
-      : strapi.components[componentReference.component]
-  const componentSchema = await strapi
-    .plugin('content-type-builder')
-    .service('components')
-    .formatComponent(componentInfo)
-
-  const attributesSchema = _.get(componentSchema, 'schema.attributes', [])
-  let translateFields = await Promise.all(
-    Object.keys(attributesSchema).map(async (attr) => {
-      const schema = attributesSchema[attr]
-
-      if (componentReference.repeatable) {
-        return _.compact(
-          _.flattenDeep(
-            await Promise.all(
-              data.map(async (_value, index) =>
-                getTranslateFields(
-                  data,
-                  schema,
-                  `${index}.${attr}`,
-                  translatedFieldTypes
-                )
-              )
-            )
-          )
-        )
-      }
-      return getTranslateFields(data, schema, attr, translatedFieldTypes)
-    })
-  )
-  return _.compact(_.flattenDeep(translateFields))
-}
+const { getAllTranslatableFields } = require('../utils/translatable-fields')
 
 module.exports = ({ strapi }) => ({
   async translate(ctx) {
@@ -95,29 +22,8 @@ module.exports = ({ strapi }) => ({
       .plugin('content-type-builder')
       .service('content-types')
       .formatContentType(contentType)
-    const attributesSchema = _.get(contentSchema, 'schema.attributes', [])
 
-    const { translatedFieldTypes } = strapi.config.get('plugin.deepl')
-
-    let translateFields = _.compact(
-      _.flattenDeep(
-        await Promise.all(
-          Object.keys(attributesSchema).map(async (attr) => {
-            const schema = attributesSchema[attr]
-
-            if (schema.pluginOptions?.i18n.localized) {
-              return getTranslateFields(
-                data,
-                schema,
-                attr,
-                translatedFieldTypes
-              )
-            }
-            return null
-          })
-        )
-      )
-    )
+    let translateFields = await getAllTranslatableFields(data, contentSchema)
 
     try {
       ctx.body = await strapi
