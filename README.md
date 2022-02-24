@@ -75,3 +75,7 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - [ ] Overview of api usage in admin panel -> api done
 - [ ] batch translation (needs to also 'translate' uids)
 - [ ] translate relations as well
+
+## Legal Disclaimer
+
+Feki.de e.V. do not hold the copyright to the Logos of Strapi Inc. or DeepL SE. There is no cooperation or any other sort of affiliation between Feki.de e.V. and Strapi Inc. or DeepL SE. The Logos are used under fair use in order to not confuse Users as to what this plugin does.
