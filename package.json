@@ -3,7 +3,7 @@
   "version": "0.1.3",
   "description": "Strapi plugin for automated translation of content using DeepL",
   "strapi": {
-    "name": "DeepL",
+    "name": "deepl",
     "description": "Automatic content translation with DeepL",
     "kind": "plugin"
   },
