@@ -3,35 +3,29 @@
 const { URLSearchParams } = require('url')
 const axios = require('axios')
 
+const { DEEPL_FREE_API, DEEPL_PAID_API } = require('./constants')
+
 async function usage({ free_api, ...parameters }) {
-  const sub_domain = free_api ? 'api-free' : 'api'
+  const apiURL = free_api ? DEEPL_FREE_API : DEEPL_PAID_API
   const params = new URLSearchParams(parameters)
 
-  return (
-    await axios.post(
-      `https://${sub_domain}.deepl.com/v2/usage`,
-      params.toString()
-    )
-  ).data
+  return (await axios.post(`${apiURL}/usage`, params.toString())).data
 }
 
 async function translate({ text, free_api, glossary_id, ...parameters }) {
-  const sub_domain = free_api ? 'api-free' : 'api'
+  const apiURL = free_api ? DEEPL_FREE_API : DEEPL_PAID_API
   const params = new URLSearchParams(parameters)
   if (Array.isArray(text)) {
     text.forEach((t) => params.append('text', t))
-  } else {
+  } else if (text) {
     params.append('text', text)
+  } else {
+    return { translations: [] }
   }
   if (glossary_id) {
     params.append('glossary_id', glossary_id)
   }
-  return (
-    await axios.post(
-      `https://${sub_domain}.deepl.com/v2/translate`,
-      params.toString()
-    )
-  ).data
+  return (await axios.post(`${apiURL}/translate`, params.toString())).data
 }
 
 function parseLocale(strapiLocale) {
