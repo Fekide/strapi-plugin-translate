@@ -6,9 +6,19 @@
 
 > This plugin is still a work in progress
 
-This plugin integrates with the DeepL-API to provide quick automated translation of content fields.
+This plugin integrates strapi with the [DeepL-API](https://www.deepl.com/pro-api) to provide quick automated translation of content fields.
 
 ![plugin showcase](assets/showcase.gif)
+
+## Requirements
+
+This plugin requires the following, in order to work correctly:
+- The plugin **i18n** installed and enabled (`@strapi/plugin-i18n` [[npm](https://www.npmjs.com/package/@strapi/plugin-i18n)])
+- The content type to have internationalization enabled (advanced settings in the content type builder)
+- In the internationalization settings at least **two** locales
+- In the config an apiKey defined (see [Setup](#setup))
+
+Unless you have the previous not set up, the field on the right where you can translate will not show up. Also it will not show up when editing the currently only available translation of an 
 
 ## Setup
 
@@ -53,7 +63,7 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - Configure which field types are translated
   - standard text fields and nested components by default
   - The translation of Markdown using DeepL works relatively well but is not perfect. Watch out especially if you have links in Markdown that could be changed by translation
-  - uid fields are not translated by default because they might not result in the same translation as the attatched field -> saving is prevented in the conent manager anyway until you change the slug again
+  - **uid fields are not translated** by default because they might not result in the same translation as the attached field -> saving is prevented in the conent manager anyway until you change the slug again
 - Fields that are marked as not translated in the content-type settings will not be translated
 
 ## (Current) Limitations:
@@ -75,6 +85,9 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - [ ] Overview of api usage in admin panel -> api done
 - [ ] batch translation (needs to also 'translate' uids)
 - [ ] translate relations as well
+- [ ] Tests
+  - [ ] unit (partly done, controllers missing)
+  - [ ] e2e
 
 ## Legal Disclaimer
 
