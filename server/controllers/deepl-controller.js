@@ -19,8 +19,7 @@ module.exports = ({ strapi }) => ({
       return ctx.notFound('corresponding content type not found')
     }
 
-    let translateFields = await getAllTranslatableFields(data, contentSchema)
-
+    let fieldsToTranslate = await getAllTranslatableFields(data, contentSchema)
     try {
       ctx.body = await strapi
         .plugin('deepl')
@@ -29,7 +28,7 @@ module.exports = ({ strapi }) => ({
           data,
           sourceLocale,
           targetLocale,
-          translateFields,
+          fieldsToTranslate,
         })
     } catch (error) {
       strapi.log.error(JSON.stringify(error))

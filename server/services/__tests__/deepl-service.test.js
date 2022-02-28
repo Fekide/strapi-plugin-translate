@@ -46,12 +46,12 @@ describe('deepl service', () => {
       }
       const sourceLocale = 'en'
       const targetLocale = 'de'
-      const translateFields = ['title']
+      const fieldsToTranslate = ['title']
 
       // when
       const result = await strapi.plugins.deepl
         .service('deeplService')
-        .translate({ data, sourceLocale, targetLocale, translateFields })
+        .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
 
       // then
       expect(result).toEqual({
@@ -67,12 +67,12 @@ describe('deepl service', () => {
       }
       const sourceLocale = 'en'
       const targetLocale = 'de'
-      const translateFields = []
+      const fieldsToTranslate = []
 
       // when
       const result = await strapi.plugins.deepl
         .service('deeplService')
-        .translate({ data, sourceLocale, targetLocale, translateFields })
+        .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
 
       // then
       expect(result).toEqual(data)
@@ -92,7 +92,7 @@ describe('deepl service', () => {
       }
       const sourceLocale = 'en'
       const targetLocale = 'de'
-      const translateFields = [
+      const fieldsToTranslate = [
         'title',
         'content',
         'component.text',
@@ -103,7 +103,7 @@ describe('deepl service', () => {
       // when
       const result = await strapi.plugins.deepl
         .service('deeplService')
-        .translate({ data, sourceLocale, targetLocale, translateFields })
+        .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
 
       // then
       expect(result).toEqual({

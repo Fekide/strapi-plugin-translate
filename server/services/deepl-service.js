@@ -6,10 +6,10 @@ const set = require('lodash/set')
 const deepl = require('../utils/deepl-api')
 
 module.exports = ({ strapi }) => ({
-  async translate({ data, sourceLocale, targetLocale, translateFields }) {
+  async translate({ data, sourceLocale, targetLocale, fieldsToTranslate }) {
     const { apiKey, freeApi, glossaryId } = strapi.config.get('plugin.deepl')
 
-    const textsToTranslate = translateFields.map((field) => {
+    const textsToTranslate = fieldsToTranslate.map((field) => {
       return get(data, field, '')
     })
 
@@ -23,7 +23,7 @@ module.exports = ({ strapi }) => ({
     })
 
     const translatedData = { ...data }
-    translateFields.forEach((field, index) => {
+    fieldsToTranslate.forEach((field, index) => {
       set(translatedData, field, translateResult.translations[index]?.text)
     })
 
