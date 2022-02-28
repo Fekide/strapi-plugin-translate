@@ -80,6 +80,9 @@ module.exports = ({
         service: function (name) {
           return this.services[name]({ strapi: mock.getRef() })
         },
+        controller: function (name) {
+          return this.controllers[name]({ strapi: mock.getRef() })
+        },
         package: require('../package.json'),
         services: {
           deeplService: require('../server/services/deepl-service'),

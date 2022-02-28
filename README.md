@@ -94,7 +94,7 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - [ ] batch translation (needs to also 'translate' uids)
 - [x] translate relations as well
 - [ ] Tests
-  - [ ] unit (partly done, controllers missing)
+  - [x] unit (partly done, controllers missing)
   - [ ] e2e
 
 ## Legal Disclaimer
