@@ -13,15 +13,11 @@ module.exports = ({ strapi }) => ({
       return ctx.badRequest('target and source locale are both required')
     }
 
-    const contentType = strapi.contentTypes[contentTypeUid]
+    const contentSchema = strapi.contentTypes[contentTypeUid]
 
     if (!contentType) {
       return ctx.notFound('corresponding content type not found')
     }
-    const contentSchema = await strapi
-      .plugin('content-type-builder')
-      .service('content-types')
-      .formatContentType(contentType)
 
     let translateFields = await getAllTranslatableFields(data, contentSchema)
 

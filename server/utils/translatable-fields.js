@@ -12,7 +12,7 @@ const flatten_and_compact = (arr) => _.compact(_.flattenDeep(arr))
  * @returns all attributes that can be translated
  */
 async function getAllTranslatableFields(data, schema) {
-  const attributesSchema = _.get(schema, 'schema.attributes', [])
+  const attributesSchema = _.get(schema, 'attributes', [])
   const { translatedFieldTypes } = strapi.config.get('plugin.deepl')
   return flatten_and_compact(
     await Promise.all(
@@ -90,16 +90,12 @@ async function recursiveComponentFieldsToTranslate(
   data,
   translatedFieldTypes
 ) {
-  const componentInfo =
+  const componentSchema =
     componentReference.type == 'dynamiczone'
       ? strapi.components[data.__component]
       : strapi.components[componentReference.component]
-  const componentSchema = await strapi
-    .plugin('content-type-builder')
-    .service('components')
-    .formatComponent(componentInfo)
 
-  const attributesSchema = _.get(componentSchema, 'schema.attributes', [])
+  const attributesSchema = _.get(componentSchema, 'attributes', [])
   let translateFields = await Promise.all(
     Object.keys(attributesSchema).map(async (attr) => {
       const schema = attributesSchema[attr]
@@ -118,7 +114,7 @@ async function recursiveComponentFieldsToTranslate(
           )
         )
       }
-      return getTranslateFields(data, schema, attr, translatedFieldTypes)
+      return await getTranslateFields(data, schema, attr, translatedFieldTypes)
     })
   )
   return flatten_and_compact(translateFields)
