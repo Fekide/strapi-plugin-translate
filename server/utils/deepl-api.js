@@ -3,7 +3,13 @@
 const { URLSearchParams } = require('url')
 const axios = require('axios')
 
-const { DEEPL_FREE_API, DEEPL_PAID_API } = require('./constants')
+const _ = require('lodash')
+
+const {
+  DEEPL_FREE_API,
+  DEEPL_PAID_API,
+  DEEPL_API_MAX_TEXTS,
+} = require('./constants')
 
 async function usage({ free_api, ...parameters }) {
   const apiURL = free_api ? DEEPL_FREE_API : DEEPL_PAID_API
@@ -13,19 +19,37 @@ async function usage({ free_api, ...parameters }) {
 }
 
 async function translate({ text, free_api, glossary_id, ...parameters }) {
-  const apiURL = free_api ? DEEPL_FREE_API : DEEPL_PAID_API
-  const params = new URLSearchParams(parameters)
-  if (Array.isArray(text)) {
-    text.forEach((t) => params.append('text', t))
-  } else if (text) {
-    params.append('text', text)
-  } else {
+  if (!text) {
     return { translations: [] }
   }
+
+  const apiURL = free_api ? DEEPL_FREE_API : DEEPL_PAID_API
+  const params = new URLSearchParams(parameters)
   if (glossary_id) {
     params.append('glossary_id', glossary_id)
   }
-  return (await axios.post(`${apiURL}/translate`, params.toString())).data
+
+  const textArray = Array.isArray(text) ? text : [text]
+  const chunkedText = _.chunk(textArray, DEEPL_API_MAX_TEXTS)
+
+  return (
+    await Promise.all(
+      chunkedText.map(async (texts) => {
+        const requestParams = new URLSearchParams(params)
+        texts.forEach((t) => requestParams.append('text', t))
+        return (
+          await axios.post(`${apiURL}/translate`, requestParams.toString())
+        ).data
+      })
+    )
+  ).reduce(
+    (prev, cur) => {
+      return {
+        translations: [...prev.translations, ...cur.translations],
+      }
+    },
+    { translations: [] }
+  )
 }
 
 function parseLocale(strapiLocale) {

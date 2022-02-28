@@ -79,7 +79,6 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 ## (Current) Limitations:
 
 - Only the [deepl supported languages](https://www.deepl.com/docs-api/translating-text/request/) can be translated
-- Only up to 50 text fields can be translated at once
 
 
 ## TODOs
@@ -92,9 +91,10 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - [ ] Configuration of free Api and token also through admin
 - [ ] Overview of api usage in admin panel -> api done
 - [ ] batch translation (needs to also 'translate' uids)
+  - [ ] include overview of translation status to start translating
 - [x] translate relations as well
 - [ ] Tests
-  - [x] unit (partly done, controllers missing)
+  - [x] unit
   - [ ] e2e
 
 ## Legal Disclaimer
