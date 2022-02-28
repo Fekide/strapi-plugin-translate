@@ -62,7 +62,6 @@ describe('deepl api', () => {
       character_count: 180118,
       character_limit: 1250000,
     }
-
     beforeEach(() => {
       const usageHandler = (config) => {
         const params = new URLSearchParams(config.data)
@@ -74,246 +73,223 @@ describe('deepl api', () => {
       mock.onPost(`${DEEPL_FREE_API}/usage`).reply(usageHandler)
       mock.onPost(`${DEEPL_PAID_API}/usage`).reply(usageHandler)
     })
-
-    describe('succeeds', () => {
-      it('for free api with valid key', async () => {
-        // given
-        const params = {
-          free_api: true,
-          auth_key: authKey,
-        }
-        // when
-        const result = await usage(params)
-
-        // then
-        expect(mock.history.post[0].url).toEqual(`${DEEPL_FREE_API}/usage`)
-        expect(result).toEqual(usage_result)
-      })
-
-      it('for paid api with valid key', async () => {
-        // given
-        const params = {
-          free_api: false,
-          auth_key: authKey,
-        }
-        // when
-        const result = await usage(params)
-
-        // then
-        expect(mock.history.post[0].url).toEqual(`${DEEPL_PAID_API}/usage`)
-        expect(result).toEqual(usage_result)
-      })
-    })
-    describe('fails', () => {
-      it('for free api with invalid key', async () => {
-        // given
-        const params = {
-          free_api: true,
-          auth_key: invalidAuthKey,
-        }
-        try {
+    describe.each([true, false])('for free api %p', (freeApi) => {
+      describe('succeeds', () => {
+        it('with valid key', async () => {
+          // given
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+          }
           // when
-          await usage(params)
-          throw new Error('usage should not succeed')
-        } catch (error) {
-          expect(mock.history.post[0].url).toEqual(`${DEEPL_FREE_API}/usage`)
-          expect(error.response.status).toEqual(403)
-        }
+          const result = await usage(params)
 
-        // then
-      })
-
-      it('for paid api with invalid key', async () => {
-        // given
-        const params = {
-          free_api: false,
-          auth_key: invalidAuthKey,
-        }
-        try {
-          // when
-          await usage(params)
-          fail('usage should not succeed')
-        } catch (error) {
           // then
-          expect(mock.history.post[0].url).toEqual(`${DEEPL_PAID_API}/usage`)
-          expect(error.response.status).toEqual(403)
-        }
+          expect(mock.history.post[0].url).toEqual(
+            `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/usage`
+          )
+          expect(result).toEqual(usage_result)
+        })
+      })
+      describe('fails', () => {
+        it('with invalid key', async () => {
+          // given
+          const params = {
+            free_api: freeApi,
+            auth_key: invalidAuthKey,
+          }
+          try {
+            // when
+            await usage(params)
+            throw new Error('usage should not succeed')
+          } catch (error) {
+            // then
+            expect(mock.history.post[0].url).toEqual(
+              `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/usage`
+            )
+            expect(error.response.status).toEqual(403)
+          }
+        })
       })
     })
   })
 
   describe('translate', () => {
-    beforeEach(() => {
-      const translateHandler = (config) => {
-        const params = new URLSearchParams(config.data)
-        if (params.get('auth_key') == authKey) {
-          let text = params.getAll('text')
-          if (text.length == 0) {
-            return [400]
+    describe.each([true, false])('for free api %p', (freeApi) => {
+      beforeEach(() => {
+        const translateHandler = (config) => {
+          const params = new URLSearchParams(config.data)
+          if (params.get('auth_key') == authKey) {
+            let text = params.getAll('text')
+            if (text.length == 0) {
+              return [400]
+            }
+            if (text.length > 50) {
+              return [413]
+            }
+            let targetLang = params.get('target_lang')
+            if (!targetLang) {
+              return [400]
+            }
+            return [
+              200,
+              {
+                translations: text.map((t) => ({
+                  detected_source_language: 'EN',
+                  text: t,
+                })),
+              },
+            ]
           }
-          if (text.length > 50) {
-            return [413]
+          return [403]
+        }
+        mock.onPost(`${DEEPL_FREE_API}/translate`).reply(translateHandler)
+        mock.onPost(`${DEEPL_PAID_API}/translate`).reply(translateHandler)
+      })
+
+      describe('succeeds', () => {
+        async function singleText(freeApi) {
+          // given
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            target_lang: 'DE',
+            text: 'Some text',
           }
-          let targetLang = params.get('target_lang')
-          if (!targetLang) {
-            return [400]
+          // when
+          const result = await translate(params)
+
+          // then
+          expect(mock.history.post[0].url).toEqual(
+            `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/translate`
+          )
+          expect(result).toEqual({
+            translations: [
+              { detected_source_language: 'EN', text: params.text },
+            ],
+          })
+        }
+
+        async function multipleTexts(freeApi) {
+          // given
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            target_lang: 'DE',
+            text: ['Some text', 'Some more text', 'Even more text'],
           }
-          return [
-            200,
-            {
-              translations: text.map((t) => ({
-                detected_source_language: 'EN',
-                text: t,
-              })),
-            },
-          ]
+          // when
+          const result = await translate(params)
+
+          // then
+          expect(mock.history.post[0].url).toEqual(
+            `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/translate`
+          )
+          expect(result).toEqual({
+            translations: params.text.map((t) => ({
+              detected_source_language: 'EN',
+              text: t,
+            })),
+          })
         }
-        return [403]
-      }
-      mock.onPost(`${DEEPL_FREE_API}/translate`).reply(translateHandler)
-      mock.onPost(`${DEEPL_PAID_API}/translate`).reply(translateHandler)
-    })
 
-    describe('succeeds', () => {
-      async function singleText(freeApi) {
-        // given
-        const params = {
-          free_api: freeApi,
-          auth_key: authKey,
-          target_lang: 'DE',
-          text: 'Some text',
+        async function forMissingText(freeApi) {
+          // given
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            target_lang: 'DE',
+          }
+          // when
+          const result = await translate(params)
+
+          // then
+          expect(mock.history.post.length).toEqual(0)
+          expect(result).toEqual({
+            translations: [],
+          })
         }
-        // when
-        const result = await translate(params)
 
-        // then
-        expect(mock.history.post[0].url).toEqual(
-          `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/translate`
-        )
-        expect(result).toEqual({
-          translations: [{ detected_source_language: 'EN', text: params.text }],
-        })
-      }
+        async function forMoreThan50Texts(freeApi) {
+          // given
+          const textLength = 120
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            target_lang: 'DE',
+            text: Array.from({ length: textLength }, (_v, i) => `text ${i}`),
+          }
+          // when
+          const result = await translate(params)
 
-      async function multipleTexts(freeApi) {
-        // given
-        const params = {
-          free_api: freeApi,
-          auth_key: authKey,
-          target_lang: 'DE',
-          text: ['Some text', 'Some more text', 'Even more text'],
+          // then
+          expect(mock.history.post.length).toBeGreaterThan(1)
+          expect(result).toEqual({
+            translations: params.text.map((t) => ({
+              detected_source_language: 'EN',
+              text: t,
+            })),
+          })
         }
-        // when
-        const result = await translate(params)
 
-        // then
-        expect(mock.history.post[0].url).toEqual(
-          `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/translate`
-        )
-        expect(result).toEqual({
-          translations: params.text.map((t) => ({
-            detected_source_language: 'EN',
-            text: t,
-          })),
-        })
-      }
-
-      async function forMissingText(freeApi) {
-        // given
-        const params = {
-          free_api: freeApi,
-          auth_key: authKey,
-          target_lang: 'DE',
-        }
-        // when
-        const result = await translate(params)
-
-        // then
-        expect(mock.history.post.length).toEqual(0)
-        expect(result).toEqual({
-          translations: [],
-        })
-      }
-
-      describe('for free api', () => {
         it('with single text', async () => {
-          await singleText(true)
+          await singleText(freeApi)
         })
 
         it('with multiple texts', async () => {
-          await multipleTexts(true)
+          await multipleTexts(freeApi)
         })
 
         it('with missing text', async () => {
-          await forMissingText(true)
+          await forMissingText(freeApi)
+        })
+
+        it('with more than 50 texts', async () => {
+          await forMoreThan50Texts(freeApi)
         })
       })
-      describe('for paid api', () => {
-        it('with single text', async () => {
-          await singleText(false)
-        })
 
-        it('with multiple texts', async () => {
-          await multipleTexts(false)
-        })
-
-        it('with missing text', async () => {
-          await forMissingText(false)
-        })
-      })
-    })
-
-    describe('fails', () => {
-      async function forInvalidKey(freeApi) {
-        // given
-        const params = {
-          free_api: freeApi,
-          auth_key: invalidAuthKey,
-          target_lang: 'DE',
-          text: 'Some text',
+      describe('fails', () => {
+        async function forInvalidKey(freeApi) {
+          // given
+          const params = {
+            free_api: freeApi,
+            auth_key: invalidAuthKey,
+            target_lang: 'DE',
+            text: 'Some text',
+          }
+          await expect(
+            // when
+            async () => await translate(params)
+            // then
+          ).rejects.toThrow('403')
+          expect(mock.history.post[0].url).toEqual(
+            `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/translate`
+          )
         }
-        await expect(
-          // when
-          async () => await translate(params)
-          // then
-        ).rejects.toThrow('403')
-        expect(mock.history.post[0].url).toEqual(
-          `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/translate`
-        )
-      }
-      async function forMissingTargetLang(freeApi) {
-        // given
-        const params = {
-          free_api: freeApi,
-          auth_key: authKey,
-          text: 'Some text',
+        async function forMissingTargetLang(freeApi) {
+          // given
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            text: 'Some text',
+          }
+          await expect(
+            // when
+            async () => await translate(params)
+            // then
+          ).rejects.toThrow('400')
+          expect(mock.history.post[0].url).toEqual(
+            `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/translate`
+          )
         }
-        await expect(
-          // when
-          async () => await translate(params)
-          // then
-        ).rejects.toThrow('400')
-        expect(mock.history.post[0].url).toEqual(
-          `${freeApi ? DEEPL_FREE_API : DEEPL_PAID_API}/translate`
-        )
-      }
 
-      describe('for free api', () => {
         it('with invalid key', async () => {
-          await forInvalidKey(true)
+          await forInvalidKey(freeApi)
         })
 
         it('with missing target language', async () => {
-          await forMissingTargetLang(true)
-        })
-      })
-      describe('for paid api', () => {
-        it('with invalid key', async () => {
-          await forInvalidKey(false)
-        })
-
-        it('with missing target language', async () => {
-          await forMissingTargetLang(false)
+          await forMissingTargetLang(freeApi)
         })
       })
     })
