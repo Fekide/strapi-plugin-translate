@@ -18,7 +18,7 @@ This plugin requires the following, in order to work correctly:
 - In the internationalization settings at least **two** locales
 - In the config an apiKey defined (see [Setup](#setup))
 
-Unless you have the previous not set up, the field on the right where you can translate will not show up. Also it will not show up when editing the currently only available translation of an 
+Unless you have the previous not set up, the field on the right where you can translate will not show up. Also it will not show up when editing the currently only available translation of an entry.
 
 ## Setup
 
