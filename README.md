@@ -27,7 +27,7 @@ This plugin requires the following, in order to work correctly:
 - The plugin **i18n** installed and enabled (`@strapi/plugin-i18n` [[npm](https://www.npmjs.com/package/@strapi/plugin-i18n)])
 - The content type to have internationalization enabled (advanced settings in the content type builder)
 - In the internationalization settings at least **two** locales
-- In the config an apiKey defined (see [Setup](#setup))
+- In the config an apiKey defined (see [Configuration](#configuration))
 
 Unless you have the previous not set up, the field on the right where you can translate will not show up. Also it will not show up when editing the currently only available translation of an entry.
 
