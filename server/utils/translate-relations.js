@@ -18,6 +18,8 @@ async function getRelevantLocalization(contentType, id, locale) {
  *  - translated if the relation target is localized and the related instance has the targetLocale created
  */
 async function translateRelations(data, schema, targetLocale) {
+  const { translateRelations: shouldTranslateRelations } = strapi.config.get('plugin.deepl')
+
   const attributesSchema = _.get(schema, 'attributes', [])
   const resultData = _.cloneDeep(data)
   await Promise.all(
@@ -25,11 +27,11 @@ async function translateRelations(data, schema, targetLocale) {
       const attributeSchema = attributesSchema[attr]
 
       if (attributeSchema.type === 'relation') {
-        resultData[attr] = await translateRelation(
+        resultData[attr] = shouldTranslateRelations ? await translateRelation(
           _.get(data, attr, undefined),
           attributeSchema,
           targetLocale
-        )
+        ) : undefined
       } else if (attributeSchema.type === 'component') {
         resultData[attr] = await translateComponent(
           _.get(data, attr, undefined),

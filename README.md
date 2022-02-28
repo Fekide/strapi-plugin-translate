@@ -42,6 +42,8 @@ module.exports = {
         'component',
         'dynamiczone',
       ],
+      // If relations should be translated (default true)
+      translateRelations: true,
       // You can define a custom glossary to be used here (see https://www.deepl.com/docs-api/managing-glossaries/)
       glossaryId: 'customGlossary',
     },

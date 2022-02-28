@@ -423,7 +423,7 @@ describe('relation', () => {
     { relationIsLocalized: false },
   ])(
     'many to many, relation localized: $relationIsLocalized',
-    ({ relationIsLocalized, bothWays }) => {
+    ({ relationIsLocalized }) => {
       beforeEach(() => {
         const firstEnglish = { id: 1, related: undefined, locale: 'en' }
         const firstGerman = { id: 2, related: undefined, locale: 'de' }
@@ -1353,5 +1353,54 @@ describe('relation', () => {
         })
       }
     )
+  })
+
+  describe('config do not translate relations', () => {
+    beforeEach(() => {
+      const firstEnglish = { id: 1, locale: 'en' }
+      const firstGerman = { id: 2, locale: 'de' }
+      setup({
+        config: {
+          translateRelations: false,
+        },
+        contentTypes: {
+          'api::first.first': createComponentWithRelation(
+            'oneToOne',
+            'api::second.second'
+          ),
+          'api::second.second': createSimpleContentType(true),
+        },
+        database: {
+          'api::second.second': [
+            {
+              ...firstEnglish,
+              localizations: [firstGerman],
+            },
+            {
+              ...firstGerman,
+              localizations: [firstEnglish],
+            },
+          ],
+        },
+      })
+    })
+    it('is not translated', async () => {
+      // given
+      const data = {
+        related: { id: 1, locale: 'en' },
+      }
+      const schema = strapi.contentTypes['api::first.first']
+      const targetLocale = 'de'
+      // when
+      const relationsTranslated = await translateRelations(
+        data,
+        schema,
+        targetLocale
+      )
+      // then
+      expect(relationsTranslated).toEqual({
+        related: undefined,
+      })
+    })
   })
 })

@@ -129,6 +129,7 @@ module.exports = ({
             'component',
             'dynamiczone',
           ],
+          translateRelations: true,
           glossaryId: null,
           ...(toStore ? {} : config),
         },
