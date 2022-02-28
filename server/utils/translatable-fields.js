@@ -2,7 +2,7 @@
 
 const _ = require('lodash')
 
-const flatten_and_compact = (arr) => _.compact(_.flattenDeep(arr))
+const { flatten_and_compact } = require('./lodash-helpers')
 
 /**
  * Get the field or fields to translate of a content type
