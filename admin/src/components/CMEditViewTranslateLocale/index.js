@@ -47,10 +47,8 @@ import {
 } from '@strapi/helper-plugin'
 import { axiosInstance } from '@strapi/plugin-i18n/admin/src/utils'
 import { getTrad } from '../../utils'
-import {
-  cleanData,
-  generateOptions,
-} from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils'
+import cleanData from './utils/cleanData'
+import { generateOptions } from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils'
 import useContentTypePermissions from '@strapi/plugin-i18n/admin/src/hooks/useContentTypePermissions'
 import selectI18NLocales from '@strapi/plugin-i18n/admin/src/selectors/selectI18nLocales'
 

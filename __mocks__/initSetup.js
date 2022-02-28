@@ -22,11 +22,13 @@ module.exports = ({
   let mock = {
     db: {
       query: (uid) => {
-        const [handler, rest] = uid.split('::')
-        const [collection] = rest.split('.')
+        const [handler, collection] = uid.split('::')
         const values = get(mock.db, `${handler}.${collection}.records`, [])
         return {
-          findOne: async () => new Promise((resolve) => resolve(values[0])),
+          findOne: async (id) =>
+            new Promise((resolve) =>
+              resolve(values.find((obj) => obj.id == id))
+            ),
           findMany: async () => new Promise((resolve) => resolve(values)),
           findWithCount: async () =>
             new Promise((resolve) => resolve([values, values.length])),
@@ -128,6 +130,22 @@ module.exports = ({
           ...(toStore ? {} : config),
         },
       },
+    },
+    service(uid) {
+      return {
+        findOne: this.db.query(uid).findOne,
+        find: this.db.query(uid).findMany,
+        count: this.db.query(uid).count,
+        create: this.db.query(uid).create,
+        update: this.db.query(uid).update,
+        delete: this.db.query(uid).delete,
+      }
+    },
+    log: {
+      debug: jest.fn(),
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
     },
   }
 

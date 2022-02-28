@@ -65,14 +65,22 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
   - The translation of Markdown using DeepL works relatively well but is not perfect. Watch out especially if you have links in Markdown that could be changed by translation
   - **uid fields are not translated** by default because they might not result in the same translation as the attached field -> saving is prevented in the conent manager anyway until you change the slug again
 - Fields that are marked as not translated in the content-type settings will not be translated
+- Translation of relations by the followig schema:\
+  (_The related objects are not translated directly, only the relation itself is translated_)
+  - the related content type **is localized**:
+    - if a localization of the relation with the targetLocale exists\
+      -> it is used
+    - else the relation is removed
+  - the related content type **is not localized**:
+    - the relation goes both ways and would be removed from another object or localization if it was used (the case with oneToOne or oneToMany)\
+      -> it is removed
+    - otherwise the relation is kept
 
 ## (Current) Limitations:
 
 - Only the [deepl supported languages](https://www.deepl.com/docs-api/translating-text/request/) can be translated
 - Only up to 50 text fields can be translated at once
-- Relations are not translated
-  - if the relation does not have internationalization enabled, the source relation is reused (unless this doesn't work with the cardinalities)
-  - if the relation does have internationalization enabled, the source relation cannot be reused. It is hover not translated automatically (yet)
+
 
 ## TODOs
 
@@ -84,7 +92,7 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - [ ] Configuration of free Api and token also through admin
 - [ ] Overview of api usage in admin panel -> api done
 - [ ] batch translation (needs to also 'translate' uids)
-- [ ] translate relations as well
+- [x] translate relations as well
 - [ ] Tests
   - [ ] unit (partly done, controllers missing)
   - [ ] e2e

@@ -3,6 +3,7 @@
 const _ = require('lodash')
 
 const { getAllTranslatableFields } = require('../utils/translatable-fields')
+const { translateRelations } = require('../utils/translate-relations')
 
 module.exports = ({ strapi }) => ({
   async translate(ctx) {
@@ -21,7 +22,7 @@ module.exports = ({ strapi }) => ({
 
     let fieldsToTranslate = await getAllTranslatableFields(data, contentSchema)
     try {
-      ctx.body = await strapi
+      const translatedData = await strapi
         .plugin('deepl')
         .service('deeplService')
         .translate({
@@ -30,6 +31,11 @@ module.exports = ({ strapi }) => ({
           targetLocale,
           fieldsToTranslate,
         })
+      ctx.body = await translateRelations(
+        translatedData,
+        contentSchema,
+        targetLocale
+      )
     } catch (error) {
       strapi.log.error(JSON.stringify(error))
 

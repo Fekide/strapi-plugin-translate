@@ -1,45 +1,49 @@
 const simpleComponent = {
-  uid: 'simpleComponent',
-  schema: {
-    attributes: {
-      text: {
-        type: 'text',
-      },
+  attributes: {
+    text: {
+      type: 'text',
     },
   },
 }
 
 const nestedComponent = {
-  uid: 'nestedComponent',
-  schema: {
-    attributes: {
-      text: {
-        type: 'text',
-      },
-      nested: {
-        type: 'component',
-        component: 'nestedComponent',
-      },
+  attributes: {
+    text: {
+      type: 'text',
+    },
+    nested: {
+      type: 'component',
+      component: 'nestedComponent',
     },
   },
 }
 
 const twoFieldComponent = {
-  uid: 'twoFieldComponent',
-  schema: {
-    attributes: {
-      title: {
-        type: 'text',
-      },
-      number: {
-        type: 'number',
-      },
+  attributes: {
+    title: {
+      type: 'text',
+    },
+    number: {
+      type: 'number',
     },
   },
+}
+
+function createComponentWithRelation(relationType, target) {
+  return {
+    attributes: {
+      related: {
+        type: 'relation',
+        relation: relationType,
+        target: target,
+      },
+    },
+  }
 }
 
 module.exports = {
   simpleComponent,
   nestedComponent,
   twoFieldComponent,
+  createComponentWithRelation,
 }
