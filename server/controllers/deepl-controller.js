@@ -16,7 +16,7 @@ module.exports = ({ strapi }) => ({
 
     const contentSchema = strapi.contentTypes[contentTypeUid]
 
-    if (!contentType) {
+    if (!contentSchema) {
       return ctx.notFound('corresponding content type not found')
     }
 
