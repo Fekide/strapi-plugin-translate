@@ -2,17 +2,28 @@
   <img src="assets/logo.svg" alt="Meilisearch-Strapi" width="300" height="150" />
 </p>
 
-# Strapi plugin DeepL
+<div align="center">
+  <h1>Strapi v4 - DeepL plugin</h1>
+  <p>Integration with the <a href="https://www.deepl.com/pro-api">DeepL-API</a> to provide quick automated translation of content fields.</p>
+  <a href="https://www.npmjs.org/package/strapi-plugin-deepl">
+    <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/Fekide/strapi-plugin-deepl?label=npm&logo=npm">
+  </a>
+  <a href="https://www.npmjs.org/package/strapi-plugin-deepl">
+    <img src="https://img.shields.io/npm/dm/strapi-plugin-deepl.svg" alt="Monthly download on NPM" />
+  </a>
+  <a href="https://github.com/Fekide/strapi-plugin-deepl/actions">
+    <img src="https://img.shields.io/github/workflow/status/Fekide/strapi-plugin-deepl/Test" alt="Build" />
+  </a>
+</div>
 
 > This plugin is still a work in progress
-
-This plugin integrates strapi with the [DeepL-API](https://www.deepl.com/pro-api) to provide quick automated translation of content fields.
 
 ![plugin showcase](assets/showcase.gif)
 
 ## Requirements
 
 This plugin requires the following, in order to work correctly:
+- Strapi v4 (this plugin is not compatible with v3)
 - The plugin **i18n** installed and enabled (`@strapi/plugin-i18n` [[npm](https://www.npmjs.com/package/@strapi/plugin-i18n)])
 - The content type to have internationalization enabled (advanced settings in the content type builder)
 - In the internationalization settings at least **two** locales
@@ -20,7 +31,24 @@ This plugin requires the following, in order to work correctly:
 
 Unless you have the previous not set up, the field on the right where you can translate will not show up. Also it will not show up when editing the currently only available translation of an entry.
 
-## Setup
+## Installation
+```bash
+# with npm
+$ npm install strapi-plugin-deepl
+# or with yarn
+$ yarn add strapi-plugin-deepl
+```
+
+After successful installation you have to build a fresh package that includes plugin UI:
+
+```bash
+# with npm
+$ npm run build && npm run develop
+# or with yarn
+$ yarn build && yarn develop
+```
+
+## Configuration
 
 > Configuration is currently only possible using the plugin config file `config[/env]/plugins.js` or environment variables
 
@@ -65,7 +93,8 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - Configure which field types are translated
   - standard text fields and nested components by default
   - The translation of Markdown using DeepL works relatively well but is not perfect. Watch out especially if you have links in Markdown that could be changed by translation
-  - **uid fields are not translated** by default because they might not result in the same translation as the attached field -> saving is prevented in the conent manager anyway until you change the slug again
+  - **uid fields are not translated** by default because they might not result in the same translation as the attached field\
+    -> saving is prevented in the conent manager anyway until you change the slug again
 - Fields that are marked as not translated in the content-type settings will not be translated
 - Translation of relations by the followig schema:\
   (_The related objects are not translated directly, only the relation itself is translated_)
