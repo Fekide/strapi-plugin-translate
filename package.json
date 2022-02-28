@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-deepl",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Strapi plugin for automated translation of content using DeepL",
   "strapi": {
     "name": "deepl",
