@@ -92,7 +92,6 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - fill in and translate any locale from another already defined locale
 - Configure which field types are translated
   - standard text fields and nested components by default
-  - The translation of Markdown using DeepL works relatively well but is not perfect. Watch out especially if you have links in Markdown that could be changed by translation
   - **uid fields are not translated** by default because they might not result in the same translation as the attached field\
     -> saving is prevented in the conent manager anyway until you change the slug again
 - Fields that are marked as not translated in the content-type settings will not be translated
@@ -110,23 +109,10 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 ## (Current) Limitations:
 
 - Only the [deepl supported languages](https://www.deepl.com/docs-api/translating-text/request/) can be translated
-
-
-## TODOs
-
-- [x] Ignore fields that are not translated
-- [x] Ignore dates, enumeration, email, json
-- [x] Allow translation of nested data
-  - [x] components
-  - [x] dynamic zones
-- [ ] Configuration of free Api and token also through admin
-- [ ] Overview of api usage in admin panel -> api done
-- [ ] batch translation (needs to also 'translate' uids)
-  - [ ] include overview of translation status to start translating
-- [x] translate relations as well
-- [ ] Tests
-  - [x] unit
-  - [ ] e2e
+- The translation of Markdown using DeepL works relatively well but is not perfect. Watch out especially if you have links in Markdown that could be changed by translation
+- HTML in `richtext` created using a different WYSIWYG editor is not supported
+- **Only super admins can translate**. This is currently the case, since permissions were added to the `translate` endpoint. Probably you can change the permissions with an enterprise subscription but I am not sure. If you know how to do that also in the community edition please tell me or open a merge request!
+- Relations that do not have a translation of the desired locale will not be translated. To keep the relation you will need to translate both in succession (Behaviour for multi-relations has not yet been analyzed)
 
 ## Legal Disclaimer
 
