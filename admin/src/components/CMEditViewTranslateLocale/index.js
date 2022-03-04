@@ -44,9 +44,11 @@ import {
   useCMEditViewDataManager,
   useNotification,
   useQueryParams,
+  CheckPermissions,
 } from '@strapi/helper-plugin'
 import { axiosInstance } from '@strapi/plugin-i18n/admin/src/utils'
 import { getTrad } from '../../utils'
+import permissions from '../../permissions'
 import cleanData from './utils/cleanData'
 import { generateOptions } from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils'
 import useContentTypePermissions from '@strapi/plugin-i18n/admin/src/hooks/useContentTypePermissions'
@@ -87,14 +89,16 @@ const CMEditViewTranslateLocale = () => {
   }
 
   return (
-    <Content
-      {...{
-        appLocales: locales,
-        currentLocale,
-        localizations,
-        readPermissions,
-      }}
-    />
+    <CheckPermissions permissions={permissions.translate}>
+      <Content
+        {...{
+          appLocales: locales,
+          currentLocale,
+          localizations,
+          readPermissions,
+        }}
+      />
+    </CheckPermissions>
   )
 }
 

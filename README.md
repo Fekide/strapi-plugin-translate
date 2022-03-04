@@ -89,7 +89,8 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 
 ## Features
 
-- fill in and translate any locale from another already defined locale
+- Fill in and translate any locale from another already defined locale
+- Translation is restricted by permissions to avoid misuse of api quota
 - Configure which field types are translated
   - standard text fields and nested components by default
   - **uid fields are not translated** by default because they might not result in the same translation as the attached field\
