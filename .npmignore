@@ -133,3 +133,8 @@ dist
 .pnp.*
 
 .vscode
+.github
+**/__tests__/
+__mocks__
+jest.config.js
+.prettierrc
