@@ -1,5 +1,7 @@
 'use strict'
 
+const { getService } = require('../../utils')
+
 // Every text to translate becomes "translated" in this mock so it can be verified to have been changed
 const translatedText = 'translated'
 
@@ -31,9 +33,12 @@ describe('deepl service', () => {
       const fieldsToTranslate = ['title']
 
       // when
-      const result = await strapi.plugins.deepl
-        .service('deeplService')
-        .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
+      const result = await getService('translate').translate({
+        data,
+        sourceLocale,
+        targetLocale,
+        fieldsToTranslate,
+      })
 
       // then
       expect(result).toEqual({
@@ -52,9 +57,12 @@ describe('deepl service', () => {
       const fieldsToTranslate = []
 
       // when
-      const result = await strapi.plugins.deepl
-        .service('deeplService')
-        .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
+      const result = await getService('translate').translate({
+        data,
+        sourceLocale,
+        targetLocale,
+        fieldsToTranslate,
+      })
 
       // then
       expect(result).toEqual(data)
@@ -84,7 +92,7 @@ describe('deepl service', () => {
 
       // when
       const result = await strapi.plugins.deepl
-        .service('deeplService')
+        .service('translate')
         .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
 
       // then

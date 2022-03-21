@@ -85,10 +85,12 @@ module.exports = ({
         },
         package: require('../package.json'),
         services: {
-          deeplService: require('../server/services/deepl-service'),
+          deepl: require('../server/services/deepl'),
+          translate: require('../server/services/translate'),
         },
         controllers: {
-          deeplController: require('../server/controllers/deepl-controller'),
+          deepl: require('../server/controllers/deepl'),
+          translate: require('../server/controllers/translate'),
         },
         contentTypes: {},
       },
