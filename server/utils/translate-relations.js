@@ -18,7 +18,8 @@ async function getRelevantLocalization(contentType, id, locale) {
  *  - translated if the relation target is localized and the related instance has the targetLocale created
  */
 async function translateRelations(data, schema, targetLocale) {
-  const { translateRelations: shouldTranslateRelations } = strapi.config.get('plugin.deepl')
+  const { translateRelations: shouldTranslateRelations } =
+    strapi.config.get('plugin.deepl')
 
   const attributesSchema = _.get(schema, 'attributes', [])
   const resultData = _.cloneDeep(data)
@@ -31,11 +32,13 @@ async function translateRelations(data, schema, targetLocale) {
       const attributeSchema = attributesSchema[attr]
 
       if (attributeSchema.type === 'relation') {
-        resultData[attr] = shouldTranslateRelations ? await translateRelation(
-          _.get(data, attr, undefined),
-          attributeSchema,
-          targetLocale
-        ) : undefined
+        resultData[attr] = shouldTranslateRelations
+          ? await translateRelation(
+              _.get(data, attr, undefined),
+              attributeSchema,
+              targetLocale
+            )
+          : undefined
       } else if (attributeSchema.type === 'component') {
         resultData[attr] = await translateComponent(
           _.get(data, attr, undefined),
@@ -83,13 +86,6 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
     _.has(attributeSchema, 'inversedBy', false) ||
     _.has(attributeSchema, 'mappedBy', false)
 
-  strapi.log.debug(
-    JSON.stringify([
-      attributeSchema.relation,
-      relationIsLocalized,
-      relationIsBothWays,
-    ])
-  )
   // If the relation is localized, the relevant localizations from the relation should be selected
   if (relationIsLocalized) {
     // for oneToMany and manyToMany relations there are multiple relations possible, so all of them need to be considered
