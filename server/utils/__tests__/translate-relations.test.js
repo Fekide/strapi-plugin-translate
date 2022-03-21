@@ -1,3 +1,5 @@
+'use strict'
+
 const { translateRelations } = require('../translate-relations')
 
 const { createComponentWithRelation } = require('../../../__mocks__/components')

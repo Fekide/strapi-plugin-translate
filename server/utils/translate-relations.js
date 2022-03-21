@@ -1,3 +1,5 @@
+'use strict'
+
 const _ = require('lodash')
 
 async function getRelevantLocalization(contentType, id, locale) {
@@ -59,18 +61,21 @@ async function translateRelations(data, schema, targetLocale) {
 }
 
 async function translateComponent(data, componentReference, targetLocale) {
+  if (!data) {
+    return undefined
+  }
   const componentSchema =
     componentReference.type === 'dynamiczone'
       ? strapi.components[data.__component]
       : strapi.components[componentReference.component]
   if (componentReference.repeatable) {
-    return await Promise.all(
+    return Promise.all(
       data.map((value) =>
         translateRelations(value, componentSchema, targetLocale)
       )
     )
   }
-  return await translateRelations(data, componentSchema, targetLocale)
+  return translateRelations(data, componentSchema, targetLocale)
 }
 
 async function translateRelation(attributeData, attributeSchema, targetLocale) {

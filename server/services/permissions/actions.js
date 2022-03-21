@@ -1,3 +1,5 @@
+'use strict'
+
 const actions = [
   {
     section: 'plugins',
