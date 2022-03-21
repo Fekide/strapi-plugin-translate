@@ -15,4 +15,18 @@ module.exports = [
       ],
     },
   },
+  {
+    method: 'POST',
+    path: '/batch-translate',
+    handler: 'translate.batchTranslate',
+    config: {
+      policies: [
+        'admin::isAuthenticatedAdmin',
+        {
+          name: 'plugin::content-manager.hasPermissions',
+          config: { actions: ['plugin::deepl.translate'] },
+        },
+      ],
+    },
+  },
 ]

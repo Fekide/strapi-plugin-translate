@@ -84,4 +84,25 @@ module.exports = ({ strapi }) => ({
       }
     }
   },
+  async batchTranslate(ctx) {
+    const { contentType, sourceLocale, targetLocale, entityIds } =
+      ctx.request.body
+
+    if (!targetLocale || !sourceLocale) {
+      return ctx.badRequest('target and source locale are both required')
+    }
+
+    const contentSchema = strapi.contentTypes[contentType]
+
+    if (!contentSchema) {
+      return ctx.notFound('corresponding content type not found')
+    }
+
+    ctx.body = await getService('translate').batchTranslate({
+      contentType,
+      sourceLocale,
+      targetLocale,
+      entityIds,
+    })
+  },
 })

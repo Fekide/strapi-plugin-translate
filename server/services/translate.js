@@ -32,4 +32,8 @@ module.exports = ({ strapi }) => ({
 
     return translatedData
   },
+
+  async batchTranslate(params) {
+    return await this.batchTranslateManager.submitJob(params)
+  },
 })
