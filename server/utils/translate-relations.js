@@ -95,7 +95,7 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
     // for oneToMany and manyToMany relations there are multiple relations possible, so all of them need to be considered
     if (
       ['oneToMany', 'manyToMany'].includes(attributeSchema.relation) &&
-      attributeData.length > 0
+      attributeData?.length > 0
     ) {
       return _.compact(
         await Promise.all(
