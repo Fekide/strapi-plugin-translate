@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "deepl_batch_translate_jobs",
+  "info": {
+    "singularName": "batch-translate-job",
+    "pluralName": "batch-translate-jobs",
+    "displayName": "DeepL Batch Translate Job"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": false
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "contentType": {
+      "type": "string"
+    },
+    "sourceLocale": {
+      "type": "string"
+    },
+    "targetLocale": {
+      "type": "string"
+    },
+    "entityIds": {
+      "type": "json"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "created",
+        "setup",
+        "running",
+        "paused",
+        "finished",
+        "cancelled",
+        "failed"
+      ],
+      "default": "created"
+    },
+    "progress": {
+      "type": "float",
+      "default": 0
+    }
+  }
+}
