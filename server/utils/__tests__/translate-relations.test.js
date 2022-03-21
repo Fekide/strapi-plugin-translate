@@ -1403,4 +1403,80 @@ describe('relation', () => {
       })
     })
   })
+
+  describe('localizations', () => {
+    describe.each([
+      { relationIsLocalized: true, bothWays: false },
+      { relationIsLocalized: false, bothWays: false },
+    ])(
+      'one to one, relation localized: $relationIsLocalized, both ways: $bothWays',
+      ({ relationIsLocalized, bothWays }) => {
+        beforeEach(() => {
+          const firstEnglish = { id: 1, related: 1, locale: 'en' }
+          const firstGerman = { id: 2, related: undefined, locale: 'de' }
+          setup({
+            contentTypes: {
+              'api::first.first': createRelationContentType(
+                'oneToOne',
+                bothWays ? { inversedBy: 'related' } : {},
+                true,
+                'api::second.second',
+                'api::first.first'
+              ),
+              'api::second.second': createRelationContentType(
+                'oneToOne',
+                bothWays ? { mappedBy: 'related' } : {},
+                relationIsLocalized,
+                'api::first.first',
+                'api::second.second'
+              ),
+            },
+            database: {
+              'api::first.first': [
+                {
+                  ...firstEnglish,
+                  localizations: [],
+                },
+              ],
+              'api::second.second': [
+                {
+                  ...firstEnglish,
+                  localizations: relationIsLocalized ? [firstGerman] : [],
+                },
+                {
+                  ...firstGerman,
+                  localizations: relationIsLocalized ? [firstEnglish] : [],
+                },
+              ],
+            },
+          })
+        })
+        it('are not removed', async () => {
+          // given
+          const data = {
+            related: { id: 1 },
+            localizations: [{ id: 1, locale: 'en' }],
+          }
+          const schema = strapi.contentTypes['api::first.first']
+          const targetLocale = 'de'
+          // when
+          const relationsTranslated = await translateRelations(
+            data,
+            schema,
+            targetLocale
+          )
+          // then
+          const result = relationIsLocalized
+            ? {
+                related: { id: 2, locale: 'de', related: undefined },
+                localizations: [{ id: 1, locale: 'en' }],
+              }
+            : data
+          // if the relation is translated, the corresponding locale should be used,
+          // otherwise it should stay the same if the relation is not both ways but be removed otherwise
+          expect(relationsTranslated).toEqual(result)
+        })
+      }
+    )
+  })
 })
