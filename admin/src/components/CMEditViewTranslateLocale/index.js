@@ -174,12 +174,12 @@ const Content = ({
         },
       })
     } catch (err) {
-      console.error(err.response)
+      console.error(err)
 
       toggleNotification({
         type: 'warning',
         message: {
-          id: getTrad(err.response.data.error.message),
+          id: getTrad(err.response?.data?.error?.message),
           defaultMessage: 'Failed to translate locale',
         },
       })

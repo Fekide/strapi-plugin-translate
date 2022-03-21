@@ -26,7 +26,7 @@
 
 import {
   contentManagementUtilRemoveFieldsFromData,
-  formatComponentData,
+  formatContentTypeData,
 } from '@strapi/helper-plugin'
 
 import { get } from 'lodash'
@@ -118,7 +118,7 @@ const cleanData = (data, { contentType, components }, initialLocalizations) => {
     fieldsToRemove
   )
 
-  return formatComponentData(cleanedClonedData, contentType, components)
+  return formatContentTypeData(cleanedClonedData, contentType, components)
 }
 
 export default cleanData

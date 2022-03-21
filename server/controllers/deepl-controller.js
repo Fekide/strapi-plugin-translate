@@ -37,8 +37,9 @@ module.exports = ({ strapi }) => ({
         targetLocale
       )
     } catch (error) {
+      console.log(error)
       strapi.log.error(JSON.stringify(error))
-      if (error.response.status !== undefined) {
+      if (error.response?.status !== undefined) {
         switch (error.response.status) {
           case 400:
             return ctx.badRequest('deepl.error.badRequest', {
