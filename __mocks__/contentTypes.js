@@ -25,7 +25,8 @@ function createRelationContentType(
   relationType,
   inverseOrMapped,
   translated,
-  target
+  target,
+  uid = 'api::first.first'
 ) {
   return {
     pluginOptions: {
@@ -41,6 +42,15 @@ function createRelationContentType(
         target: target,
         ...inverseOrMapped,
       },
+      ...(translated
+        ? {
+            localizations: {
+              type: 'relation',
+              relation: 'oneToMany',
+              target: uid,
+            },
+          }
+        : {}),
     },
   }
 }
