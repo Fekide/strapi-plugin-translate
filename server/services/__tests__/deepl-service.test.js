@@ -1,28 +1,10 @@
+'use strict'
+
 // Every text to translate becomes "translated" in this mock so it can be verified to have been changed
 const translatedText = 'translated'
 
 jest.mock('../../utils/deepl-api', () => {
-  return {
-    translate(props) {
-      if (Array.isArray(props.text)) {
-        return {
-          translations: props.text.map((t) => ({
-            detected_source_language: 'EN',
-            text: translatedText,
-          })),
-        }
-      } else if (props.text) {
-        return {
-          translations: [
-            { detected_source_language: 'EN', text: translatedText },
-          ],
-        }
-      } else {
-        return { translations: [] }
-      }
-    },
-    parseLocale: jest.fn(),
-  }
+  return require('../../../__mocks__/deepl-api').createMock(translatedText)
 })
 
 const setup = function (params) {
