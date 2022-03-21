@@ -24,6 +24,10 @@ async function translateRelations(data, schema, targetLocale) {
   const resultData = _.cloneDeep(data)
   await Promise.all(
     Object.keys(attributesSchema).map(async (attr) => {
+      if (attr === 'localizations') {
+        return true
+      }
+
       const attributeSchema = attributesSchema[attr]
 
       if (attributeSchema.type === 'relation') {
