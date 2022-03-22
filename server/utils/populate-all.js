@@ -11,7 +11,7 @@ const _ = require('lodash')
  * @returns a populate object with all components, nested components,
  *  dynamic zones and relations
  */
-function populateAll(schema) {
+function populateAll(schema, maxDepth = 10) {
   const attributesSchema = _.get(schema, 'attributes', [])
   const populateResult = {}
 
@@ -19,13 +19,26 @@ function populateAll(schema) {
     const fieldSchema = attributesSchema[attr]
     if (fieldSchema.type === 'component') {
       populateResult[attr] = {
-        populate: recursiveComponentPopulate(fieldSchema.component),
+        populate: recursiveComponentPopulate(
+          fieldSchema.component,
+          maxDepth - 1
+        ),
       }
     } else if (fieldSchema.type === 'dynamiczone') {
+      const dynamicZonePopulate = fieldSchema.components.reduce(
+        (combined, component) => {
+          return _.merge(
+            combined,
+            recursiveComponentPopulate(component, maxDepth - 1)
+          )
+        },
+        {}
+      )
       populateResult[attr] = {
-        populate: fieldSchema.components.reduce((combined, component) => {
-          return _.merge(combined, recursiveComponentPopulate(component))
-        }, {}),
+        populate:
+          Object.keys(dynamicZonePopulate).length == 0
+            ? true
+            : dynamicZonePopulate,
       }
     } else if (['relation', 'media'].includes(fieldSchema.type)) {
       populateResult[attr] = {
@@ -46,9 +59,12 @@ function populateAll(schema) {
  * @param {array} translatedFieldTypes The types of fields that are translated
  * @returns A list of attributes to translate for this component
  */
-function recursiveComponentPopulate(component) {
+function recursiveComponentPopulate(component, maxDepth) {
   const componentSchema = strapi.components[component]
-  return populateAll(componentSchema)
+  if (maxDepth == 0) {
+    return true
+  }
+  return populateAll(componentSchema, maxDepth)
 }
 
 module.exports = {

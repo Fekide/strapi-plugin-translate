@@ -8,6 +8,7 @@ module.exports = ({
   components = {},
   // contentTypes should not be in the actual format but the formatted version
   contentTypes = {},
+  plugins = {},
 }) => {
   const dbConfig = toStore
     ? {
@@ -112,6 +113,7 @@ module.exports = ({
           },
         },
       },
+      ...plugins,
     },
     config: {
       get: function (prop = '') {
@@ -138,6 +140,11 @@ module.exports = ({
       },
     },
     service(uid) {
+      const [handler, collection] = uid.split('::')
+      if (handler === 'plugin') {
+        const [plugin, service] = collection.split('.')
+        return this.plugins[plugin].services[service]({ strapi: mock.getRef() })
+      }
       return {
         findOne: this.db.query(uid).findOne,
         find: this.db.query(uid).findMany,

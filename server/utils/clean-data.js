@@ -19,7 +19,7 @@ function deleteInvalidFields(data, schema) {
 }
 
 /**
- * Clean the data based on the schema to only include fields for input
+ * Clean the data based on the schema to only include fields for input and flatten relations
  * @param {object} data The data to clean
  * @param {object} schema The schema of the content-type
  * @returns The input data with invalid fields (like id or localizations) removed
@@ -33,6 +33,10 @@ function cleanData(data, schema) {
 
   Object.keys(attributesSchema).forEach((attr) => {
     const attributeSchema = attributesSchema[attr]
+
+    if (!_.has(data, attr)) {
+      return
+    }
 
     if (attributeSchema.type === 'component') {
       resultData[attr] = cleanComponent(
@@ -51,7 +55,6 @@ function cleanData(data, schema) {
         resultData[attr] = relatedEntity.id
       }
     }
-    return true
   })
 
   return resultData

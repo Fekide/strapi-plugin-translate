@@ -1,6 +1,6 @@
-const simpleContentType = createSimpleContentType(true)
+const simpleContentType = createSimpleContentType(false)
 
-function createSimpleContentType(localized) {
+function createSimpleContentType(localized, uid = 'simple') {
   return {
     pluginOptions: {
       i18n: {
@@ -17,6 +17,15 @@ function createSimpleContentType(localized) {
           },
         },
       },
+      ...(localized
+        ? {
+            localizations: {
+              type: 'relation',
+              relation: 'oneToMany',
+              target: uid,
+            },
+          }
+        : {}),
     },
   }
 }
@@ -41,6 +50,36 @@ function createRelationContentType(
         relation: relationType,
         target: target,
         ...inverseOrMapped,
+      },
+      ...(translated
+        ? {
+            localizations: {
+              type: 'relation',
+              relation: 'oneToMany',
+              target: uid,
+            },
+          }
+        : {}),
+    },
+  }
+}
+
+function createContentTypeWithUid(translated, uid = 'simple') {
+  return {
+    pluginOptions: {
+      i18n: {
+        localized: !!translated,
+      },
+    },
+    kind: 'collectionType',
+    attributes: {
+      uid: {
+        pluginOptions: {
+          i18n: {
+            localized: true,
+          },
+        },
+        type: 'uid',
       },
       ...(translated
         ? {
@@ -191,4 +230,5 @@ module.exports = {
   createRelationContentType,
   createContentTypeWithComponent,
   createContentTypeWithDynamicZone,
+  createContentTypeWithUid,
 }
