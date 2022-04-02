@@ -36,4 +36,13 @@ module.exports = ({ strapi }) => ({
   async batchTranslate(params) {
     return await this.batchTranslateManager.submitJob(params)
   },
+  async batchTranslatePauseJob(id) {
+    return await this.batchTranslateManager.pauseJob(id)
+  },
+  async batchTranslateResumeJob(id) {
+    return await this.batchTranslateManager.resumeJob(id)
+  },
+  async batchTranslateCancelJob(id) {
+    return await this.batchTranslateManager.cancelJob(id)
+  },
 })

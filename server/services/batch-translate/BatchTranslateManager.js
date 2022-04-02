@@ -36,7 +36,7 @@ class BatchTranslateManager {
     const job = new BatchTranslateJob(entity)
 
     const promise = job.start()
-    this.runningJobs.set(entity.id, { job, promise })
+    this.runningJobs.set(entity.id, job)
     promise.finally(() => {
       this.runningJobs.delete(entity.id)
     })
@@ -45,7 +45,8 @@ class BatchTranslateManager {
 
   async pauseJob(id) {
     if (this.runningJobs.has(id)) {
-      await this.runningJobs.get(id).job.pause()
+      await this.runningJobs.get(id).pause()
+      return await strapi.service(batchContentTypeUid).findOne(id)
     } else {
       throw new Error('deepl.batch-translate.job-not-running')
     }
@@ -58,26 +59,36 @@ class BatchTranslateManager {
         throw new Error('deepl.batch-translate.job-does-not-exist')
       }
       this._resumeJob(entity)
+      return {
+        ...entity,
+        status: 'running',
+      }
     } else {
       throw new Error('deepl.batch-translate.job-already-running')
     }
   }
 
   _resumeJob(entity) {
-    if (entity.status == 'running') {
+    if (['running', 'paused'].includes(entity.status)) {
       const job = new BatchTranslateJob(entity)
 
-      const promise = job.start()
-      this.runningJobs.set(entity.id, { job, promise })
+      const promise = job.start(true)
+      strapi.log.debug(JSON.stringify(entity))
+      this.runningJobs.set(entity.id, job)
+      strapi.log.debug(this.runningJobs.get(entity.id).id)
+
       promise.finally(() => {
         this.runningJobs.delete(entity.id)
       })
+    } else {
+      throw new Error('deepl.batch-translate.job-cannot-be-resumed')
     }
   }
 
   async cancelJob(id) {
     if (this.runningJobs.has(id)) {
       await this.runningJobs.get(id).job.cancel()
+      return await strapi.service(batchContentTypeUid).findOne(id)
     } else {
       throw new Error('deepl.batch-translate.job-not-running')
     }
@@ -90,7 +101,7 @@ class BatchTranslateManager {
     const iterator = this.runningJobs.values()
     let i = iterator.next()
     while (!i.done) {
-      const job = i.value.job
+      const job = i.value
       strapi.log.warn(
         `Translation of '${job.contentType}' from '${job.sourceLocale}' to '${job.targetLocale}' paused due to server shutdown, will resume on restart`
       )

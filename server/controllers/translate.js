@@ -98,11 +98,82 @@ module.exports = ({ strapi }) => ({
       return ctx.notFound('corresponding content type not found')
     }
 
-    ctx.body = await getService('translate').batchTranslate({
-      contentType,
-      sourceLocale,
-      targetLocale,
-      entityIds,
-    })
+    ctx.body = {
+      data: await getService('translate').batchTranslate({
+        contentType,
+        sourceLocale,
+        targetLocale,
+        entityIds,
+      }),
+    }
+  },
+  async batchTranslatePauseJob(ctx) {
+    const { id } = ctx.request.params
+
+    if (!id) {
+      return ctx.badRequest('id is missing')
+    }
+
+    try {
+      const parsedId = parseInt(id)
+      ctx.body = {
+        data: await getService('translate').batchTranslatePauseJob(parsedId),
+      }
+    } catch (error) {
+      if (
+        typeof error.message === 'string' &&
+        error.message.startsWith('deepl')
+      ) {
+        return ctx.badRequest(error.message)
+      } else {
+        return ctx.internalServerError(error.message)
+      }
+    }
+  },
+  async batchTranslateResumeJob(ctx) {
+    const { id } = ctx.request.params
+
+    if (!id) {
+      return ctx.badRequest('id is missing')
+    }
+
+    try {
+      const parsedId = parseInt(id)
+      ctx.body = {
+        data: await getService('translate').batchTranslateResumeJob(parsedId),
+      }
+    } catch (error) {
+      if (
+        typeof error.message === 'string' &&
+        error.message.startsWith('deepl')
+      ) {
+        return ctx.badRequest(error.message)
+      } else {
+        return ctx.internalServerError(error.message)
+      }
+    }
+  },
+  async batchTranslateCancelJob(ctx) {
+    const { id } = ctx.request.params
+
+    if (!id) {
+      return ctx.badRequest('id is missing')
+    }
+
+    try {
+      const parsedId = parseInt(id)
+      ctx.body = {
+        data: await getService('translate').batchTranslateCancelJob(parsedId),
+      }
+    } catch (error) {
+      if (
+        typeof error.message === 'string' &&
+        error.message.startsWith('deepl')
+      ) {
+        return ctx.badRequest(error.message)
+      } else {
+        return ctx.internalServerError(error.message)
+      }
+    }
   },
 })

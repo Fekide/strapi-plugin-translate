@@ -106,7 +106,6 @@ class BatchTranslateJob {
     let entity = null
 
     const populate = populateAll(this.contentTypeSchema)
-    strapi.log.debug(JSON.stringify(populate))
 
     if (this.entityIds !== null) {
       // Get an entity from the provided entity id list
@@ -211,7 +210,6 @@ class BatchTranslateJob {
 
   async setup() {
     await this.updateStatus('setup')
-    strapi.log.debug('setting up')
     if (!this.entityIds) {
       this.totalEntities = await strapi.db
         .query(this.contentType)
@@ -235,10 +233,17 @@ class BatchTranslateJob {
     // The rest of the logic will now be executed using the interval
   }
 
-  start() {
+  start(resume = false) {
     this.promise = new Promise((resolve, reject) => {
-      if (this.status != 'created') {
+      if (
+        resume &&
+        !['running', 'created', 'setup', 'paused'].includes(this.status)
+      ) {
+        reject('Job is not in a status to be resumed')
+        return
+      } else if (!resume && this.status != 'created') {
         reject('Job was started before or has already been stopped')
+        return
       }
 
       this._reject = reject
