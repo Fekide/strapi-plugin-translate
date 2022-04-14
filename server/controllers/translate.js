@@ -176,4 +176,17 @@ module.exports = ({ strapi }) => ({
       }
     }
   },
+  async batchTranslateJobStatus(ctx) {
+    const { id } = ctx.request.params
+
+    if (!id) {
+      return ctx.badRequest('id is missing')
+    }
+    const parsedId = parseInt(id)
+    const job = await getService('batch-translate-job').findOne(parsedId)
+    if (!job) {
+      return ctx.notFound()
+    }
+    ctx.body = { data: { status: job.status, progress: job.progress } }
+  },
 })

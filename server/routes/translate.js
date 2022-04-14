@@ -31,6 +31,20 @@ module.exports = [
   },
   {
     method: 'GET',
+    path: '/batch-translate/status/:id',
+    handler: 'translate.batchTranslateJobStatus',
+    config: {
+      policies: [
+        'admin::isAuthenticatedAdmin',
+        {
+          name: 'plugin::content-manager.hasPermissions',
+          config: { actions: ['plugin::deepl.batch-translate'] },
+        },
+      ],
+    },
+  },
+  {
+    method: 'GET',
     path: '/batch-translate/pause/:id',
     handler: 'translate.batchTranslatePauseJob',
     config: {
