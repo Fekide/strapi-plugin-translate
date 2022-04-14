@@ -1,3 +1,5 @@
+'use strict'
+
 const { simpleContentType } = require('../../../__mocks__/contentTypes')
 const createContext = require('../../../__mocks__/createContext')
 
@@ -14,8 +16,8 @@ jest.mock('../../utils/translate-relations')
 describe('deepl controller', () => {
   const translateServiceMock = jest.fn()
   beforeEach(() => {
-    jest.mock('../../services/deepl-service', () => {
-      return ({}) => ({
+    jest.mock('../../services/translate', () => {
+      return () => ({
         translate: translateServiceMock,
       })
     })
@@ -45,7 +47,7 @@ describe('deepl controller', () => {
     })
 
     // when
-    await strapi.plugin('deepl').controller('deeplController').translate(ctx)
+    await strapi.plugin('deepl').controller('translate').translate(ctx)
 
     // then
     expect(translateServiceMock).toHaveBeenCalled()
@@ -63,7 +65,7 @@ describe('deepl controller', () => {
     })
 
     // when
-    await strapi.plugin('deepl').controller('deeplController').translate(ctx)
+    await strapi.plugin('deepl').controller('translate').translate(ctx)
 
     // then
     expect(ctx.badRequest).toHaveBeenCalled()
@@ -82,7 +84,7 @@ describe('deepl controller', () => {
     })
 
     // when
-    await strapi.plugin('deepl').controller('deeplController').translate(ctx)
+    await strapi.plugin('deepl').controller('translate').translate(ctx)
 
     // then
     expect(ctx.badRequest).toHaveBeenCalled()
@@ -103,7 +105,7 @@ describe('deepl controller', () => {
     })
 
     // when
-    await strapi.plugin('deepl').controller('deeplController').translate(ctx)
+    await strapi.plugin('deepl').controller('translate').translate(ctx)
 
     // then
     expect(ctx.notFound).toHaveBeenCalled()

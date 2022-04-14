@@ -1,13 +1,12 @@
-const axios = require('axios')
-const MockAdapter = require('axios-mock-adapter')
-
-const { DEEPL_FREE_API, DEEPL_PAID_API } = require('../constants')
+'use strict'
 
 const { URLSearchParams } = require('url')
-
-const { usage, translate, parseLocale } = require('../deepl-api')
-
+const axios = require('axios')
+const MockAdapter = require('axios-mock-adapter')
 const locales = require('@strapi/plugin-i18n/server/constants/iso-locales.json')
+
+const { DEEPL_FREE_API, DEEPL_PAID_API } = require('../constants')
+const { usage, translate, parseLocale } = require('../deepl-api')
 
 function supportedLocale({ code, name }) {
   // Swiss German is not supported
@@ -260,7 +259,7 @@ describe('deepl api', () => {
           }
           await expect(
             // when
-            async () => await translate(params)
+            async () => translate(params)
             // then
           ).rejects.toThrow('403')
           expect(mock.history.post[0].url).toEqual(
@@ -276,7 +275,7 @@ describe('deepl api', () => {
           }
           await expect(
             // when
-            async () => await translate(params)
+            async () => translate(params)
             // then
           ).rejects.toThrow('400')
           expect(mock.history.post[0].url).toEqual(

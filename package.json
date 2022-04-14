@@ -2,13 +2,15 @@
   "name": "strapi-plugin-deepl",
   "version": "0.3.5",
   "description": "Strapi plugin for automated translation of content using DeepL",
+  "type": "commonjs",
   "strapi": {
     "name": "deepl",
     "description": "Automatic content translation with DeepL",
     "kind": "plugin"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ."
   },
   "dependencies": {
     "axios": "^0.26.0"
@@ -23,7 +25,7 @@
   },
   "maintainers": [],
   "engines": {
-    "node": ">=12.x. <=16.x.x",
+    "node": ">=12.x.x <=16.x.x",
     "npm": ">=6.0.0"
   },
   "license": "MIT",
@@ -42,8 +44,18 @@
     "url": "https://github.com/Fekide/strapi-plugin-deepl/issues"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.17.0",
     "@strapi/plugin-i18n": "^4.1.5",
     "axios-mock-adapter": "^1.20.0",
-    "jest": "^27.5.1"
+    "eslint": "^8.11.0",
+    "eslint-config-import": "^0.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-redux-saga": "^1.3.2",
+    "jest": "^27.5.1",
+    "lodash": "^4.17.21"
   }
 }

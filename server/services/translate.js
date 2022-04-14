@@ -4,8 +4,11 @@ const get = require('lodash/get')
 const set = require('lodash/set')
 
 const deepl = require('../utils/deepl-api')
+const { BatchTranslateManager } = require('./batch-translate')
 
 module.exports = ({ strapi }) => ({
+  batchTranslateManager: new BatchTranslateManager(),
+
   async translate({ data, sourceLocale, targetLocale, fieldsToTranslate }) {
     const { apiKey, freeApi, glossaryId } = strapi.config.get('plugin.deepl')
 
@@ -30,11 +33,16 @@ module.exports = ({ strapi }) => ({
     return translatedData
   },
 
-  async usage() {
-    const { apiKey, freeApi } = strapi.config.get('plugin.deepl')
-    return await deepl.usage({
-      auth_key: apiKey,
-      free_api: freeApi,
-    })
+  async batchTranslate(params) {
+    return await this.batchTranslateManager.submitJob(params)
+  },
+  async batchTranslatePauseJob(id) {
+    return await this.batchTranslateManager.pauseJob(id)
+  },
+  async batchTranslateResumeJob(id) {
+    return await this.batchTranslateManager.resumeJob(id)
+  },
+  async batchTranslateCancelJob(id) {
+    return await this.batchTranslateManager.cancelJob(id)
   },
 })
