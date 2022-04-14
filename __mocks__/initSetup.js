@@ -106,7 +106,6 @@ module.exports = ({
         controllers: {
           deepl: require('../server/controllers/deepl'),
           translate: require('../server/controllers/translate'),
-          'batch-translate-job': require('../server/controllers/batch-translate-job'),
         },
         contentTypes: {
           'batch-translate-job': require('../server/content-types/batch-translate-job/schema.json'),
