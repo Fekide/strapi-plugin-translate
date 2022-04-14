@@ -84,11 +84,11 @@ class BatchTranslateJob {
     }
   }
 
-  async updateStatus(status) {
+  async updateStatus(status, additionalData = {}) {
     this.status = status
     await strapi
       .service(batchContentTypeUid)
-      .update(this.id, { data: { status } })
+      .update(this.id, { data: { status, ...additionalData } })
   }
 
   async updateProgress() {
@@ -200,7 +200,13 @@ class BatchTranslateJob {
       if (error.details) {
         strapi.log.debug(JSON.stringify(error.details))
       }
-      await this.updateStatus('failed')
+      await this.updateStatus('failed', {
+        failureReason: {
+          message: error.message,
+          stack: error.stack,
+          name: error.name,
+        },
+      })
       clearInterval(this.intervalId)
       this._reject('Translation of an entity failed')
       return

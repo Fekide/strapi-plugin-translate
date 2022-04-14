@@ -187,6 +187,12 @@ module.exports = ({ strapi }) => ({
     if (!job) {
       return ctx.notFound()
     }
-    ctx.body = { data: { status: job.status, progress: job.progress } }
+    ctx.body = {
+      data: {
+        status: job.status,
+        progress: job.progress,
+        failureReason: job.failureReason,
+      },
+    }
   },
 })

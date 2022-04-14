@@ -44,6 +44,9 @@
       ],
       "default": "created"
     },
+    "failureReason": {
+      "type": "json"
+    },
     "progress": {
       "type": "float",
       "default": 0
