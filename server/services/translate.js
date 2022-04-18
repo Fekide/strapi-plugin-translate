@@ -45,4 +45,64 @@ module.exports = ({ strapi }) => ({
   async batchTranslateCancelJob(id) {
     return await this.batchTranslateManager.cancelJob(id)
   },
+  async contentTypes() {
+    const localizedContentTypes = Object.keys(strapi.contentTypes).filter(
+      (ct) => strapi.contentTypes[ct].pluginOptions?.i18n?.localized
+    )
+
+    const locales = await strapi.service('plugin::i18n.locales').find()
+
+    const reports = await Promise.all(
+      localizedContentTypes.map(async (contentType) => {
+        // get jobs
+        const jobs = await strapi.db
+          .query('plugin::deepl.batch-translate-job')
+          .findMany({
+            where: { contentType: { $eq: contentType } },
+            orderBy: { updatedAt: 'desc' },
+          })
+
+        // calculate current translation statuses
+        const info = await Promise.all(
+          locales.map(async ({ code }) => {
+            const countPromise = strapi.db
+              .query(contentType)
+              .count({ where: { locale: code } })
+            const countMissingTranslations = await strapi.db
+              .query(contentType)
+              .count({
+                where: {
+                  locale: { $ne: code },
+                  localizations: {
+                    $or: [
+                      { locale: { $null: true } },
+                      { locale: { $ne: code } },
+                    ],
+                  },
+                },
+              })
+            return {
+              count: await countPromise,
+              complete: countMissingTranslations == 0,
+            }
+          })
+        )
+
+        // create report
+        const localeReports = {}
+        locales.forEach(({ code }, index) => {
+          localeReports[code] = {
+            ...info[index],
+            job: jobs.find((job) => job.targetLocale === code),
+          }
+        })
+        return {
+          contentType,
+          collection: strapi.contentTypes[contentType].info.displayName,
+          localeReports,
+        }
+      })
+    )
+    return { contentTypes: reports, locales }
+  },
 })

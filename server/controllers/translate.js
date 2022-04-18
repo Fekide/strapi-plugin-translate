@@ -195,4 +195,9 @@ module.exports = ({ strapi }) => ({
       },
     }
   },
+  async batchTranslateContentTypes(ctx) {
+    ctx.body = {
+      data: await getService('translate').contentTypes(),
+    }
+  },
 })
