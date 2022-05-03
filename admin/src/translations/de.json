@@ -13,5 +13,20 @@
   "deepl.error.payloadTooLarge": "Die Anfragegröße überschreitet das Limit in DeepL API",
   "deepl.error.uriTooLong": "URI zu lang in DeepL API",
   "deepl.error.tooManyRequests": "Zu viele Anfragen an DeepL API",
-  "deepl.error.paymentRequired": "Das Kontingent von DeepL API ist überschritten"
+  "deepl.error.paymentRequired": "Das Kontingent von DeepL API ist überschritten",
+  "batch-translate.dialog.translate.source-locale-missing": "Ausgangssprache fehlt",
+  "batch-translate.dialog.translate.title": "Massen-Übersetzung starten",
+  "batch-translate.dialog.cancel.title": "Massen-Übersetzung abbrechen",
+  "batch-translate.dialog.pause.title": "Massen-Übersetzung pausieren",
+  "batch-translate.dialog.resume.title": "Massen-Übersetzung fortsetzen",
+  "batch-translate.dialog.translate.content": "Übersetzen Sie alle Objekte von einer Sprache, die noch nicht über diese spezifische Übersetzung verfügen, in eine andere.",
+  "batch-translate.dialog.cancel.content": "Abbrechen der Übersetzung dieser Objekte. Sie müssen einen neuen Auftrag beginnen, um fortzufahren.",
+  "batch-translate.dialog.pause.content": "Unterbrechen Sie die Übersetzung dieser Objekte. Sie können die Übersetzung zu einem beliebigen Zeitpunkt fortsetzen.",
+  "batch-translate.dialog.resume.content": "Setzen Sie die Übersetzung dieser Objekte fort.",
+  "batch-translate.dialog.translate.autoPublish.label": "Automatisch veröffentlichen",
+  "batch-translate.dialog.translate.autoPublish.hint": "Die übersetzten Objekte automatisch veröffentlichen",
+  "batch-translate.dialog.translate.submit-text": "Übersetzen",
+  "batch-translate.dialog.cancel.submit-text": "Bestätigen",
+  "batch-translate.dialog.pause.submit-text": "Pausieren",
+  "batch-translate.dialog.resume.submit-text": "Fortsetzen"
 }
