@@ -85,11 +85,15 @@ module.exports = ({ strapi }) => ({
     }
   },
   async batchTranslate(ctx) {
-    const { contentType, sourceLocale, targetLocale, entityIds } =
+    const { contentType, sourceLocale, targetLocale, autoPublish, entityIds } =
       ctx.request.body
 
     if (!targetLocale || !sourceLocale) {
       return ctx.badRequest('target and source locale are both required')
+    }
+
+    if (typeof autoPublish != 'boolean') {
+      return ctx.badRequest('autoPublish must be a boolean')
     }
 
     const contentSchema = strapi.contentTypes[contentType]
@@ -104,6 +108,7 @@ module.exports = ({ strapi }) => ({
         sourceLocale,
         targetLocale,
         entityIds,
+        autoPublish,
       }),
     }
   },

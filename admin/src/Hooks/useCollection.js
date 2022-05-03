@@ -52,6 +52,7 @@ export function useCollection() {
     contentType,
     sourceLocale,
     targetLocale,
+    autoPublish,
   }) => {
     const { error } = await request(`/${pluginId}/batch-translate`, {
       method: 'POST',
@@ -59,6 +60,7 @@ export function useCollection() {
         contentType,
         sourceLocale,
         targetLocale,
+        autoPublish,
       },
     })
     if (error) {

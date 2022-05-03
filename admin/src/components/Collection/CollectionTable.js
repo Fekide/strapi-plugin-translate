@@ -14,6 +14,7 @@ import { Typography } from '@strapi/design-system/Typography'
 import ExclamationMarkCircle from '@strapi/icons/ExclamationMarkCircle'
 import { Select, Option } from '@strapi/design-system/Select'
 import { Button } from '@strapi/design-system/Button'
+import { ToggleInput } from '@strapi/design-system/ToggleInput'
 
 const CollectionTable = () => {
   const {
@@ -30,6 +31,7 @@ const CollectionTable = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [targetLocale, setTargetLocale] = useState(null)
   const [sourceLocale, setSourceLocale] = useState(null)
+  const [autoPublish, setAutoPublish] = useState(false)
   const [collection, setCollection] = useState(null)
   const [action, setAction] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -46,6 +48,10 @@ const CollectionTable = () => {
 
   const handleSourceLocaleChange = (value) => {
     setSourceLocale(value)
+  }
+
+  const toggleAutoPublish = (event) => {
+    setAutoPublish(!autoPublish)
   }
 
   const handleConfirm = async () => {
@@ -69,6 +75,7 @@ const CollectionTable = () => {
             contentType: collection.contentType,
             sourceLocale,
             targetLocale,
+            autoPublish,
           })
           break
         case 'cancel':
@@ -151,23 +158,45 @@ const CollectionTable = () => {
               </Flex>
               <Box>
                 {action === 'translate' && (
-                  <Select
-                    label={formatMessage({
-                      id: getTrad('Settings.locales.modal.locales.label'),
-                    })}
-                    onChange={handleSourceLocaleChange}
-                    value={sourceLocale}
-                  >
-                    {locales
-                      .filter((loc) => loc.code !== targetLocale)
-                      .map(({ name, code }) => {
-                        return (
-                          <Option key={code} value={code}>
-                            {name}
-                          </Option>
-                        )
+                  <Stack spacing="2">
+                    <Select
+                      label={formatMessage({
+                        id: getTrad('Settings.locales.modal.locales.label'),
                       })}
-                  </Select>
+                      onChange={handleSourceLocaleChange}
+                      value={sourceLocale}
+                    >
+                      {locales
+                        .filter((loc) => loc.code !== targetLocale)
+                        .map(({ name, code }) => {
+                          return (
+                            <Option key={code} value={code}>
+                              {name}
+                            </Option>
+                          )
+                        })}
+                    </Select>
+                    <ToggleInput
+                      label={formatMessage({
+                        id: getTrad(
+                          'batch-translate.dialog.translate.autoPublish.label'
+                        ),
+                        defaultMessage: 'Auto-Publish',
+                      })}
+                      hint={formatMessage({
+                        id: getTrad(
+                          'batch-translate.dialog.translate.autoPublish.hint'
+                        ),
+                        defaultMessage:
+                          'Publish translated entities automatically',
+                      })}
+                      name="auto-publish"
+                      onLabel="True"
+                      offLabel="False"
+                      checked={autoPublish}
+                      onChange={toggleAutoPublish}
+                    />
+                  </Stack>
                 )}
               </Box>
             </Stack>

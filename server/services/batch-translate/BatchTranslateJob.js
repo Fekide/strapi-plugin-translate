@@ -17,6 +17,7 @@ class BatchTranslateJob {
     entityIds,
     status,
     intervalLength = 5000,
+    autoPublish = false,
   }) {
     this.totalEntities = 0
     this.translatedEntities = 0
@@ -25,6 +26,7 @@ class BatchTranslateJob {
     // it is necessary as we do not want to get in to trouble for too many requests to deepl
     this.intervalLength = intervalLength
     this.id = id
+    this.autoPublish = autoPublish
     this.contentType = contentType
     this.contentTypeSchema = strapi.contentTypes[contentType]
     if (!this.contentTypeSchema.pluginOptions?.i18n?.localized) {
@@ -181,7 +183,7 @@ class BatchTranslateJob {
       // Set locale
       fullyTranslatedData.locale = this.targetLocale
       // Set publishedAt to null so the translation is not published directly
-      fullyTranslatedData.publishedAt = null
+      fullyTranslatedData.publishedAt = this.autoPublish ? new Date() : null
       // Create localized entry
       await strapi.service(this.contentType).create({
         data: fullyTranslatedData,
