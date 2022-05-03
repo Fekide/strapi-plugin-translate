@@ -4,6 +4,7 @@ const get = require('lodash/get')
 const set = require('lodash/set')
 
 const deepl = require('../utils/deepl-api')
+const { getService } = require('../utils/get-service')
 const { BatchTranslateManager } = require('./batch-translate')
 
 module.exports = ({ strapi }) => ({
@@ -68,22 +69,13 @@ module.exports = ({ strapi }) => ({
             const countPromise = strapi.db
               .query(contentType)
               .count({ where: { locale: code } })
-            const countMissingTranslations = await strapi.db
-              .query(contentType)
-              .count({
-                where: {
-                  locale: { $ne: code },
-                  localizations: {
-                    $or: [
-                      { locale: { $null: true } },
-                      { locale: { $ne: code } },
-                    ],
-                  },
-                },
-              })
+            const complete = await getService('untranslated').ifFullyTranslated(
+              contentType,
+              code
+            )
             return {
               count: await countPromise,
-              complete: countMissingTranslations == 0,
+              complete,
             }
           })
         )

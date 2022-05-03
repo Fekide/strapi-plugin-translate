@@ -133,20 +133,14 @@ class BatchTranslateJob {
       }
     } else {
       // Get an entity that was not translated yet
-      entity = await strapi.db.query(this.contentType).findOne({
-        where: {
-          locale: this.sourceLocale,
-          localizations: {
-            $or: [
-              // Case there are other locales but not the target locale
-              { locale: { $ne: this.targetLocale } },
-              // Case there is no other locale yet (so there is no join partner and locale is null)
-              { locale: { $null: true } },
-            ],
-          },
+      entity = await getService('untranslated').getUntranslatedEntity(
+        {
+          uid: this.contentType,
+          targetLocale: this.targetLocale,
+          sourceLocale: this.sourceLocale,
         },
-        populate,
-      })
+        { populate }
+      )
     }
 
     // Cancel if there is no matching entity or we have reached our initial limit
@@ -181,7 +175,7 @@ class BatchTranslateJob {
 
       const fullyTranslatedData = cleanData(uidsUpdated, this.contentTypeSchema)
       // Add reference to other localizations
-      const newLocalizations = entity.localizations.map((l) => l.id)
+      const newLocalizations = entity.localizations.map(({ id }) => id)
       newLocalizations.push(entity.id)
       fullyTranslatedData.localizations = newLocalizations
       // Set locale
@@ -189,10 +183,11 @@ class BatchTranslateJob {
       // Set publishedAt to null so the translation is not published directly
       fullyTranslatedData.publishedAt = null
       // Create localized entry
-
-      await strapi
-        .service(this.contentType)
-        .create({ data: fullyTranslatedData, populate: ['localizations'] })
+      await strapi.service(this.contentType).create({
+        data: fullyTranslatedData,
+        // Needed for syncing localizations
+        populate: ['localizations'],
+      })
 
       this.translatedEntities++
     } catch (error) {
@@ -261,7 +256,10 @@ class BatchTranslateJob {
         this.intervalLength
       )
 
-      this.setup()
+      this.setup().catch((error) => {
+        this.updateStatus('failed', error)
+        this._reject(error)
+      })
     })
     return this.promise
   }
