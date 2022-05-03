@@ -25,7 +25,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
         const { count, complete, job } = entry.localeReports[locale.code]
         return (
           <Td key={locale.code}>
-            <Stack size={3}>
+            <Stack spacing={3}>
               <Typography textColor="neutral800">{count} entries</Typography>
               <Flex wrap="wrap">
                 <Badge
@@ -96,22 +96,6 @@ const CollectionRow = ({ entry, locales, onAction }) => {
           </Td>
         )
       })}
-      {/*
-      <Td>
-        <Flex>
-          <Box paddingLeft={1}>
-            <Button
-              onClick={() =>
-                updateCollection({ contentType: entry.contentType })
-              }
-              size="S"
-              variant="secondary"
-            >
-              Update
-            </Button>
-          </Box>
-        </Flex>
-      </Td> */}
     </Tr>
   )
 }

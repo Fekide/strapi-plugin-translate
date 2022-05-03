@@ -26,6 +26,7 @@ const PluginTabs = () => {
           </TabPanel>
           <TabPanel>
             <Box color="neutral800" padding={4} background="neutral0">
+              To be done
               {/* <Settings /> */}
             </Box>
           </TabPanel>
