@@ -1,21 +1,21 @@
 'use strict'
 
 module.exports = {
-  default: ({ env }) => ({
-    apiKey: env['DEEPL_API_KEY'] ?? null,
-    freeApi: env['DEEPL_API_FREE']
-      ? env['DEEPL_API_FREE'].toLowerCase() == 'true'
-      : true,
-    translatedFieldTypes: [
-      'string',
-      'text',
-      'richtext',
-      'component',
-      'dynamiczone',
-    ],
-    translateRelations: true,
-    glossaryId: null,
-  }),
+  default: ({ env }) => {
+    return {
+      apiKey: env('DEEPL_API_KEY', null),
+      freeApi: env.bool('DEEPL_API_FREE', true),
+      translatedFieldTypes: [
+        'string',
+        'text',
+        'richtext',
+        'component',
+        'dynamiczone',
+      ],
+      translateRelations: true,
+      glossaryId: null,
+    }
+  },
   validator({
     apiKey,
     translatedFieldTypes,
