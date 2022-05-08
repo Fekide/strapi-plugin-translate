@@ -1,12 +1,11 @@
 import React, { memo } from 'react'
 import { Tr, Td } from '@strapi/design-system/Table'
-import { BaseCheckbox } from '@strapi/design-system/BaseCheckbox'
 import { Typography } from '@strapi/design-system/Typography'
 import { Flex } from '@strapi/design-system/Flex'
-import { Box } from '@strapi/design-system/Box'
-import { Button } from '@strapi/design-system/Button'
 import { Badge } from '@strapi/design-system/Badge'
 import { Stack } from '@strapi/design-system/Stack'
+import { useIntl } from 'react-intl'
+import { getTrad } from '../../utils'
 import { IconButton, IconButtonGroup } from '@strapi/design-system/IconButton'
 import { Tooltip } from '@strapi/design-system/Tooltip'
 import Earth from '@strapi/icons/Earth'
@@ -15,6 +14,8 @@ import Clock from '@strapi/icons/Clock'
 import Play from '@strapi/icons/Play'
 
 const CollectionRow = ({ entry, locales, onAction }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <Tr key={entry.contentType}>
       {/* Name */}
@@ -27,13 +28,22 @@ const CollectionRow = ({ entry, locales, onAction }) => {
         return (
           <Td key={locale.code}>
             <Stack spacing={3}>
-              <Typography textColor="neutral800">{count} entries</Typography>
+              <Typography textColor="neutral800">
+                {count}{' '}
+                {formatMessage({
+                  id: getTrad(`batch-translate.table.entries`),
+                  defaultMessage: 'entries',
+                })}
+              </Typography>
               <Flex wrap="wrap">
                 <Badge
                   textColor="neutral100"
                   backgroundColor={complete ? 'success500' : 'warning500'}
                 >
-                  {complete ? 'complete' : 'incomplete'}
+                  {formatMessage({
+                    id: getTrad(`batch-translate.table.complete.${complete}`),
+                    defaultMessage: complete ? 'complete' : 'incomplete',
+                  })}
                 </Badge>
                 {job &&
                   ([
@@ -48,12 +58,21 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                       textColor="neutral100"
                       backgroundColor={'success500'}
                     >
-                      Job {job.status}
+                      {formatMessage({
+                        id: getTrad(
+                          `batch-translate.table.job-status.${job.status}`
+                        ),
+                        defaultMessage: `Job ${job.status}`,
+                      })}
                     </Badge>
                   ) : (
                     <Tooltip
                       description={
-                        job.failureReason?.message || 'Unknown error'
+                        job.failureReason?.message ||
+                        formatMessage({
+                          id: getTrad(`errors.unknown`),
+                          defaultMessage: 'Unknown error',
+                        })
                       }
                     >
                       <Badge
@@ -61,7 +80,12 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                         textColor="neutral100"
                         backgroundColor={'danger500'}
                       >
-                        Job {job.status}
+                        {formatMessage({
+                          id: getTrad(
+                            `batch-translate.table.job-status.${job.status}`
+                          ),
+                          defaultMessage: `Job ${job.status}`,
+                        })}
                       </Badge>
                     </Tooltip>
                   ))}
@@ -69,7 +93,12 @@ const CollectionRow = ({ entry, locales, onAction }) => {
               <IconButtonGroup>
                 <IconButton
                   onClick={() => onAction('translate', locale.code)}
-                  label="Translate"
+                  label={formatMessage({
+                    id: getTrad(
+                      'batch-translate.table.actions.labels.translate'
+                    ),
+                    defaultMessage: 'Translate',
+                  })}
                   icon={<Earth />}
                   disabled={
                     complete ||
@@ -81,7 +110,10 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                 />
                 <IconButton
                   onClick={() => onAction('cancel', locale.code)}
-                  label="Cancel"
+                  label={formatMessage({
+                    id: getTrad('batch-translate.table.actions.labels.cancel'),
+                    defaultMessage: 'Cancel',
+                  })}
                   icon={<Cross />}
                   disabled={
                     complete ||
@@ -90,7 +122,10 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                 />
                 <IconButton
                   onClick={() => onAction('pause', locale.code)}
-                  label="Pause"
+                  label={formatMessage({
+                    id: getTrad('batch-translate.table.actions.labels.pause'),
+                    defaultMessage: 'Pause',
+                  })}
                   icon={<Clock />}
                   disabled={
                     complete ||
@@ -99,7 +134,10 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                 />
                 <IconButton
                   onClick={() => onAction('resume', locale.code)}
-                  label="Resume"
+                  label={formatMessage({
+                    id: getTrad('batch-translate.table.actions.labels.resume'),
+                    defaultMessage: 'Resume',
+                  })}
                   icon={<Play />}
                   disabled={complete || job?.status !== 'paused'}
                 />

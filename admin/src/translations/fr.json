@@ -28,5 +28,20 @@
   "batch-translate.dialog.translate.submit-text": "Traduire",
   "batch-translate.dialog.cancel.submit-text": "Confirmer",
   "batch-translate.dialog.pause.submit-text": "Pause",
-  "batch-translate.dialog.resume.submit-text": "Continue"
+  "batch-translate.dialog.resume.submit-text": "Continue",
+  "batch-translate.table.entries": "entités",
+  "batch-translate.table.complete.true": "complet",
+  "batch-translate.table.complete.false": "incomplet",
+  "batch-translate.table.job-status.created": "Tâche créé",
+  "batch-translate.table.job-status.setup": "Tâche commence",
+  "batch-translate.table.job-status.running": "Tâche en cours",
+  "batch-translate.table.job-status.paused": "Tâche arrêté",
+  "batch-translate.table.job-status.finished": "Tâche terminé",
+  "batch-translate.table.job-status.cancelled": "Tâche cancelled",
+  "batch-translate.table.job-status.failed": "Tâche annulé",
+  "batch-translate.table.actions.labels.translate": "Traduire",
+  "batch-translate.table.actions.labels.cancel": "Annuler",
+  "batch-translate.table.actions.labels.pause": "Pause",
+  "batch-translate.table.actions.labels.resume": "Continue",
+  "errors.unknown-error": "Erreur inconnue"
 }
