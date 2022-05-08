@@ -8,6 +8,7 @@ import { Button } from '@strapi/design-system/Button'
 import { Badge } from '@strapi/design-system/Badge'
 import { Stack } from '@strapi/design-system/Stack'
 import { IconButton, IconButtonGroup } from '@strapi/design-system/IconButton'
+import { Tooltip } from '@strapi/design-system/Tooltip'
 import Earth from '@strapi/icons/Earth'
 import Cross from '@strapi/icons/Cross'
 import Clock from '@strapi/icons/Clock'
@@ -34,25 +35,36 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                 >
                   {complete ? 'complete' : 'incomplete'}
                 </Badge>
-                {job && (
-                  <Badge
-                    marginLeft={1}
-                    textColor="neutral100"
-                    backgroundColor={
-                      [
-                        'created',
-                        'setup',
-                        'running',
-                        'paused',
-                        'finished',
-                      ].includes(job.status)
-                        ? 'success500'
-                        : 'danger500'
-                    }
-                  >
-                    Job {job.status}
-                  </Badge>
-                )}
+                {job &&
+                  ([
+                    'created',
+                    'setup',
+                    'running',
+                    'paused',
+                    'finished',
+                  ].includes(job.status) ? (
+                    <Badge
+                      marginLeft={1}
+                      textColor="neutral100"
+                      backgroundColor={'success500'}
+                    >
+                      Job {job.status}
+                    </Badge>
+                  ) : (
+                    <Tooltip
+                      description={
+                        job.failureReason?.message || 'Unknown error'
+                      }
+                    >
+                      <Badge
+                        marginLeft={1}
+                        textColor="neutral100"
+                        backgroundColor={'danger500'}
+                      >
+                        Job {job.status}
+                      </Badge>
+                    </Tooltip>
+                  ))}
               </Flex>
               <IconButtonGroup>
                 <IconButton
