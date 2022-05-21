@@ -35,9 +35,9 @@ async function translate({ text, free_api, glossary_id, ...parameters }) {
       chunks.map(async (texts) => {
         const requestParams = new URLSearchParams(params)
         texts.forEach((t) => requestParams.append('text', t))
-        return (
-          await axios.post(`${apiURL}/translate`, requestParams.toString())
-        ).data
+        const requestParamsString = requestParams.toString()
+        return (await axios.post(`${apiURL}/translate`, requestParamsString))
+          .data
       })
     )
   )

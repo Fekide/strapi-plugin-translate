@@ -129,8 +129,10 @@ describe('deepl api', () => {
     describe.each([true, false])('for free api %p', (freeApi) => {
       beforeEach(() => {
         const translateHandler = (config) => {
-          if (stringByteLength(config.data) > DEEPL_API_MAX_REQUEST_SIZE) {
-            console.log({ length: stringByteLength(config.data) })
+          if (
+            stringByteLength(config.data || '') > DEEPL_API_MAX_REQUEST_SIZE
+          ) {
+            console.log({ length: stringByteLength(config.data || '') })
             return [413]
           }
           const params = new URLSearchParams(config.data)

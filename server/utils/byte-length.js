@@ -6,7 +6,11 @@
  * @returns The length of the string in bytes when encoded using `encodeURI`
  */
 function stringByteLength(string) {
-  return Buffer.byteLength(encodeURI(string), 'utf8')
+  return Buffer.byteLength(string, 'utf8')
 }
 
-module.exports = { stringByteLength }
+function stringByteLengthEncoded(string) {
+  return stringByteLength(encodeURI(string))
+}
+
+module.exports = { stringByteLength, stringByteLengthEncoded }

@@ -1,6 +1,6 @@
 'use strict'
 
-const { stringByteLength } = require('./byte-length')
+const { stringByteLengthEncoded } = require('./byte-length')
 const {
   DEEPL_API_MAX_TEXTS,
   DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
@@ -16,10 +16,7 @@ const {
  */
 function splitTextArrayIntoChunks(
   textArray,
-  {
-    maxLength = DEEPL_API_MAX_TEXTS,
-    maxByteSize = DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
-  } = {
+  { maxLength, maxByteSize } = {
     maxLength: DEEPL_API_MAX_TEXTS,
     maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
   }
@@ -45,7 +42,7 @@ function splitTextArrayIntoChunks(
   // - the string needs to be added to a new chunk
   // - the string itself is too big and needs to be split before it can be put into chunks
   textArray.forEach((textField) => {
-    const fieldByteLength = stringByteLength(textField)
+    const fieldByteLength = stringByteLengthEncoded(textField)
     if (fieldByteLength > maxByteSize) {
       strapi.log.warn(
         'There is a field being translated, that is itself longer than the maxByteSize parameter. ' +
