@@ -1,13 +1,19 @@
 const axios = require('axios')
 const MockAdapter = require('axios-mock-adapter')
+const faker = require('@faker-js/faker').default
 
-const { DEEPL_FREE_API, DEEPL_PAID_API } = require('../constants')
+const {
+  DEEPL_FREE_API,
+  DEEPL_PAID_API,
+  DEEPL_API_MAX_REQUEST_SIZE,
+} = require('../constants')
 
 const { URLSearchParams } = require('url')
 
 const { usage, translate, parseLocale } = require('../deepl-api')
 
 const locales = require('@strapi/plugin-i18n/server/constants/iso-locales.json')
+const { stringByteLength } = require('../byte-length')
 
 function supportedLocale({ code, name }) {
   // Swiss German is not supported
@@ -51,6 +57,11 @@ describe('deepl api', () => {
 
   beforeAll(() => {
     mock = new MockAdapter(axios)
+
+    Object.defineProperty(global, 'strapi', {
+      value: require('../../../__mocks__/initSetup')({}),
+      writable: true,
+    })
   })
 
   afterEach(() => {
@@ -118,6 +129,12 @@ describe('deepl api', () => {
     describe.each([true, false])('for free api %p', (freeApi) => {
       beforeEach(() => {
         const translateHandler = (config) => {
+          if (
+            stringByteLength(config.data || '') > DEEPL_API_MAX_REQUEST_SIZE
+          ) {
+            console.log({ length: stringByteLength(config.data || '') })
+            return [413]
+          }
           const params = new URLSearchParams(config.data)
           if (params.get('auth_key') == authKey) {
             let text = params.getAll('text')
@@ -246,6 +263,113 @@ describe('deepl api', () => {
 
         it('with more than 50 texts', async () => {
           await forMoreThan50Texts(freeApi)
+        })
+
+        it('with all fields together more than request size limit', async () => {
+          // given
+          const textLength = 40
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            target_lang: 'DE',
+            text: faker.helpers.uniqueArray(
+              () => faker.lorem.paragraphs(20),
+              textLength
+            ),
+          }
+          // when
+          const result = await translate(params)
+
+          // then
+          expect(mock.history.post.length).toBeGreaterThan(1)
+          expect(result).toEqual({
+            translations: params.text.map((t) => ({
+              detected_source_language: 'EN',
+              text: t,
+            })),
+          })
+        })
+
+        it('with a field larger than request size limit', async () => {
+          // given
+          const textLength = 1
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            target_lang: 'DE',
+            text: [faker.lorem.paragraphs(DEEPL_API_MAX_REQUEST_SIZE / 200)],
+          }
+          // when
+          const result = await translate(params)
+
+          // then
+          expect(mock.history.post.length).toBeGreaterThan(1)
+          expect(result).toEqual({
+            translations: params.text.map((t) => ({
+              detected_source_language: 'EN',
+              text: t,
+            })),
+          })
+        })
+
+        it.skip('with fields larger than request size limit count of new lines preserved', async () => {
+          // given
+          const textLength = 10
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            target_lang: 'DE',
+            text: faker.helpers.uniqueArray(
+              () =>
+                faker.lorem.paragraphs(
+                  DEEPL_API_MAX_REQUEST_SIZE / 200,
+                  '\n'.repeat(faker.datatype.number({ min: 1, max: 3 }))
+                ),
+              textLength
+            ),
+          }
+          // when
+          const result = await translate(params)
+
+          // then
+          expect(mock.history.post.length).toBeGreaterThan(1)
+          expect(result).toEqual({
+            translations: params.text.map((t) => ({
+              detected_source_language: 'EN',
+              text: t,
+            })),
+          })
+        })
+
+        it('with some fields larger than request size limit', async () => {
+          // given
+          const textLength = 20
+          const params = {
+            free_api: freeApi,
+            auth_key: authKey,
+            target_lang: 'DE',
+            text: faker.helpers.uniqueArray(
+              () =>
+                faker.lorem.paragraphs(
+                  faker.datatype.number({
+                    min: DEEPL_API_MAX_REQUEST_SIZE / 2000,
+                    max: DEEPL_API_MAX_REQUEST_SIZE / 200,
+                  })
+                ),
+              textLength
+            ),
+          }
+          // when
+          const result = await translate(params)
+
+          // then
+          expect(mock.history.post.length).toBeGreaterThan(1)
+          expect(result).toEqual({
+            translations: params.text.map((t) => ({
+              detected_source_language: 'EN',
+              text: t,
+            })),
+          })
         })
       })
 
