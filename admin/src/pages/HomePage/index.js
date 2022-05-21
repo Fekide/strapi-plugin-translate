@@ -5,14 +5,14 @@
  */
 
 import React, { memo } from 'react'
-// import PropTypes from 'prop-types';
-import pluginId from '../../pluginId'
+import PluginHeader from '../../components/PluginHeader'
+import PluginTabs from '../../components/PluginTabs'
 
 const HomePage = () => {
   return (
     <div>
-      <h1>{pluginId}&apos;s HomePage</h1>
-      <p>Happy coding</p>
+      <PluginHeader />
+      <PluginTabs />
     </div>
   )
 }

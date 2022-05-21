@@ -50,6 +50,10 @@
     "progress": {
       "type": "float",
       "default": 0
+    },
+    "autoPublish": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

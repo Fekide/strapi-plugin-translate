@@ -46,7 +46,7 @@ class BatchTranslateManager {
   async pauseJob(id) {
     if (this.runningJobs.has(id)) {
       await this.runningJobs.get(id).pause()
-      return await strapi.service(batchContentTypeUid).findOne(id)
+      return strapi.service(batchContentTypeUid).findOne(id)
     } else {
       throw new Error('deepl.batch-translate.job-not-running')
     }
@@ -87,8 +87,8 @@ class BatchTranslateManager {
 
   async cancelJob(id) {
     if (this.runningJobs.has(id)) {
-      await this.runningJobs.get(id).job.cancel()
-      return await strapi.service(batchContentTypeUid).findOne(id)
+      await this.runningJobs.get(id).cancel()
+      return strapi.service(batchContentTypeUid).findOne(id)
     } else {
       throw new Error('deepl.batch-translate.job-not-running')
     }
