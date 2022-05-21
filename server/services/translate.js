@@ -69,7 +69,7 @@ module.exports = ({ strapi }) => ({
             const countPromise = strapi.db
               .query(contentType)
               .count({ where: { locale: code } })
-            const complete = await getService('untranslated').ifFullyTranslated(
+            const complete = await getService('untranslated').isFullyTranslated(
               contentType,
               code
             )

@@ -13,48 +13,53 @@ module.exports = ({ strapi }) => {
       { uid, targetLocale, sourceLocale },
       { populate }
     ) {
-      const {
-        collectionName,
-        info: { singularName },
-      } = strapi.contentTypes[uid]
+      const metadata = strapi.db.metadata.get(uid)
+      if (!metadata) {
+        throw new Error("Content Type does not exist")
+      }
+      const tableName = metadata.tableName
+      const joinTable = metadata.attributes?.localizations?.joinTable
+      if (!joinTable) {
+        throw new Error("Content Type not localized")
+      }
       const notTranslated = await strapi.db
-        .getConnection(collectionName)
-        .select(`${collectionName}.id`)
+        .getConnection(tableName)
+        .select(`${tableName}.${joinTable.joinColumn.referencedColumn}`)
         // Join the other localizations (null allowed)
         .leftJoin(
-          `${collectionName}_localizations_links as l`,
-          `${collectionName}.id`,
-          `l.${singularName}_id`
+          joinTable.name,
+          `${tableName}.${joinTable.joinColumn.referencedColumn}`,
+          `${joinTable.name}.${joinTable.joinColumn.name}`
         )
         .leftJoin(
-          `${collectionName} as c2`,
-          `l.inv_${singularName}_id`,
-          'c2.id'
+          `${tableName} as c2`,
+          `${joinTable.name}.${joinTable.inverseJoinColumn.name}`,
+          `c2.${joinTable.inverseJoinColumn.referencedColumn}`
         )
         // The other localizations should not include the target locale
         .whereNotIn(
-          `${collectionName}.id`,
+          `${tableName}.${joinTable.joinColumn.referencedColumn}`,
           strapi.db
-            .getConnection(collectionName)
-            .select(`${collectionName}.id`)
+            .getConnection(tableName)
+            .select(`${tableName}.${joinTable.joinColumn.referencedColumn}`)
             // Join the other localizations (null not allowed)
             .join(
-              `${collectionName}_localizations_links as l`,
-              `${collectionName}.id`,
-              `l.${singularName}_id`
+              joinTable.name,
+              `${tableName}.${joinTable.joinColumn.referencedColumn}`,
+              `${joinTable.name}.${joinTable.joinColumn.name}`
             )
             .join(
-              `${collectionName} as c2`,
-              `l.inv_${singularName}_id`,
-              'c2.id'
+              `${tableName} as c2`,
+              `${joinTable.name}.${joinTable.inverseJoinColumn.name}`,
+              `c2.${joinTable.inverseJoinColumn.referencedColumn}`
             )
             // other localization should be the target
             .where('c2.locale', targetLocale)
             // start localization should be the source
-            .andWhere(`${collectionName}.locale`, sourceLocale)
+            .andWhere(`${tableName}.locale`, sourceLocale)
         )
         // Only from the source locale
-        .andWhere(`${collectionName}.locale`, sourceLocale)
+        .andWhere(`${tableName}.locale`, sourceLocale)
         // Only the first needed
         .limit(1)
       if (!notTranslated || notTranslated.length == 0) {
@@ -76,46 +81,51 @@ module.exports = ({ strapi }) => {
      * @param {string} targetLocale the target locale
      * @returns if the target locale is fully translated
      */
-    async ifFullyTranslated(uid, targetLocale) {
-      const {
-        collectionName,
-        info: { singularName },
-      } = strapi.contentTypes[uid]
+    async isFullyTranslated(uid, targetLocale) {
+      const metadata = strapi.db.metadata.get(uid)
+      if (!metadata) {
+        throw new Error("Content Type does not exist")
+      }
+      const tableName = metadata.tableName
+      const joinTable = metadata.attributes?.localizations?.joinTable
+      if (!joinTable) {
+        throw new Error("Content Type not localized")
+      }
       const notTranslated = await strapi.db
-        .getConnection(collectionName)
+        .getConnection(tableName)
         // Join the other localizations (null allowed)
         .leftJoin(
-          `${collectionName}_localizations_links as l`,
-          `${collectionName}.id`,
-          `l.${singularName}_id`
+          joinTable.name,
+          `${tableName}.${joinTable.joinColumn.referencedColumn}`,
+          `${joinTable.name}.${joinTable.joinColumn.name}`
         )
         .leftJoin(
-          `${collectionName} as c2`,
-          `l.inv_${singularName}_id`,
-          'c2.id'
+          `${tableName} as c2`,
+          `${joinTable.name}.${joinTable.inverseJoinColumn.name}`,
+          `c2.${joinTable.inverseJoinColumn.referencedColumn}`
         )
         // The other localizations should not include the target locale
         .whereNotIn(
-          `${collectionName}.id`,
+          `${tableName}.${joinTable.joinColumn.referencedColumn}`,
           strapi.db
-            .getConnection(collectionName)
-            .select(`${collectionName}.id`)
+            .getConnection(tableName)
+            .select(`${tableName}.${joinTable.joinColumn.referencedColumn}`)
             // Join the other localizations (null not allowed)
             .join(
-              `${collectionName}_localizations_links as l`,
-              `${collectionName}.id`,
-              `l.${singularName}_id`
+              joinTable.name,
+              `${tableName}.${joinTable.joinColumn.referencedColumn}`,
+              `${joinTable.name}.${joinTable.joinColumn.name}`
             )
             .join(
-              `${collectionName} as c2`,
-              `l.inv_${singularName}_id`,
-              'c2.id'
+              `${tableName} as c2`,
+              `${joinTable.name}.${joinTable.inverseJoinColumn.name}`,
+              `c2.${joinTable.inverseJoinColumn.referencedColumn}`
             )
             // other localization should be the target
             .where('c2.locale', targetLocale)
         )
         // First entity cannot be of the target locale
-        .andWhereNot(`${collectionName}.locale`, targetLocale)
+        .andWhereNot(`${tableName}.locale`, targetLocale)
         // One is enough to see if there is at least one missing or not
         .limit(1)
       return notTranslated.length === 0
