@@ -40,7 +40,7 @@ module.exports = {
     if (typeof translateRelations !== 'boolean') {
       throw new Error('freeApi has to be a boolean')
     }
-    if (glossaryId !== null && typeof freeApi !== 'string') {
+    if (glossaryId !== null && typeof glossaryId !== 'string') {
       throw new Error('glossaryId should be a string if it is defined')
     }
   },
