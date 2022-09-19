@@ -16,13 +16,27 @@ async function updateUids(data, contentTypeUid) {
     Object.keys(attributesSchema).map(async (attr) => {
       const attributeSchema = attributesSchema[attr]
       if (attributeSchema.type === 'uid') {
-        resultData[attr] = await strapi
-          .service('plugin::content-manager.uid')
-          .generateUIDField({
-            contentTypeUID: contentTypeUid,
-            field: attr,
-            data,
-          })
+        const onTranslate = _.get(
+          attributeSchema,
+          ['pluginOptions', 'deepl', 'translate'],
+          'translate'
+        )
+        switch (onTranslate) {
+          case 'translate':
+            resultData[attr] = await strapi
+              .service('plugin::content-manager.uid')
+              .generateUIDField({
+                contentTypeUID: contentTypeUid,
+                field: attr,
+                data,
+              })
+            break
+          case 'delete':
+            resultData[attr] = undefined
+          case 'copy':
+          default:
+            break
+        }
       }
       return true
     })

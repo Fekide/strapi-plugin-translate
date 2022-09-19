@@ -38,7 +38,7 @@ module.exports = ({ strapi }) => ({
         targetLocale
       )
     } catch (error) {
-      strapi.log.error(error)
+      strapi.log.error('Translating entity failed: ' + error.message)
       if (error.response?.status !== undefined) {
         switch (error.response.status) {
           case 400:

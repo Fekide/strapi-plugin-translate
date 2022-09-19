@@ -9,6 +9,7 @@ const {
   simpleComponent,
   nestedComponent,
   twoFieldComponent,
+  createSimpleComponent,
 } = require('../../../__mocks__/components')
 const {
   complexContentType,
@@ -34,6 +35,8 @@ describe('translatable fields', () => {
           simpleComponent,
           twoFieldComponent,
           nestedComponent,
+          simpleComponentCopy: createSimpleComponent('copy'),
+          simpleComponentDelete: createSimpleComponent('delete'),
         },
       })
     )
@@ -41,7 +44,10 @@ describe('translatable fields', () => {
     it('text field translated', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = { type: 'text' }
+      const schema = {
+        type: 'text',
+        pluginOptions: { deepl: { translate: 'translate' } },
+      }
       const attr = 'field'
       const translatedFieldTypes = ['text']
 
@@ -55,6 +61,50 @@ describe('translatable fields', () => {
 
       // then
       expect(translatedField).toEqual(attr)
+    })
+
+    it('text field copy not translated', async () => {
+      // given
+      const data = { field: 'some text' }
+      const schema = {
+        type: 'text',
+        pluginOptions: { deepl: { translate: 'copy' } },
+      }
+      const attr = 'field'
+      const translatedFieldTypes = ['text']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toBeNull()
+    })
+
+    it('text field delete not translated', async () => {
+      // given
+      const data = { field: 'some text' }
+      const schema = {
+        type: 'text',
+        pluginOptions: { deepl: { translate: 'delete' } },
+      }
+      const attr = 'field'
+      const translatedFieldTypes = ['text']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toBeNull()
     })
 
     it('other field not translated', async () => {
@@ -79,7 +129,11 @@ describe('translatable fields', () => {
     it('component field translated nested', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = { type: 'component', component: 'simpleComponent' }
+      const schema = {
+        type: 'component',
+        component: 'simpleComponent',
+        pluginOptions: { deepl: { translate: 'translate' } },
+      }
       const attr = 'child_component'
       const translatedFieldTypes = ['text', 'component']
 
@@ -95,6 +149,52 @@ describe('translatable fields', () => {
       expect(translatedField).toEqual(['child_component.text'])
     })
 
+    it('component with copy field not translated', async () => {
+      // given
+      const data = { child_component: { text: 'some text' } }
+      const schema = {
+        type: 'component',
+        component: 'simpleComponentCopy',
+        pluginOptions: { deepl: { translate: 'translate' } },
+      }
+      const attr = 'child_component'
+      const translatedFieldTypes = ['text', 'component']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toEqual([])
+    })
+
+    it('component with delete field not translated', async () => {
+      // given
+      const data = { child_component: { text: 'some text' } }
+      const schema = {
+        type: 'component',
+        component: 'simpleComponentDelete',
+        pluginOptions: { deepl: { translate: 'translate' } },
+      }
+      const attr = 'child_component'
+      const translatedFieldTypes = ['text', 'component']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toEqual([])
+    })
+
     it('repeated component field translated', async () => {
       // given
       const data = {
@@ -104,6 +204,7 @@ describe('translatable fields', () => {
         type: 'component',
         component: 'simpleComponent',
         repeatable: true,
+        pluginOptions: { deepl: { translate: 'translate' } },
       }
       const attr = 'child_component'
       const translatedFieldTypes = ['text', 'component']
@@ -140,6 +241,7 @@ describe('translatable fields', () => {
       const schema = {
         type: 'component',
         component: 'nestedComponent',
+        pluginOptions: { deepl: { translate: 'translate' } },
       }
       const attr = 'comp'
       const translatedFieldTypes = ['text', 'component']
@@ -176,6 +278,7 @@ describe('translatable fields', () => {
       const schema = {
         type: 'dynamiczone',
         components: ['simpleComponent', 'twoFieldComponent'],
+        pluginOptions: { deepl: { translate: 'translate' } },
       }
       const attr = 'dynamic_zone'
       const translatedFieldTypes = ['text', 'dynamiczone', 'component']

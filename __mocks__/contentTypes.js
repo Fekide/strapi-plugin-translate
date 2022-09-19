@@ -1,6 +1,10 @@
 const simpleContentType = createSimpleContentType(false)
 
-function createSimpleContentType(localized, uid = 'simple') {
+function createSimpleContentType(
+  localized,
+  uid = 'simple',
+  translate = 'translate'
+) {
   return {
     pluginOptions: {
       i18n: {
@@ -14,6 +18,9 @@ function createSimpleContentType(localized, uid = 'simple') {
         pluginOptions: {
           i18n: {
             localized: true,
+          },
+          deepl: {
+            translate,
           },
         },
       },
@@ -33,25 +40,31 @@ function createSimpleContentType(localized, uid = 'simple') {
 function createRelationContentType(
   relationType,
   inverseOrMapped,
-  translated,
+  localized,
   target,
-  uid = 'api::first.first'
+  uid = 'api::first.first',
+  translate = 'translate'
 ) {
   return {
     pluginOptions: {
       i18n: {
-        localized: !!translated,
+        localized: !!localized,
       },
     },
     kind: 'collectionType',
     attributes: {
       related: {
+        pluginOptions: {
+          deepl: {
+            translate,
+          },
+        },
         type: 'relation',
         relation: relationType,
         target: target,
         ...inverseOrMapped,
       },
-      ...(translated
+      ...(localized
         ? {
             localizations: {
               type: 'relation',
@@ -96,12 +109,12 @@ function createContentTypeWithUid(translated, uid = 'simple') {
 
 function createContentTypeWithComponent(
   component,
-  { translated = true, repeatable = false }
+  { localized = true, repeatable = false, translate = 'translate' }
 ) {
   return {
     pluginOptions: {
       i18n: {
-        localized: !!translated,
+        localized: !!localized,
       },
     },
     kind: 'collectionType',
@@ -110,6 +123,9 @@ function createContentTypeWithComponent(
         pluginOptions: {
           i18n: {
             localized: true,
+          },
+          deepl: {
+            translate,
           },
         },
         type: 'component',
@@ -156,6 +172,9 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
+        deepl: {
+          translate: 'translate',
+        },
       },
     },
     content: {
@@ -164,12 +183,18 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
+        deepl: {
+          translate: 'translate',
+        },
       },
     },
     slug: {
       pluginOptions: {
         i18n: {
           localized: true,
+        },
+        deepl: {
+          translate: 'translate',
         },
       },
       type: 'uid',
@@ -179,6 +204,17 @@ const complexContentType = {
       pluginOptions: {
         i18n: {
           localized: false,
+        },
+      },
+      type: 'string',
+    },
+    copied_field: {
+      pluginOptions: {
+        i18n: {
+          localized: false,
+        },
+        deepl: {
+          translate: 'copy',
         },
       },
       type: 'string',
@@ -197,6 +233,9 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
+        deepl: {
+          translate: 'translate',
+        },
       },
       type: 'dynamiczone',
       components: ['simpleComponent', 'twoFieldComponent'],
@@ -206,6 +245,9 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
+        deepl: {
+          translate: 'translate',
+        },
       },
       type: 'component',
       component: 'simpleComponent',
@@ -214,6 +256,9 @@ const complexContentType = {
       pluginOptions: {
         i18n: {
           localized: true,
+        },
+        deepl: {
+          translate: 'translate',
         },
       },
       repeatable: true,
