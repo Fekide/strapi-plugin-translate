@@ -1,7 +1,9 @@
 'use strict'
+const { URLSearchParams } = require('url')
 const axios = require('axios')
 const MockAdapter = require('axios-mock-adapter')
 const faker = require('@faker-js/faker').default
+const locales = require('@strapi/plugin-i18n/server/constants/iso-locales.json')
 
 const {
   DEEPL_FREE_API,
@@ -9,13 +11,8 @@ const {
   DEEPL_API_MAX_REQUEST_SIZE,
 } = require('../constants')
 
-const { URLSearchParams } = require('url')
-const axios = require('axios')
-const MockAdapter = require('axios-mock-adapter')
-const locales = require('@strapi/plugin-i18n/server/constants/iso-locales.json')
 const { stringByteLength } = require('../byte-length')
 
-const { DEEPL_FREE_API, DEEPL_PAID_API } = require('../constants')
 const { usage, translate, parseLocale } = require('../deepl-api')
 
 function supportedLocale({ code, name }) {
