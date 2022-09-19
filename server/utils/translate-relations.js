@@ -28,7 +28,13 @@ async function translateRelations(data, schema, targetLocale) {
   await Promise.all(
     Object.keys(attributesSchema).map(async (attr) => {
       if (attr === 'localizations') {
-        return true
+        return
+      }
+
+      const attributeData = _.get(data, attr, undefined)
+
+      if (attributeData === null || attributeData === undefined) {
+        return
       }
 
       const attributeSchema = attributesSchema[attr]
@@ -36,25 +42,24 @@ async function translateRelations(data, schema, targetLocale) {
       if (attributeSchema.type === 'relation') {
         resultData[attr] = shouldTranslateRelations
           ? await translateRelation(
-              _.get(data, attr, undefined),
+              attributeData,
               attributeSchema,
               targetLocale
             )
           : undefined
       } else if (attributeSchema.type === 'component') {
         resultData[attr] = await translateComponent(
-          _.get(data, attr, undefined),
+          attributeData,
           attributeSchema,
           targetLocale
         )
       } else if (attributeSchema.type === 'dynamiczone') {
         resultData[attr] = await Promise.all(
-          _.get(data, attr, []).map((object) =>
+          attributeData.map((object) =>
             translateComponent(object, attributeSchema, targetLocale)
           )
         )
       }
-      return true
     })
   )
   return resultData

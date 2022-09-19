@@ -1,21 +1,21 @@
 'use strict'
 
 module.exports = {
-  default: ({ env }) => ({
-    apiKey: env['DEEPL_API_KEY'] ?? null,
-    freeApi: env['DEEPL_API_FREE']
-      ? env['DEEPL_API_FREE'].toLowerCase() == 'true'
-      : true,
-    translatedFieldTypes: [
-      'string',
-      'text',
-      'richtext',
-      'component',
-      'dynamiczone',
-    ],
-    translateRelations: true,
-    glossaryId: null,
-  }),
+  default: ({ env }) => {
+    return {
+      apiKey: env('DEEPL_API_KEY', null),
+      freeApi: env.bool('DEEPL_API_FREE', true),
+      translatedFieldTypes: [
+        'string',
+        'text',
+        'richtext',
+        'component',
+        'dynamiczone',
+      ],
+      translateRelations: true,
+      glossaryId: null,
+    }
+  },
   validator({
     apiKey,
     translatedFieldTypes,
@@ -38,9 +38,9 @@ module.exports = {
       throw new Error('freeApi has to be a boolean')
     }
     if (typeof translateRelations !== 'boolean') {
-      throw new Error('freeApi has to be a boolean')
+      throw new Error('translateRelations has to be a boolean')
     }
-    if (glossaryId !== null && typeof freeApi !== 'string') {
+    if (glossaryId !== null && typeof glossaryId !== 'string') {
       throw new Error('glossaryId should be a string if it is defined')
     }
   },
