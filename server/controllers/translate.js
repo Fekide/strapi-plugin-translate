@@ -31,6 +31,7 @@ module.exports = ({ strapi }) => ({
         sourceLocale,
         targetLocale,
         fieldsToTranslate,
+        priority: 3,
       })
       ctx.body = await translateRelations(
         translatedData,
