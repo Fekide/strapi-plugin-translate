@@ -72,7 +72,17 @@ async function translateRelations(data, schema, targetLocale) {
             }
             break
           case 'copy':
-            resultData[attr] = _.get(data, attr, undefined)
+            if (attributeSchema.type === 'relation') {
+              resultData[attr] = shouldTranslateRelations
+                ? await translateRelation(
+                    attributeData,
+                    attributeSchema,
+                    targetLocale
+                  )
+                : undefined
+            } else {
+              resultData[attr] = attributeData
+            }
             break
           case 'delete':
             resultData[attr] = undefined
@@ -113,7 +123,7 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
     false
   )
 
-  const attributeTranslate = _.get(
+  const onTranslate = _.get(
     attributeSchema,
     'pluginOptions.deepl.translate',
     'translate'
@@ -124,7 +134,7 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
     _.has(attributeSchema, 'mappedBy', false)
 
   // If the relation is localized, the relevant localizations from the relation should be selected
-  if (attributeTranslate === 'translate') {
+  if (onTranslate === 'translate') {
     if (relationIsLocalized) {
       // for oneToMany and manyToMany relations there are multiple relations possible, so all of them need to be considered
       if (
@@ -160,7 +170,7 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
       // so there is not really a different option than to not include these relations
       return attributeSchema.relation == 'oneToMany' ? [] : undefined
     }
-  } else if (attributeTranslate === 'copy') {
+  } else if (onTranslate === 'copy') {
     if (relationIsLocalized || relationIsBothWays) {
       return ['oneToMany', 'manyToMany'].includes(attributeSchema.relation)
         ? []

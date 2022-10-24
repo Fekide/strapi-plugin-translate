@@ -1482,7 +1482,7 @@ describe('relation', () => {
             targetLocale
           )
           const result =
-            !bothWays && relationIsLocalized
+            !bothWays && !relationIsLocalized
               ? data
               : {
                   related: undefined,
