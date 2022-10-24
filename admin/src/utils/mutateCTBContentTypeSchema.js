@@ -24,7 +24,6 @@ const addTranslationToFields = (attributes) =>
           attributeDefaultTranslated ? 'translate' : 'copy'
         ),
       }
-      console.log(deepl)
 
       const pluginOptions = {
         ...(currentAttribute.pluginOptions ?? {}),
@@ -64,7 +63,6 @@ const mutateCTBContentTypeSchema = (nextSchema, prevSchema) => {
 
   // Remove the deepl object from the pluginOptions
   if (!isNextSchemaLocalized) {
-    const pluginOptions = omit(nextSchema.pluginOptions, 'deepl')
     const attributes = disableAttributesLocalisation(nextSchema.attributes)
 
     return { ...nextSchema, pluginOptions, attributes }
