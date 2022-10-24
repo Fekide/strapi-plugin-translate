@@ -5,6 +5,7 @@ const {
   batchContentTypeUid,
   DEEPL_PRIORITY_BATCH_TRANSLATION,
 } = require('../../utils/constants')
+const { filterAllDeletedFields } = require('../../utils/delete-fields')
 const { getService } = require('../../utils/get-service')
 const { populateAll } = require('../../utils/populate-all')
 const { getAllTranslatableFields } = require('../../utils/translatable-fields')
@@ -24,8 +25,6 @@ class BatchTranslateJob {
     this.totalEntities = 0
     this.translatedEntities = 0
     this.intervalId = null
-    // TODO: this should probably be adaptive as to how many jobs are running
-    // it is necessary as we do not want to get in to trouble for too many requests to deepl
     this.id = id
     this.autoPublish = autoPublish
     this.contentType = contentType
@@ -195,8 +194,13 @@ class BatchTranslateJob {
 
         const uidsUpdated = await updateUids(withRelations, this.contentType)
 
-        const fullyTranslatedData = cleanData(
+        const withFieldsDeleted = filterAllDeletedFields(
           uidsUpdated,
+          this.contentType
+        )
+
+        const fullyTranslatedData = cleanData(
+          withFieldsDeleted,
           this.contentTypeSchema
         )
         // Add reference to other localizations
@@ -206,7 +210,8 @@ class BatchTranslateJob {
         // Set locale
         fullyTranslatedData.locale = this.targetLocale
         // Set publishedAt to null so the translation is not published directly
-        fullyTranslatedData.publishedAt = this.autoPublish ? new Date() : null
+        fullyTranslatedData.publishedAt =
+          entity.publishedAt && this.autoPublish ? new Date() : null
         // Create localized entry
         await strapi.service(this.contentType).create({
           data: fullyTranslatedData,

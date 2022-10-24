@@ -189,14 +189,6 @@ const complexContentType = {
       },
     },
     slug: {
-      pluginOptions: {
-        i18n: {
-          localized: true,
-        },
-        deepl: {
-          translate: 'translate',
-        },
-      },
       type: 'uid',
       targetField: 'title',
     },
@@ -268,7 +260,110 @@ const complexContentType = {
   },
 }
 
+const complexContentTypeDelete = {
+  pluginOptions: {
+    i18n: {
+      localized: true,
+    },
+  },
+  kind: 'collectionType',
+  attributes: {
+    title: {
+      type: 'string',
+      pluginOptions: {
+        i18n: {
+          localized: true,
+        },
+        deepl: {
+          translate: 'translate',
+        },
+      },
+    },
+    content: {
+      type: 'richtext',
+      pluginOptions: {
+        i18n: {
+          localized: true,
+        },
+        deepl: {
+          translate: 'delete',
+        },
+      },
+    },
+    slug: {
+      type: 'uid',
+      targetField: 'title',
+    },
+    not_translated_field: {
+      pluginOptions: {
+        i18n: {
+          localized: false,
+        },
+      },
+      type: 'string',
+    },
+    copied_field: {
+      pluginOptions: {
+        i18n: {
+          localized: false,
+        },
+        deepl: {
+          translate: 'copy',
+        },
+      },
+      type: 'string',
+    },
+    enumeration: {
+      pluginOptions: {
+        i18n: {
+          localized: true,
+        },
+      },
+      type: 'enumeration',
+      enum: ['option_a', 'option_b', 'option_c'],
+    },
+    dynamic_zone: {
+      pluginOptions: {
+        i18n: {
+          localized: true,
+        },
+        deepl: {
+          translate: 'delete',
+        },
+      },
+      type: 'dynamiczone',
+      components: ['simpleComponent', 'twoFieldComponent'],
+    },
+    child_component: {
+      pluginOptions: {
+        i18n: {
+          localized: true,
+        },
+        deepl: {
+          translate: 'delete',
+        },
+      },
+      type: 'component',
+      component: 'simpleComponent',
+    },
+    repeated_child_component: {
+      pluginOptions: {
+        i18n: {
+          localized: true,
+        },
+        deepl: {
+          translate: 'delete',
+        },
+      },
+      repeatable: true,
+      type: 'component',
+      component: 'twoFieldComponent',
+    },
+  },
+}
+
 module.exports = {
+  complexContentTypeDelete,
   simpleContentType,
   createSimpleContentType,
   complexContentType,
