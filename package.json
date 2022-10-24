@@ -12,7 +12,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "axios": "^0.26.0"
+    "axios": "^0.26.0",
+    "bottleneck": "^2.19.5"
   },
   "peerDependencies": {
     "@strapi/plugin-i18n": "^4.1.4",
@@ -24,7 +25,7 @@
   },
   "maintainers": [],
   "engines": {
-    "node": ">=12.x.x <=16.x.x",
+    "node": ">=14.19.1 <=18.x.x",
     "npm": ">=6.0.0"
   },
   "license": "MIT",

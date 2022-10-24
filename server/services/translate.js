@@ -10,7 +10,13 @@ const { BatchTranslateManager } = require('./batch-translate')
 module.exports = ({ strapi }) => ({
   batchTranslateManager: new BatchTranslateManager(),
 
-  async translate({ data, sourceLocale, targetLocale, fieldsToTranslate }) {
+  async translate({
+    data,
+    sourceLocale,
+    targetLocale,
+    fieldsToTranslate,
+    priority,
+  }) {
     const { apiKey, freeApi, glossaryId } = strapi.config.get('plugin.deepl')
 
     const textsToTranslate = fieldsToTranslate.map((field) => {
@@ -24,6 +30,7 @@ module.exports = ({ strapi }) => ({
       target_lang: deepl.parseLocale(targetLocale),
       source_lang: deepl.parseLocale(sourceLocale),
       glossary_id: glossaryId,
+      priority,
     })
 
     const translatedData = { ...data }

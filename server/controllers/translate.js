@@ -5,6 +5,7 @@ const { getService } = require('../utils/get-service')
 
 const { getAllTranslatableFields } = require('../utils/translatable-fields')
 const { translateRelations } = require('../utils/translate-relations')
+const { DEEPL_PRIORITY_DIRECT_TRANSLATION } = require('../utils/constants')
 
 module.exports = ({ strapi }) => ({
   async translate(ctx) {
@@ -31,6 +32,7 @@ module.exports = ({ strapi }) => ({
         sourceLocale,
         targetLocale,
         fieldsToTranslate,
+        priority: DEEPL_PRIORITY_DIRECT_TRANSLATION,
       })
       ctx.body = await translateRelations(
         translatedData,
