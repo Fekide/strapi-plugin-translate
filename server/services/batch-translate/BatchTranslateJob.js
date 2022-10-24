@@ -1,7 +1,10 @@
 'use strict'
 
 const { cleanData } = require('../../utils/clean-data')
-const { batchContentTypeUid } = require('../../utils/constants')
+const {
+  batchContentTypeUid,
+  DEEPL_PRIORITY_BATCH_TRANSLATION,
+} = require('../../utils/constants')
 const { getService } = require('../../utils/get-service')
 const { populateAll } = require('../../utils/populate-all')
 const { getAllTranslatableFields } = require('../../utils/translatable-fields')
@@ -181,7 +184,7 @@ class BatchTranslateJob {
           sourceLocale: this.sourceLocale,
           targetLocale: this.targetLocale,
           fieldsToTranslate,
-          priority: 6,
+          priority: DEEPL_PRIORITY_BATCH_TRANSLATION,
         })
 
         const withRelations = await translateRelations(

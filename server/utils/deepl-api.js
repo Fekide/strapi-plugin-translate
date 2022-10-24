@@ -5,7 +5,12 @@ const axios = require('axios')
 
 const Bottleneck = require('bottleneck/es5')
 
-const { DEEPL_FREE_API, DEEPL_PAID_API } = require('./constants')
+const {
+  DEEPL_FREE_API,
+  DEEPL_PAID_API,
+  DEEPL_PRIORITY_DEFAULT,
+  DEEPL_PRIORITY_USAGE,
+} = require('./constants')
 const { splitTextArrayIntoChunks } = require('./chunks')
 
 const limiter = new Bottleneck({
@@ -21,7 +26,7 @@ async function usage({ free_api, ...parameters }) {
 
   return (
     await rateLimitedPost.withOptions(
-      { priority: 1 },
+      { priority: DEEPL_PRIORITY_USAGE },
       `${apiURL}/usage`,
       params.toString()
     )
@@ -57,7 +62,10 @@ async function translate({
         const requestParamsString = requestParams.toString()
         return (
           await rateLimitedPost.withOptions(
-            { priority: typeof priority == 'number' ? priority : 5 },
+            {
+              priority:
+                typeof priority == 'number' ? priority : DEEPL_PRIORITY_DEFAULT,
+            },
             `${apiURL}/translate`,
             requestParamsString
           )
