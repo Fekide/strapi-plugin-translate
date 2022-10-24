@@ -23,7 +23,7 @@
   },
   "maintainers": [],
   "engines": {
-    "node": ">=12 <=16",
+    "node": ">=14 <=16",
     "npm": ">=6.0.0"
   },
   "license": "MIT",
