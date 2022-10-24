@@ -1,7 +1,10 @@
 'use strict'
 
 const { cleanData } = require('../../utils/clean-data')
-const { batchContentTypeUid } = require('../../utils/constants')
+const {
+  batchContentTypeUid,
+  DEEPL_PRIORITY_BATCH_TRANSLATION,
+} = require('../../utils/constants')
 const { getService } = require('../../utils/get-service')
 const { populateAll } = require('../../utils/populate-all')
 const { getAllTranslatableFields } = require('../../utils/translatable-fields')
@@ -16,7 +19,6 @@ class BatchTranslateJob {
     targetLocale,
     entityIds,
     status,
-    intervalLength = 5000,
     autoPublish = false,
   }) {
     this.totalEntities = 0
@@ -24,7 +26,6 @@ class BatchTranslateJob {
     this.intervalId = null
     // TODO: this should probably be adaptive as to how many jobs are running
     // it is necessary as we do not want to get in to trouble for too many requests to deepl
-    this.intervalLength = intervalLength
     this.id = id
     this.autoPublish = autoPublish
     this.contentType = contentType
@@ -42,15 +43,6 @@ class BatchTranslateJob {
     this.status = status
   }
 
-  _resolve() {}
-  _reject() {}
-
-  _clearInterval() {
-    if (this.intervalId !== null) {
-      clearInterval(this.intervalId)
-    }
-  }
-
   async pause(setStatus = true) {
     // In case the promise has already resolved/rejected, don't run cancel behavior!
     if (['paused', 'cancelled', 'finished', 'failed'].includes(this.status)) {
@@ -58,12 +50,9 @@ class BatchTranslateJob {
     }
 
     // pause scenario
-    this._clearInterval()
     if (setStatus) {
       await this.updateStatus('paused')
     }
-
-    this._reject('Job was paused')
   }
 
   async cancel() {
@@ -74,10 +63,8 @@ class BatchTranslateJob {
 
     // Cancel-path scenario
     console.log('Cancelled translation')
-    this._clearInterval()
-    await this.updateStatus('cancelled')
 
-    this._reject('Job was cancelled')
+    await this.updateStatus('cancelled')
   }
 
   async waitFor() {
@@ -97,118 +84,6 @@ class BatchTranslateJob {
     await strapi.service(batchContentTypeUid).update(this.id, {
       data: { progress: this.translatedEntities / this.totalEntities },
     })
-  }
-
-  async translateOne() {
-    if (this.status != 'running') {
-      // We are currently not running, so we should not do anything
-      // This should only happen when setup is running, otherwise the execution should already be cancelled
-      return
-    }
-    let entity = null
-
-    const populate = populateAll(this.contentTypeSchema)
-
-    if (this.entityIds !== null) {
-      // Get an entity from the provided entity id list
-      // Try until we get one or the list is empty
-      while (!entity && this.entityIds.length > 0) {
-        const nextId = this.entityIds.pop(0)
-        entity = await strapi.db.query(this.contentType).findOne({
-          where: { id: nextId, locale: this.sourceLocale },
-          populate,
-        })
-        if (entity?.locale !== this.sourceLocale) {
-          strapi.log.warn(
-            `Entity ${nextId} of ${this.contentType} did not have the correct source locale ${this.sourceLocale}, skipping it...`
-          )
-          entity = null
-        } else if (
-          entity?.localizations?.filter((l) => l.locale === this.targetLocale)
-            .length > 0
-        ) {
-          strapi.log.warn(
-            `Entity ${nextId} of ${this.contentType} already has a translation for ${this.sourceLocale}, skipping it...`
-          )
-          entity = null
-        }
-      }
-    } else {
-      // Get an entity that was not translated yet
-      entity = await getService('untranslated').getUntranslatedEntity(
-        {
-          uid: this.contentType,
-          targetLocale: this.targetLocale,
-          sourceLocale: this.sourceLocale,
-        },
-        { populate }
-      )
-    }
-
-    // Cancel if there is no matching entity or we have reached our initial limit
-    if (!entity || this.totalEntities == this.translatedEntities) {
-      await this.updateStatus('finished')
-      this._clearInterval()
-      this._resolve()
-      return
-    }
-
-    // Translate the entity
-    try {
-      const fieldsToTranslate = await getAllTranslatableFields(
-        entity,
-        this.contentTypeSchema
-      )
-
-      const translated = await getService('translate').translate({
-        data: entity,
-        sourceLocale: this.sourceLocale,
-        targetLocale: this.targetLocale,
-        fieldsToTranslate,
-      })
-
-      const withRelations = await translateRelations(
-        translated,
-        this.contentTypeSchema,
-        this.targetLocale
-      )
-
-      const uidsUpdated = await updateUids(withRelations, this.contentType)
-
-      const fullyTranslatedData = cleanData(uidsUpdated, this.contentTypeSchema)
-      // Add reference to other localizations
-      const newLocalizations = entity.localizations.map(({ id }) => id)
-      newLocalizations.push(entity.id)
-      fullyTranslatedData.localizations = newLocalizations
-      // Set locale
-      fullyTranslatedData.locale = this.targetLocale
-      // Set publishedAt to null so the translation is not published directly
-      fullyTranslatedData.publishedAt = this.autoPublish ? new Date() : null
-      // Create localized entry
-      await strapi.service(this.contentType).create({
-        data: fullyTranslatedData,
-        // Needed for syncing localizations
-        populate: ['localizations'],
-      })
-
-      this.translatedEntities++
-    } catch (error) {
-      strapi.log.error(error)
-      if (error.details) {
-        strapi.log.debug(JSON.stringify(error.details))
-      }
-      await this.updateStatus('failed', {
-        failureReason: {
-          message: error.message,
-          stack: error.stack,
-          name: error.name,
-        },
-      })
-      clearInterval(this.intervalId)
-      this._reject('Translation of an entity failed')
-      return
-    }
-    await this.updateProgress()
   }
 
   async setup() {
@@ -236,34 +111,138 @@ class BatchTranslateJob {
     // The rest of the logic will now be executed using the interval
   }
 
-  start(resume = false) {
-    this.promise = new Promise((resolve, reject) => {
-      if (
-        resume &&
-        !['running', 'created', 'setup', 'paused'].includes(this.status)
-      ) {
-        reject('Job is not in a status to be resumed')
-        return
-      } else if (!resume && this.status != 'created') {
-        reject('Job was started before or has already been stopped')
+  async start(resume = false) {
+    if (
+      resume &&
+      !['running', 'created', 'setup', 'paused'].includes(this.status)
+    ) {
+      throw new Error('Job is not in a status to be resumed')
+    } else if (!resume && this.status != 'created') {
+      throw new Error('Job was started before or has already been stopped')
+    }
+
+    await this.setup().catch((error) => {
+      this.updateStatus('failed', error)
+      throw error
+    })
+
+    let entity = null
+
+    const populate = populateAll(this.contentTypeSchema)
+    while (this.status === 'running') {
+      if (this.entityIds !== null) {
+        // Get an entity from the provided entity id list
+        // Try until we get one or the list is empty
+        while (!entity && this.entityIds.length > 0) {
+          const nextId = this.entityIds.pop(0)
+          entity = await strapi.db.query(this.contentType).findOne({
+            where: { id: nextId, locale: this.sourceLocale },
+            populate,
+          })
+          if (entity?.locale !== this.sourceLocale) {
+            strapi.log.warn(
+              `Entity ${nextId} of ${this.contentType} did not have the correct source locale ${this.sourceLocale}, skipping it...`
+            )
+            entity = null
+          } else if (
+            entity?.localizations?.filter((l) => l.locale === this.targetLocale)
+              .length > 0
+          ) {
+            strapi.log.warn(
+              `Entity ${nextId} of ${this.contentType} already has a translation for ${this.sourceLocale}, skipping it...`
+            )
+            entity = null
+          }
+        }
+      } else {
+        // Get an entity that was not translated yet
+        entity = await getService('untranslated').getUntranslatedEntity(
+          {
+            uid: this.contentType,
+            targetLocale: this.targetLocale,
+            sourceLocale: this.sourceLocale,
+          },
+          { populate }
+        )
+      }
+
+      // Cancel if there is no matching entity or we have reached our initial limit
+      if (!entity || this.totalEntities == this.translatedEntities) {
+        await this.updateStatus('finished')
         return
       }
 
-      this._reject = reject
-      this._resolve = resolve
+      // Translate the entity
+      try {
+        const fieldsToTranslate = await getAllTranslatableFields(
+          entity,
+          this.contentTypeSchema
+        )
 
-      // Start the interval before
-      this.intervalId = setInterval(
-        this.translateOne.bind(this),
-        this.intervalLength
-      )
+        const translated = await getService('translate').translate({
+          data: entity,
+          sourceLocale: this.sourceLocale,
+          targetLocale: this.targetLocale,
+          fieldsToTranslate,
+          priority: DEEPL_PRIORITY_BATCH_TRANSLATION,
+        })
 
-      this.setup().catch((error) => {
-        this.updateStatus('failed', error)
-        this._reject(error)
-      })
-    })
-    return this.promise
+        const withRelations = await translateRelations(
+          translated,
+          this.contentTypeSchema,
+          this.targetLocale
+        )
+
+        const uidsUpdated = await updateUids(withRelations, this.contentType)
+
+        const fullyTranslatedData = cleanData(
+          uidsUpdated,
+          this.contentTypeSchema
+        )
+        // Add reference to other localizations
+        const newLocalizations = entity.localizations.map(({ id }) => id)
+        newLocalizations.push(entity.id)
+        fullyTranslatedData.localizations = newLocalizations
+        // Set locale
+        fullyTranslatedData.locale = this.targetLocale
+        // Set publishedAt to null so the translation is not published directly
+        fullyTranslatedData.publishedAt = this.autoPublish ? new Date() : null
+        // Create localized entry
+        await strapi.service(this.contentType).create({
+          data: fullyTranslatedData,
+          // Needed for syncing localizations
+          populate: ['localizations'],
+        })
+
+        this.translatedEntities++
+      } catch (error) {
+        strapi.log.error(error)
+        if (error.details) {
+          strapi.log.debug(JSON.stringify(error.details))
+        }
+        await this.updateStatus('failed', {
+          failureReason: {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+          },
+        })
+        clearInterval(this.intervalId)
+        throw new Error('Translation of an entity failed')
+      }
+      await this.updateProgress()
+    }
+    switch (this.status) {
+      case 'paused':
+        throw new Error('Job was paused')
+      case 'cancelled':
+        throw new Error('Job was cancelled')
+      case 'failed':
+        throw new Error('Translation of an entity failed')
+
+      default:
+        break
+    }
   }
 }
 

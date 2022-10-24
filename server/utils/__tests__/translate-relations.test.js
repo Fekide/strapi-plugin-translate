@@ -590,6 +590,21 @@ describe('relation', () => {
             },
           })
         })
+        it('null component ignored', async () => {
+          // given
+          const data = { component: null }
+          const schema = strapi.contentTypes['api::first.notRepeated']
+          const targetLocale = 'de'
+          // when
+          const relationsTranslated = await translateRelations(
+            data,
+            schema,
+            targetLocale
+          )
+          // then
+          expect(relationsTranslated).toEqual(data)
+        })
+
         it('is translated', async () => {
           // given
           const data = { component: { related: { id: 1, locale: 'en' } } }

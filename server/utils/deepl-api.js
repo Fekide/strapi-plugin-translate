@@ -3,22 +3,43 @@
 const { URLSearchParams } = require('url')
 const axios = require('axios')
 
-const _ = require('lodash')
+const Bottleneck = require('bottleneck/es5')
 
 const {
   DEEPL_FREE_API,
   DEEPL_PAID_API,
-  DEEPL_API_MAX_TEXTS,
+  DEEPL_PRIORITY_DEFAULT,
+  DEEPL_PRIORITY_USAGE,
 } = require('./constants')
+const { splitTextArrayIntoChunks } = require('./chunks')
+
+const limiter = new Bottleneck({
+  minTime: process.env.NODE_ENV == 'test' ? 10 : 200,
+  maxConcurrent: 5,
+})
+
+const rateLimitedPost = limiter.wrap(axios.post)
 
 async function usage({ free_api, ...parameters }) {
   const apiURL = free_api ? DEEPL_FREE_API : DEEPL_PAID_API
   const params = new URLSearchParams(parameters)
 
-  return (await axios.post(`${apiURL}/usage`, params.toString())).data
+  return (
+    await rateLimitedPost.withOptions(
+      { priority: DEEPL_PRIORITY_USAGE },
+      `${apiURL}/usage`,
+      params.toString()
+    )
+  ).data
 }
 
-async function translate({ text, free_api, glossary_id, ...parameters }) {
+async function translate({
+  text,
+  free_api,
+  glossary_id,
+  priority,
+  ...parameters
+}) {
   if (!text) {
     return { translations: [] }
   }
@@ -30,25 +51,27 @@ async function translate({ text, free_api, glossary_id, ...parameters }) {
   }
 
   const textArray = Array.isArray(text) ? text : [text]
-  const chunkedText = _.chunk(textArray, DEEPL_API_MAX_TEXTS)
 
-  return (
+  const { chunks, reduceFunction } = splitTextArrayIntoChunks(textArray)
+
+  return reduceFunction(
     await Promise.all(
-      chunkedText.map(async (texts) => {
+      chunks.map(async (texts) => {
         const requestParams = new URLSearchParams(params)
         texts.forEach((t) => requestParams.append('text', t))
+        const requestParamsString = requestParams.toString()
         return (
-          await axios.post(`${apiURL}/translate`, requestParams.toString())
+          await rateLimitedPost.withOptions(
+            {
+              priority:
+                typeof priority == 'number' ? priority : DEEPL_PRIORITY_DEFAULT,
+            },
+            `${apiURL}/translate`,
+            requestParamsString
+          )
         ).data
       })
     )
-  ).reduce(
-    (prev, cur) => {
-      return {
-        translations: [...prev.translations, ...cur.translations],
-      }
-    },
-    { translations: [] }
   )
 }
 

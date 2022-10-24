@@ -23,6 +23,7 @@
 ## Requirements
 
 This plugin requires the following, in order to work correctly:
+
 - Strapi v4 (this plugin is not compatible with v3)
 - The plugin **i18n** installed and enabled (`@strapi/plugin-i18n` [[npm](https://www.npmjs.com/package/@strapi/plugin-i18n)])
 - The content type to have internationalization enabled (advanced settings in the content type builder)
@@ -32,6 +33,7 @@ This plugin requires the following, in order to work correctly:
 Unless you have the previous set up, the field on the right where you can translate will not show up. Also it will not show up when editing the currently only available translation of an entry.
 
 ## Installation
+
 ```bash
 # with npm
 $ npm install strapi-plugin-deepl
@@ -114,6 +116,7 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 - HTML in `richtext` created using a different WYSIWYG editor is not supported
 - **Only super admins can translate**. This is currently the case, since permissions were added to the `translate` endpoint. Probably you can change the permissions with an enterprise subscription but I am not sure. If you know how to do that also in the community edition please tell me or open a merge request!
 - Relations that do not have a translation of the desired locale will not be translated. To keep the relation you will need to translate both in succession (Behaviour for multi-relations has not yet been analyzed)
+- The API-Limits of DeepL ([size](https://www.deepl.com/de/docs-api/accessing-the-api/limits/) and [number of fields](https://www.deepl.com/de/docs-api/translating-text/request/)) should not be an issue, however if you have a very large entity you might be sending too many requests. Also if one field is larger than the reqest size limit, the content needs to be split and merged at some character, which may break the content layout!
 
 ## Legal Disclaimer
 
