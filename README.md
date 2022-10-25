@@ -52,7 +52,9 @@ $ yarn build && yarn develop
 
 ## Configuration
 
-> Configuration is currently only possible using the plugin config file `config[/env]/plugins.js` or environment variables
+### Overall plugin configuration
+
+> The overall plugin configurtion is done through `config[/env]/plugins.js` or environment variables
 
 ```js
 module.exports = {
@@ -88,6 +90,50 @@ or using the default environment variables:
 - `DEEPL_API_FREE` - default `true`
 
 To get an API key, register for free at [www.deepl.com/pro#developer](https://www.deepl.com/pro#developer).
+
+### Configure translation of individual fields/attributes
+
+There are two options to configure translation of individual fields. Both are configured either in the Content-Type Builder in the admin interface in development mode, or in the `pluginOptions` property in the schema file.
+
+#### Disable localization completely
+
+This is part of the `i18n`-plugin and available in all field types except `relation`, `uid` under the name `Enable localization for this field`.
+
+Set this value to false, and the field will not be translated. However it will be copied and have the same value for all localizations.
+
+#### Configure behavior of automated translation
+
+For the field types `component`, `dynamiczone`, `media`, `relation`, `richtext`, `string`, `text`, you can additionally configure the behavior when translating automatically under the name `Configure automated translation for this field?`. There are three options:
+
+- `translate`: The field in automatically translated using DeepL
+- `copy`: The original value of the source localization is copied
+- `delete`: The field is let empty after translation
+
+> Relations are again little bit different. The `translate` option works as described [below](#schema-for-translating-relations), the `copy` option only works when the related content type is not localized and is one way or if bothWays is either `manyToOne` or `manyToMany`
+
+> If you have other fields (e.g. custom fields) for which you want to configure the translation, this cannot be done through the Content-Type Builder, but only in the schema file:
+
+```json
+{
+  //...
+  "attributes": {
+    //...
+    "customField": {
+      "type": "customField",
+      "pluginOptions": {
+        "deepl": {
+          "translate": "copy"
+        },
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+    //...
+  }
+  //...
+}
+```
 
 ## Features
 
