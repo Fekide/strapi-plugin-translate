@@ -42,6 +42,7 @@ export default {
   },
 
   bootstrap(app) {
+    console.log(app)
     app.injectContentManagerComponent('editView', 'informations', {
       name: 'deepl-locale-translate',
       Component: CMEditViewTranslateLocale,
@@ -56,14 +57,7 @@ export default {
       ctbFormsAPI.extendFields(TRANSLATABLE_FIELDS, {
         validator: () => {},
         form: {
-          advanced({
-            contentTypeSchema,
-            forTarget,
-            type,
-            step,
-            data,
-            ...rest
-          }) {
+          advanced({ contentTypeSchema, forTarget, data }) {
             if (forTarget === 'contentType') {
               const contentTypeHasI18nEnabled = get(
                 contentTypeSchema,
@@ -83,10 +77,6 @@ export default {
                 return []
               }
             }
-
-            // if (type === 'component' && step === '1') {
-            //   return []
-            // }
 
             return [
               {
