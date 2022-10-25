@@ -42,7 +42,6 @@ export default {
   },
 
   bootstrap(app) {
-    console.log(app)
     app.injectContentManagerComponent('editView', 'informations', {
       name: 'deepl-locale-translate',
       Component: CMEditViewTranslateLocale,
