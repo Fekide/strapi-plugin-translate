@@ -91,23 +91,55 @@ To get an API key, register for free at [www.deepl.com/pro#developer](https://ww
 
 ## Features
 
+This plugin allows you to automatically translate content types. This can be done either on a single entity, or for all entities of a content type.
+
+The following features are included:
+
 - Fill in and translate any locale from another already defined locale
 - Translation is restricted by permissions to avoid misuse of api quota
-- Configure which field types are translated
-  - standard text fields and nested components by default
-  - **uid fields are not translated** by default because they might not result in the same translation as the attached field\
-    -> saving is prevented in the conent manager anyway until you change the slug again
-- Fields that are marked as not translated in the content-type settings will not be translated
-- Translation of relations by the followig schema:\
-  (_The related objects are not translated directly, only the relation itself is translated_)
-  - the related content type **is localized**:
-    - if a localization of the relation with the targetLocale exists\
-      -> it is used
-    - else the relation is removed
-  - the related content type **is not localized**:
-    - the relation goes both ways and would be removed from another object or localization if it was used (the case with oneToOne or oneToMany)\
-      -> it is removed
-    - otherwise the relation is kept
+- Configure which field types are translated in the [plugin configuration](#configuration)
+- Fields that are marked as not localized in the content-type settings will not be translated
+- Components and Dynamic zones are translated recursively
+- Relations are translated (if enabled in the [configuration](#configuration)) [if possible](#schema-for-translating-relations)
+
+### Translate a single entity
+
+- Open the entity that you want to translate
+- Select a different (possibly unconfigured) locale in the `Internationalization` section on the right sidebar
+- Click the link for `Translate from another locale` in the `DeepL` section on the right sidebar
+- Select the desired source to translate from
+- Press the confirmation button
+
+### Translate all entities of a content type
+
+![Batch translation showcase](assets/batch-translation.gif)
+
+- Open the DeepL plugin section in the left menu
+- You now see an overview of all localized content types
+- For each language and each content type you have 4 actions: `translate`, `cancel`, `pause` and `resume`. Most actions are disabled, since no job is running.
+- Press the `translate` button, select the source locale and if already published entries should be published as well (Auto-Publish option)
+- Start the translation.
+
+Additional remarks:
+
+- If a batch translation is running and the server is stopped, the translation will be resumed on a restart
+- If entities are added after the starting the translation, they will not be translated
+- UIDs are automatically translated in batch translation mode, since otherwise the entities could not be created/published
+- If an error occurs, this will be shown in the logs or the message can be accessed by hovering over the `Job failed` badge
+
+### Schema for translating relations
+
+_The related objects are not translated directly, only the relation itself is translated_
+
+#### the related content type **is localized**
+
+- if a localization of the relation with the targetLocale exists -> it is used
+- else the relation is removed
+
+#### the related content type **is not localized**
+
+- the relation goes both ways and would be removed from another object or localization if it was used (the case with oneToOne or oneToMany) -> it is removed
+- otherwise the relation is kept
 
 ## (Current) Limitations:
 
