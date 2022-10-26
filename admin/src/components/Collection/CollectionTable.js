@@ -1,12 +1,8 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useState } from 'react'
 import { Table, Tbody } from '@strapi/design-system/Table'
 import { Box } from '@strapi/design-system/Box'
-import CollectionTableHeader from './CollectionHeader'
-import CollectionRow from './CollectionRow'
-import useCollection from '../../Hooks/useCollection'
 import { Dialog, DialogBody, DialogFooter } from '@strapi/design-system/Dialog'
 import { useIntl } from 'react-intl'
-import { getTrad } from '../../utils'
 import { useNotification } from '@strapi/helper-plugin'
 import { Stack } from '@strapi/design-system/Stack'
 import { Flex } from '@strapi/design-system/Flex'
@@ -15,6 +11,10 @@ import ExclamationMarkCircle from '@strapi/icons/ExclamationMarkCircle'
 import { Select, Option } from '@strapi/design-system/Select'
 import { Button } from '@strapi/design-system/Button'
 import { ToggleInput } from '@strapi/design-system/ToggleInput'
+import useCollection from '../../Hooks/useCollection'
+import { getTrad } from '../../utils'
+import CollectionTableHeader from './CollectionHeader'
+import CollectionRow from './CollectionRow'
 
 const CollectionTable = () => {
   const {
@@ -50,7 +50,7 @@ const CollectionTable = () => {
     setSourceLocale(value)
   }
 
-  const toggleAutoPublish = (event) => {
+  const toggleAutoPublish = () => {
     setAutoPublish(!autoPublish)
   }
 
@@ -60,6 +60,7 @@ const CollectionTable = () => {
       switch (action) {
         case 'translate':
           setLoading(true)
+
           if (!sourceLocale) {
             toggleNotification({
               type: 'warning',
@@ -69,6 +70,7 @@ const CollectionTable = () => {
               },
             })
             setLoading(false)
+
             return
           }
           await translateCollection({

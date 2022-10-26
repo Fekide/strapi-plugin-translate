@@ -42,16 +42,16 @@ module.exports = ({ strapi }) => ({
   },
 
   async batchTranslate(params) {
-    return await this.batchTranslateManager.submitJob(params)
+    return this.batchTranslateManager.submitJob(params)
   },
   async batchTranslatePauseJob(id) {
-    return await this.batchTranslateManager.pauseJob(id)
+    return this.batchTranslateManager.pauseJob(id)
   },
   async batchTranslateResumeJob(id) {
-    return await this.batchTranslateManager.resumeJob(id)
+    return this.batchTranslateManager.resumeJob(id)
   },
   async batchTranslateCancelJob(id) {
-    return await this.batchTranslateManager.cancelJob(id)
+    return this.batchTranslateManager.cancelJob(id)
   },
   async contentTypes() {
     const localizedContentTypes = Object.keys(strapi.contentTypes).filter(

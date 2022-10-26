@@ -1,8 +1,7 @@
 import React, { memo } from 'react'
 import { Thead, Tr, Th } from '@strapi/design-system/Table'
-import { BaseCheckbox } from '@strapi/design-system/BaseCheckbox'
 import { Typography } from '@strapi/design-system/Typography'
-import { VisuallyHidden } from '@strapi/design-system/VisuallyHidden'
+import PropTypes from 'prop-types'
 
 const CollectionTableHeader = ({ locales }) => {
   return (
@@ -19,6 +18,14 @@ const CollectionTableHeader = ({ locales }) => {
       </Tr>
     </Thead>
   )
+}
+CollectionTableHeader.propTypes = {
+  locales: PropTypes.arrayOf(
+    PropTypes.shape({
+      code: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ),
 }
 
 export default memo(CollectionTableHeader)

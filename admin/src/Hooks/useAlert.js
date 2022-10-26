@@ -33,6 +33,7 @@ export function useAlert() {
       onClose: () => localStorage.setItem('STRAPI_UPDATE_NOTIF', true),
     })
   }
+
   return {
     handleNotification,
   }

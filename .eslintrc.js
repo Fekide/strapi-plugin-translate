@@ -24,6 +24,12 @@ module.exports = {
       },
       rules: {
         'node/no-unpublished-require': 'off',
+        'node/no-missing-require': [
+          'error',
+          {
+            allowModules: ['@strapi/strapi'],
+          },
+        ],
         'require-atomic-updates': 'off',
         'no-process-exit': 'off',
         strict: ['error', 'global'],

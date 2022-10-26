@@ -8,6 +8,7 @@ const { populateAll } = require('./populate-all')
 const translatableFields = require('./translatable-fields')
 const { translateRelations } = require('./translate-relations')
 const { updateUids } = require('./update-uids')
+
 module.exports = {
   cleanData,
   deepl,
