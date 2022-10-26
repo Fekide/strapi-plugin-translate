@@ -106,6 +106,14 @@ function parseLocale(strapiLocale) {
       if (unstripped == 'PT-PT') return unstripped
       if (unstripped == 'PT-BR') return unstripped
       return stripped
+    // english creole variants. Translating them to english by default
+    case 'AIG':
+    case 'BAH':
+    case 'SVC':
+    case 'VIC':
+    case 'LIR':
+    case 'TCH':
+      return 'EN'
     case 'EN':
       if (unstripped == 'EN-GB') return unstripped
       if (unstripped == 'EN-US') return unstripped

@@ -17,6 +17,11 @@ module.exports = ({ strapi }) => ({
     fieldsToTranslate,
     priority,
   }) {
+    // Do not translate if there is nothing to do (for language variants)
+    if (sourceLocale === targetLocale) {
+      return data
+    }
+
     const { apiKey, freeApi, glossaryId } = strapi.config.get('plugin.deepl')
 
     const textsToTranslate = fieldsToTranslate.map((field) => {
