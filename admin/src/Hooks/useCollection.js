@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { request } from '@strapi/helper-plugin'
 import pluginId from '../pluginId'
-import useAlert from './useAlert'
 import getTrad from '../utils/getTrad'
+import useAlert from './useAlert'
 
 export function useCollection() {
   const [collections, setCollections] = useState([])
@@ -63,6 +63,7 @@ export function useCollection() {
         autoPublish,
       },
     })
+
     if (error) {
       handleNotification({
         type: 'warning',
@@ -88,6 +89,7 @@ export function useCollection() {
         method: 'GET',
       }
     )
+
     if (error) {
       handleNotification({
         type: 'warning',
@@ -113,6 +115,7 @@ export function useCollection() {
         method: 'GET',
       }
     )
+
     if (error) {
       handleNotification({
         type: 'warning',
@@ -138,6 +141,7 @@ export function useCollection() {
         method: 'GET',
       }
     )
+
     if (error) {
       handleNotification({
         type: 'warning',
@@ -158,11 +162,13 @@ export function useCollection() {
 
   useEffect(() => {
     fetchCollections()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetchIndex])
 
   // Start refreshing the collections when a collection is being indexed
   useEffect(() => {
     let interval
+
     if (realTimeReports) {
       interval = setInterval(() => {
         refetchCollection()
@@ -170,6 +176,7 @@ export function useCollection() {
     } else {
       clearInterval(interval)
     }
+
     return () => clearInterval(interval)
   }, [realTimeReports])
 

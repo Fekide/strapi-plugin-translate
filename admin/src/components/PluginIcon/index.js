@@ -1,12 +1,7 @@
-/**
- *
- * PluginIcon
- *
- */
-
 import React from 'react'
+import PropTypes from 'prop-types'
 
-const PluginIcon = ({ fill = 'none', width = 68, height = 68 }) => (
+const PluginIcon = ({ width = 68, height = 68 }) => (
   <svg width={width} height={height} viewBox="0 0 68 68">
     <defs id="defs22" />
     <path
@@ -15,5 +10,9 @@ const PluginIcon = ({ fill = 'none', width = 68, height = 68 }) => (
     />
   </svg>
 )
+PluginIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+}
 
 export default PluginIcon

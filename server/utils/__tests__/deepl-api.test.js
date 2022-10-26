@@ -292,7 +292,6 @@ describe('deepl api', () => {
 
         it('with a field larger than request size limit', async () => {
           // given
-          const textLength = 1
           const params = {
             free_api: freeApi,
             auth_key: authKey,

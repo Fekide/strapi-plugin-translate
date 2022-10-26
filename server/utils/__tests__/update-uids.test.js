@@ -1,20 +1,7 @@
 'use strict'
 
-const { cleanData } = require('../clean-data')
-
-const _ = require('lodash')
-
-const {
-  simpleComponent,
-  nestedComponent,
-  twoFieldComponent,
-  createComponentWithRelation,
-} = require('../../../__mocks__/components')
 const {
   simpleContentType,
-  createRelationContentType,
-  createContentTypeWithComponent,
-  createContentTypeWithDynamicZone,
   createContentTypeWithUid,
 } = require('../../../__mocks__/contentTypes')
 const { updateUids } = require('../update-uids')
@@ -31,7 +18,7 @@ const defaultUid = 'unique-uid'
 const contentManagerPluginMock = {
   services: {
     uid: () => ({
-      generateUIDField({ contentTypeUID, field, data }) {
+      generateUIDField() {
         return defaultUid
       },
     }),

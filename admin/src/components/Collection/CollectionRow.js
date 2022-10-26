@@ -5,13 +5,14 @@ import { Flex } from '@strapi/design-system/Flex'
 import { Badge } from '@strapi/design-system/Badge'
 import { Stack } from '@strapi/design-system/Stack'
 import { useIntl } from 'react-intl'
-import { getTrad } from '../../utils'
 import { IconButton, IconButtonGroup } from '@strapi/design-system/IconButton'
 import { Tooltip } from '@strapi/design-system/Tooltip'
 import Earth from '@strapi/icons/Earth'
 import Cross from '@strapi/icons/Cross'
 import Clock from '@strapi/icons/Clock'
 import Play from '@strapi/icons/Play'
+import PropTypes from 'prop-types'
+import { getTrad } from '../../utils'
 
 const CollectionRow = ({ entry, locales, onAction }) => {
   const { formatMessage } = useIntl()
@@ -25,6 +26,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
       {/* Status by Locale */}
       {locales.map((locale) => {
         const { count, complete, job } = entry.localeReports[locale.code]
+
         return (
           <Td key={locale.code}>
             <Stack spacing={3}>
@@ -148,6 +150,29 @@ const CollectionRow = ({ entry, locales, onAction }) => {
       })}
     </Tr>
   )
+}
+CollectionRow.propTypes = {
+  locales: PropTypes.arrayOf(
+    PropTypes.shape({
+      code: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ),
+  onAction: PropTypes.func.isRequired,
+  entry: PropTypes.shape({
+    contentType: PropTypes.string,
+    localeReports: PropTypes.objectOf(
+      PropTypes.shape({
+        count: PropTypes.number,
+        complete: PropTypes.bool,
+        job: PropTypes.shape({
+          status: PropTypes.string,
+          failureReason: PropTypes.objectOf(PropTypes.string),
+        }),
+      })
+    ),
+    collection: PropTypes.string,
+  }),
 }
 
 export default memo(CollectionRow)

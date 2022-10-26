@@ -46,13 +46,13 @@ import {
   useQueryParams,
   CheckPermissions,
 } from '@strapi/helper-plugin'
+import { generateOptions } from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils'
+import useContentTypePermissions from '@strapi/plugin-i18n/admin/src/hooks/useContentTypePermissions'
+import selectI18NLocales from '@strapi/plugin-i18n/admin/src/selectors/selectI18nLocales'
 import { axiosInstance } from '@strapi/plugin-i18n/admin/src/utils'
 import { getTrad } from '../../utils'
 import permissions from '../../permissions'
 import cleanData from './utils/cleanData'
-import { generateOptions } from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils'
-import useContentTypePermissions from '@strapi/plugin-i18n/admin/src/hooks/useContentTypePermissions'
-import selectI18NLocales from '@strapi/plugin-i18n/admin/src/selectors/selectI18nLocales'
 
 const StyledTypography = styled(Typography)`
   svg {

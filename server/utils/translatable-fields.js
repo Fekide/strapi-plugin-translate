@@ -115,7 +115,7 @@ async function recursiveComponentFieldsToTranslate(
           )
         )
       }
-      return await getTranslateFields(data, schema, attr, translatedFieldTypes)
+      return getTranslateFields(data, schema, attr, translatedFieldTypes)
     })
   )
   return flatten_and_compact(translateFields)
