@@ -33,6 +33,7 @@ async function updateUids(data, contentTypeUid) {
             break
           case 'delete':
             resultData[attr] = undefined
+            break
           case 'copy':
           default:
             break

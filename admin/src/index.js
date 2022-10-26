@@ -69,6 +69,7 @@ export default {
                 false
               )
               const attributeType = data.type
+
               if (
                 !contentTypeHasI18nEnabled ||
                 (attributeType !== 'relation' && !attributeHasi18nEnabled)

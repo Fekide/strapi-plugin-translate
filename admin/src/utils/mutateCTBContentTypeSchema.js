@@ -47,7 +47,7 @@ const disableAttributesLocalisation = (attributes) =>
     return acc
   }, {})
 
-const mutateCTBContentTypeSchema = (nextSchema, prevSchema) => {
+const mutateCTBContentTypeSchema = (nextSchema) => {
   // Don't perform mutations components
   if (!has(nextSchema, localizedPath)) {
     return nextSchema
@@ -65,7 +65,7 @@ const mutateCTBContentTypeSchema = (nextSchema, prevSchema) => {
   if (!isNextSchemaLocalized) {
     const attributes = disableAttributesLocalisation(nextSchema.attributes)
 
-    return { ...nextSchema, pluginOptions, attributes }
+    return { ...nextSchema, attributes }
   }
 
   return nextSchema
