@@ -1,20 +1,22 @@
 'use strict'
 
-const {
-  getAllTranslatableFields,
-  getTranslateFields,
-} = require('../translatable-fields')
+const _ = require('lodash')
 
 const {
   simpleComponent,
-  nestedComponent,
+  createNestedComponent,
   twoFieldComponent,
   createSimpleComponent,
 } = require('../../../__mocks__/components')
 const {
   complexContentType,
   simpleContentType,
+  complexContentTypeDelete,
 } = require('../../../__mocks__/contentTypes')
+const {
+  filterDeletedFields,
+  filterAllDeletedFields,
+} = require('../delete-fields')
 
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {
@@ -27,21 +29,21 @@ afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
 })
 
-describe('translatable fields', () => {
-  describe('get translate fields', () => {
+describe('delete fields', () => {
+  describe('single delete fields', () => {
     beforeEach(() =>
       setup({
         components: {
           simpleComponent,
           twoFieldComponent,
-          nestedComponent,
+          nestedComponentDelete: createNestedComponent('delete'),
           simpleComponentCopy: createSimpleComponent('copy'),
           simpleComponentDelete: createSimpleComponent('delete'),
         },
       })
     )
 
-    it('text field translated', async () => {
+    it('translated field ignored', async () => {
       // given
       const data = { field: 'some text' }
       const schema = {
@@ -52,18 +54,14 @@ describe('translatable fields', () => {
       const translatedFieldTypes = ['text']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toEqual(attr)
+      expect(newData).toEqual(data)
     })
 
-    it('text field copy not translated', async () => {
+    it('copied field ignored', async () => {
       // given
       const data = { field: 'some text' }
       const schema = {
@@ -74,18 +72,14 @@ describe('translatable fields', () => {
       const translatedFieldTypes = ['text']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toBeNull()
+      expect(newData).toEqual(data)
     })
 
-    it('text field delete not translated', async () => {
+    it('deleted field is deleted', async () => {
       // given
       const data = { field: 'some text' }
       const schema = {
@@ -96,18 +90,14 @@ describe('translatable fields', () => {
       const translatedFieldTypes = ['text']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toBeNull()
+      expect(newData).toEqual({})
     })
 
-    it('other field not translated', async () => {
+    it('other field ignored', async () => {
       // given
       const data = { field: 'some text' }
       const schema = { type: 'other' }
@@ -115,18 +105,33 @@ describe('translatable fields', () => {
       const translatedFieldTypes = ['text']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toBeNull()
+      expect(newData).toEqual(data)
     })
 
-    it('component field translated nested', async () => {
+    it('deleted component field is deleted', async () => {
+      // given
+      const data = { child_component: { text: 'some text' } }
+      const schema = {
+        type: 'component',
+        component: 'simpleComponent',
+        pluginOptions: { deepl: { translate: 'delete' } },
+      }
+      const attr = 'child_component'
+      const translatedFieldTypes = ['text', 'component']
+
+      // when
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+
+      // then
+      expect(newData).toEqual({})
+    })
+
+    it('component with translated field ignored', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
       const schema = {
@@ -138,18 +143,14 @@ describe('translatable fields', () => {
       const translatedFieldTypes = ['text', 'component']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toEqual(['child_component.text'])
+      expect(newData).toEqual(data)
     })
 
-    it('component with copy field not translated', async () => {
+    it('component with copied field ignored', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
       const schema = {
@@ -161,18 +162,14 @@ describe('translatable fields', () => {
       const translatedFieldTypes = ['text', 'component']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toEqual([])
+      expect(newData).toEqual(data)
     })
 
-    it('component with delete field not translated', async () => {
+    it('component with deleted field has field deleted', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
       const schema = {
@@ -184,25 +181,21 @@ describe('translatable fields', () => {
       const translatedFieldTypes = ['text', 'component']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toEqual([])
+      expect(newData).toEqual({ child_component: {} })
     })
 
-    it('repeated component field translated', async () => {
+    it('repeated component field with deleted field has fields deleted', async () => {
       // given
       const data = {
         child_component: [{ text: 'some text' }, { text: 'some other text' }],
       }
       const schema = {
         type: 'component',
-        component: 'simpleComponent',
+        component: 'simpleComponentDelete',
         repeatable: true,
         pluginOptions: { deepl: { translate: 'translate' } },
       }
@@ -210,21 +203,14 @@ describe('translatable fields', () => {
       const translatedFieldTypes = ['text', 'component']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toEqual([
-        'child_component.0.text',
-        'child_component.1.text',
-      ])
+      expect(newData).toEqual({ child_component: [{}, {}] })
     })
 
-    it('nested component field translated', async () => {
+    it('nested component with deleted fields has fields deleted', async () => {
       // given
       const data = {
         comp: {
@@ -240,67 +226,63 @@ describe('translatable fields', () => {
       }
       const schema = {
         type: 'component',
-        component: 'nestedComponent',
+        component: 'nestedComponentDelete',
         pluginOptions: { deepl: { translate: 'translate' } },
       }
       const attr = 'comp'
       const translatedFieldTypes = ['text', 'component']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toEqual([
-        'comp.text',
-        'comp.nested.text',
-        'comp.nested.nested.text',
-      ])
+      expect(newData).toEqual({
+        comp: { text: 'some text' },
+      })
     })
 
-    it('dynamic zone field translated', async () => {
+    it('dynamic zone field with deleted fields has fields deleted', async () => {
       // given
       const data = {
         dynamic_zone: [
-          { __component: 'simpleComponent', text: 'some text' },
+          { __component: 'simpleComponentDelete', text: 'some text' },
           {
             __component: 'twoFieldComponent',
             title: 'some other text',
             number: 5,
           },
-          { __component: 'simpleComponent', text: 'some simple text' },
+          { __component: 'simpleComponentDelete', text: 'some simple text' },
         ],
       }
       const schema = {
         type: 'dynamiczone',
-        components: ['simpleComponent', 'twoFieldComponent'],
+        components: ['simpleComponentDelete', 'twoFieldComponent'],
         pluginOptions: { deepl: { translate: 'translate' } },
       }
       const attr = 'dynamic_zone'
       const translatedFieldTypes = ['text', 'dynamiczone', 'component']
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const newData = _.cloneDeep(data)
+      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
 
       // then
-      expect(translatedField).toEqual([
-        'dynamic_zone.0.text',
-        'dynamic_zone.1.title',
-        'dynamic_zone.2.text',
-      ])
+      expect(newData).toEqual({
+        dynamic_zone: [
+          { __component: 'simpleComponentDelete' },
+          {
+            __component: 'twoFieldComponent',
+            title: 'some other text',
+            number: 5,
+          },
+          { __component: 'simpleComponentDelete' },
+        ],
+      })
     })
   })
 
-  describe('get all translatable fields', () => {
+  describe('filter all deleted fields', () => {
     beforeEach(() =>
       setup({
         components: {
@@ -310,19 +292,19 @@ describe('translatable fields', () => {
       })
     )
 
-    it('simple content type translated', async () => {
+    it('simple content type translated ignored', async () => {
       // given
       const data = { title: 'some title' }
       const schema = simpleContentType
 
       // when
-      const translatedField = await getAllTranslatableFields(data, schema)
+      const newData = filterAllDeletedFields(data, schema)
 
       // then
-      expect(translatedField).toEqual(['title'])
+      expect(newData).toEqual(data)
     })
 
-    it('complex content type translated', async () => {
+    it('complex content type translated ignored', async () => {
       // given
       const data = {
         title: 'some title',
@@ -355,18 +337,54 @@ describe('translatable fields', () => {
       const schema = complexContentType
 
       // when
-      const translatedField = await getAllTranslatableFields(data, schema)
+      const newData = filterAllDeletedFields(data, schema)
 
       // then
-      expect(translatedField).toEqual([
-        'title',
-        'content',
-        'dynamic_zone.0.text',
-        'dynamic_zone.1.title',
-        'child_component.text',
-        'repeated_child_component.0.title',
-        'repeated_child_component.1.title',
-      ])
+      expect(newData).toEqual(data)
+    })
+
+    it('complex content type with deleted fields has fields deleted', async () => {
+      // given
+      const data = {
+        title: 'some title',
+        content: 'some long content',
+        slug: 'some-title',
+        not_translated_field: 'not translated',
+        enumeration: 'option_a',
+        dynamic_zone: [
+          { __component: 'simpleComponent', text: 'some text' },
+          {
+            __component: 'twoFieldComponent',
+            title: 'some other text',
+            number: 5,
+          },
+        ],
+        child_component: {
+          text: 'some more text',
+        },
+        repeated_child_component: [
+          {
+            title: 'some other text',
+            number: 5,
+          },
+          {
+            title: 'the last text',
+            number: 3,
+          },
+        ],
+      }
+      const schema = complexContentTypeDelete
+
+      // when
+      const newData = filterAllDeletedFields(data, schema)
+
+      // then
+      expect(newData).toEqual({
+        title: 'some title',
+        slug: 'some-title',
+        not_translated_field: 'not translated',
+        enumeration: 'option_a',
+      })
     })
   })
 })

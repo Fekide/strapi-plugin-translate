@@ -6,6 +6,7 @@ const { getService } = require('../utils/get-service')
 const { getAllTranslatableFields } = require('../utils/translatable-fields')
 const { translateRelations } = require('../utils/translate-relations')
 const { DEEPL_PRIORITY_DIRECT_TRANSLATION } = require('../utils/constants')
+const { filterAllDeletedFields } = require('../utils/delete-fields')
 
 module.exports = ({ strapi }) => ({
   async translate(ctx) {
@@ -34,13 +35,19 @@ module.exports = ({ strapi }) => ({
         fieldsToTranslate,
         priority: DEEPL_PRIORITY_DIRECT_TRANSLATION,
       })
-      ctx.body = await translateRelations(
+      const translatedRelations = await translateRelations(
         translatedData,
         contentSchema,
         targetLocale
       )
+      const withFieldsDeleted = filterAllDeletedFields(
+        translatedRelations,
+        contentSchema
+      )
+
+      ctx.body = withFieldsDeleted
     } catch (error) {
-      strapi.log.error(error)
+      strapi.log.error('Translating entity failed: ' + error.message)
       if (error.response?.status !== undefined) {
         switch (error.response.status) {
           case 400:

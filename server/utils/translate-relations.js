@@ -39,26 +39,57 @@ async function translateRelations(data, schema, targetLocale) {
 
       const attributeSchema = attributesSchema[attr]
 
-      if (attributeSchema.type === 'relation') {
-        resultData[attr] = shouldTranslateRelations
-          ? await translateRelation(
-              attributeData,
-              attributeSchema,
-              targetLocale
-            )
-          : undefined
-      } else if (attributeSchema.type === 'component') {
-        resultData[attr] = await translateComponent(
-          attributeData,
-          attributeSchema,
-          targetLocale
-        )
-      } else if (attributeSchema.type === 'dynamiczone') {
-        resultData[attr] = await Promise.all(
-          attributeData.map((object) =>
-            translateComponent(object, attributeSchema, targetLocale)
-          )
-        )
+      const onTranslate = _.get(
+        attributeSchema,
+        ['pluginOptions', 'deepl', 'translate'],
+        'translate'
+      )
+      if (
+        ['relation', 'component', 'dynamiczone'].includes(attributeSchema.type)
+      ) {
+        switch (onTranslate) {
+          case 'translate':
+            if (attributeSchema.type === 'relation') {
+              resultData[attr] = shouldTranslateRelations
+                ? await translateRelation(
+                    attributeData,
+                    attributeSchema,
+                    targetLocale
+                  )
+                : undefined
+            } else if (attributeSchema.type === 'component') {
+              resultData[attr] = await translateComponent(
+                attributeData,
+                attributeSchema,
+                targetLocale
+              )
+            } else if (attributeSchema.type === 'dynamiczone') {
+              resultData[attr] = await Promise.all(
+                attributeData.map((object) =>
+                  translateComponent(object, attributeSchema, targetLocale)
+                )
+              )
+            }
+            break
+          case 'copy':
+            if (attributeSchema.type === 'relation') {
+              resultData[attr] = shouldTranslateRelations
+                ? await translateRelation(
+                    attributeData,
+                    attributeSchema,
+                    targetLocale
+                  )
+                : undefined
+            } else {
+              resultData[attr] = attributeData
+            }
+            break
+          case 'delete':
+            resultData[attr] = undefined
+            break
+          default:
+            break
+        }
       }
     })
   )
@@ -92,45 +123,61 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
     false
   )
 
+  const onTranslate = _.get(
+    attributeSchema,
+    'pluginOptions.deepl.translate',
+    'translate'
+  )
+
   const relationIsBothWays =
     _.has(attributeSchema, 'inversedBy', false) ||
     _.has(attributeSchema, 'mappedBy', false)
 
   // If the relation is localized, the relevant localizations from the relation should be selected
-  if (relationIsLocalized) {
-    // for oneToMany and manyToMany relations there are multiple relations possible, so all of them need to be considered
-    if (
-      ['oneToMany', 'manyToMany'].includes(attributeSchema.relation) &&
-      attributeData?.length > 0
-    ) {
-      return _.compact(
-        await Promise.all(
-          attributeData.map(async (prevRelation) =>
-            getRelevantLocalization(
-              attributeSchema.target,
-              prevRelation.id,
-              targetLocale
+  if (onTranslate === 'translate') {
+    if (relationIsLocalized) {
+      // for oneToMany and manyToMany relations there are multiple relations possible, so all of them need to be considered
+      if (
+        ['oneToMany', 'manyToMany'].includes(attributeSchema.relation) &&
+        attributeData?.length > 0
+      ) {
+        return _.compact(
+          await Promise.all(
+            attributeData.map(async (prevRelation) =>
+              getRelevantLocalization(
+                attributeSchema.target,
+                prevRelation.id,
+                targetLocale
+              )
             )
           )
         )
-      )
+      } else if (
+        ['oneToOne', 'manyToOne'].includes(attributeSchema.relation) &&
+        attributeData
+      ) {
+        return getRelevantLocalization(
+          attributeSchema.target,
+          attributeData.id,
+          targetLocale
+        )
+      }
     } else if (
-      ['oneToOne', 'manyToOne'].includes(attributeSchema.relation) &&
-      attributeData
+      relationIsBothWays &&
+      ['oneToOne', 'oneToMany'].includes(attributeSchema.relation)
     ) {
-      return getRelevantLocalization(
-        attributeSchema.target,
-        attributeData.id,
-        targetLocale
-      )
+      // In this case the relations in other locales or in the referenced relations would be deleted
+      // so there is not really a different option than to not include these relations
+      return attributeSchema.relation == 'oneToMany' ? [] : undefined
     }
-  } else if (
-    relationIsBothWays &&
-    ['oneToOne', 'oneToMany'].includes(attributeSchema.relation)
-  ) {
-    // In this case the relations in other locales or in the referenced relations would be deleted
-    // so there is not really a different option than to not include these relations
-    return attributeSchema.relation == 'oneToMany' ? [] : undefined
+  } else if (onTranslate === 'copy') {
+    if (relationIsLocalized || relationIsBothWays) {
+      return ['oneToMany', 'manyToMany'].includes(attributeSchema.relation)
+        ? []
+        : undefined
+    } else {
+      return attributeData
+    }
   }
   return attributeData
 }

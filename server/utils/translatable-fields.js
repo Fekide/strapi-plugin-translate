@@ -19,7 +19,7 @@ async function getAllTranslatableFields(data, schema) {
       Object.keys(attributesSchema).map(async (attr) => {
         const fieldSchema = attributesSchema[attr]
 
-        if (fieldSchema.pluginOptions?.i18n.localized) {
+        if (fieldSchema.pluginOptions?.i18n?.localized) {
           return getTranslateFields(
             data,
             fieldSchema,
@@ -45,7 +45,8 @@ async function getAllTranslatableFields(data, schema) {
 async function getTranslateFields(data, schema, attr, translatedFieldTypes) {
   if (
     translatedFieldTypes.includes(schema.type) &&
-    _.get(data, attr, undefined)
+    _.get(data, attr, undefined) &&
+    schema.pluginOptions?.deepl?.translate === 'translate'
   ) {
     if (schema.type == 'component') {
       return (

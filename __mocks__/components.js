@@ -1,26 +1,54 @@
-const simpleComponent = {
-  attributes: {
-    text: {
-      type: 'text',
+const simpleComponent = createSimpleComponent()
+
+function createSimpleComponent(translate = 'translate') {
+  return {
+    attributes: {
+      text: {
+        pluginOptions: {
+          deepl: {
+            translate,
+          },
+        },
+        type: 'text',
+      },
     },
-  },
+  }
 }
 
-const nestedComponent = {
-  attributes: {
-    text: {
-      type: 'text',
+const nestedComponent = createNestedComponent()
+
+function createNestedComponent(translate = 'translate') {
+  return {
+    attributes: {
+      text: {
+        pluginOptions: {
+          deepl: {
+            translate: 'translate',
+          },
+        },
+        type: 'text',
+      },
+      nested: {
+        pluginOptions: {
+          deepl: {
+            translate,
+          },
+        },
+        type: 'component',
+        component: 'nestedComponent',
+      },
     },
-    nested: {
-      type: 'component',
-      component: 'nestedComponent',
-    },
-  },
+  }
 }
 
 const twoFieldComponent = {
   attributes: {
     title: {
+      pluginOptions: {
+        deepl: {
+          translate: 'translate',
+        },
+      },
       type: 'text',
     },
     number: {
@@ -46,4 +74,6 @@ module.exports = {
   nestedComponent,
   twoFieldComponent,
   createComponentWithRelation,
+  createSimpleComponent,
+  createNestedComponent,
 }
