@@ -1,0 +1,7 @@
+- name: Run ESLint
+  # You may pin to the exact commit or the version.
+  # uses: stefanoeb/eslint-action@0b532bcd98dbed80a59071fa8986fcf1b1715be4
+  uses: stefanoeb/eslint-action@1.0.2
+  with:
+    # Blob of files to lint
+    files: # optional, default is .
