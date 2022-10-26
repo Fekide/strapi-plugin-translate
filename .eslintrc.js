@@ -1,10 +1,12 @@
 module.exports = {
   parserOptions: {
-    ecmaVersion: 2018,
+    ecmaVersion: 2020,
+    requireConfigFile: false,
   },
   overrides: [
     {
       files: ['server/**/*.js'],
+      parser: '@babel/eslint-parser',
       extends: [
         'eslint:recommended',
         'prettier',
@@ -48,13 +50,8 @@ module.exports = {
     {
       files: ['admin/src/**/*.js'],
       parser: '@babel/eslint-parser',
-      extends: [
-        'eslint:recommended',
-        'plugin:react/recommended',
-        'plugin:redux-saga/recommended',
-        'prettier',
-      ],
-      plugins: ['react', 'redux-saga', 'react-hooks', 'import', 'jsx-a11y'],
+      extends: ['eslint:recommended', 'plugin:react/recommended', 'prettier'],
+      plugins: ['react', 'react-hooks', 'import', 'jsx-a11y'],
       env: {
         browser: true,
         commonjs: true,
@@ -63,11 +60,14 @@ module.exports = {
         mocha: true,
       },
       parserOptions: {
-        ecmaVersion: 2018,
+        ecmaVersion: 2020,
         ecmaFeatures: {
           jsx: true,
         },
         sourceType: 'module',
+        babelOptions: {
+          presets: ['@babel/preset-react'],
+        },
       },
       globals: {
         strapi: false,
