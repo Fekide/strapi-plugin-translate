@@ -18,8 +18,7 @@ const defaultUid = 'unique-uid'
 const contentManagerPluginMock = {
   services: {
     uid: () => ({
-      // eslint-disable-next-line no-unused-vars
-      generateUIDField({ contentTypeUID, field, data }) {
+      generateUIDField() {
         return defaultUid
       },
     }),
