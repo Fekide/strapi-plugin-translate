@@ -30,6 +30,7 @@ function supportedLocale({ code, name }) {
     'Finnish',
     'French',
     'Hungarian',
+    'Indonesian',
     'Italian',
     'Japanese',
     'Lithuanian',
@@ -42,6 +43,7 @@ function supportedLocale({ code, name }) {
     'Slovak',
     'Slovenian',
     'Swedish',
+    'Turkish',
     'Chinese',
   ].some((l) => name.toLowerCase().includes(l.toLowerCase()))
 }

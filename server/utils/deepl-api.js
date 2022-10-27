@@ -89,6 +89,7 @@ function parseLocale(strapiLocale) {
     case 'FI':
     case 'FR':
     case 'HU':
+    case 'ID':
     case 'IT':
     case 'JA':
     case 'LT':
@@ -100,6 +101,7 @@ function parseLocale(strapiLocale) {
     case 'SK':
     case 'SL':
     case 'SV':
+    case 'TR':
     case 'ZH':
       return stripped
     case 'PT':
