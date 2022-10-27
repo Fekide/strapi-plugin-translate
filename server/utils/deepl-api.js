@@ -102,6 +102,7 @@ function parseLocale(strapiLocale) {
     case 'SL':
     case 'SV':
     case 'TR':
+    case 'UK':
     case 'ZH':
       return stripped
     case 'PT':

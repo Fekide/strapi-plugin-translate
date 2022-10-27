@@ -44,6 +44,7 @@ function supportedLocale({ code, name }) {
     'Slovenian',
     'Swedish',
     'Turkish',
+    'Ukrainian',
     'Chinese',
   ].some((l) => name.toLowerCase().includes(l.toLowerCase()))
 }
