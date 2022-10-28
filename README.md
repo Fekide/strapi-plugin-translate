@@ -14,6 +14,9 @@
   <a href="https://github.com/Fekide/strapi-plugin-deepl/actions">
     <img src="https://img.shields.io/github/workflow/status/Fekide/strapi-plugin-deepl/Test" alt="Build" />
   </a>
+  <a href="http://commitizen.github.io/cz-cli/">
+    <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly" />
+  </a>
 </div>
 
 > This plugin is still a work in progress
