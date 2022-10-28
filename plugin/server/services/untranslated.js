@@ -15,12 +15,12 @@ module.exports = ({ strapi }) => {
     ) {
       const metadata = strapi.db.metadata.get(uid)
       if (!metadata) {
-        throw new Error("Content Type does not exist")
+        throw new Error('Content Type does not exist')
       }
       const tableName = metadata.tableName
       const joinTable = metadata.attributes?.localizations?.joinTable
       if (!joinTable) {
-        throw new Error("Content Type not localized")
+        throw new Error('Content Type not localized')
       }
       const notTranslated = await strapi.db
         .getConnection(tableName)
@@ -84,12 +84,12 @@ module.exports = ({ strapi }) => {
     async isFullyTranslated(uid, targetLocale) {
       const metadata = strapi.db.metadata.get(uid)
       if (!metadata) {
-        throw new Error("Content Type does not exist")
+        throw new Error('Content Type does not exist')
       }
       const tableName = metadata.tableName
       const joinTable = metadata.attributes?.localizations?.joinTable
       if (!joinTable) {
-        throw new Error("Content Type not localized")
+        throw new Error('Content Type not localized')
       }
       const notTranslated = await strapi.db
         .getConnection(tableName)
