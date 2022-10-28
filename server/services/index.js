@@ -1,7 +1,13 @@
 'use strict'
 
-const deeplService = require('./deepl-service')
+const batchTranslateJob = require('./batch-translate-job')
+const deepl = require('./deepl')
+const translate = require('./translate')
+const untranslated = require('./untranslated')
 
 module.exports = {
-  deeplService,
+  'batch-translate-job': batchTranslateJob,
+  deepl,
+  translate,
+  untranslated,
 }

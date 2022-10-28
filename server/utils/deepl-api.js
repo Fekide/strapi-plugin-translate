@@ -3,19 +3,43 @@
 const { URLSearchParams } = require('url')
 const axios = require('axios')
 
-const _ = require('lodash')
+const Bottleneck = require('bottleneck/es5')
 
-const { DEEPL_FREE_API, DEEPL_PAID_API } = require('./constants')
+const {
+  DEEPL_FREE_API,
+  DEEPL_PAID_API,
+  DEEPL_PRIORITY_DEFAULT,
+  DEEPL_PRIORITY_USAGE,
+} = require('./constants')
 const { splitTextArrayIntoChunks } = require('./chunks')
+
+const limiter = new Bottleneck({
+  minTime: process.env.NODE_ENV == 'test' ? 10 : 200,
+  maxConcurrent: 5,
+})
+
+const rateLimitedPost = limiter.wrap(axios.post)
 
 async function usage({ free_api, ...parameters }) {
   const apiURL = free_api ? DEEPL_FREE_API : DEEPL_PAID_API
   const params = new URLSearchParams(parameters)
 
-  return (await axios.post(`${apiURL}/usage`, params.toString())).data
+  return (
+    await rateLimitedPost.withOptions(
+      { priority: DEEPL_PRIORITY_USAGE },
+      `${apiURL}/usage`,
+      params.toString()
+    )
+  ).data
 }
 
-async function translate({ text, free_api, glossary_id, ...parameters }) {
+async function translate({
+  text,
+  free_api,
+  glossary_id,
+  priority,
+  ...parameters
+}) {
   if (!text) {
     return { translations: [] }
   }
@@ -36,8 +60,16 @@ async function translate({ text, free_api, glossary_id, ...parameters }) {
         const requestParams = new URLSearchParams(params)
         texts.forEach((t) => requestParams.append('text', t))
         const requestParamsString = requestParams.toString()
-        return (await axios.post(`${apiURL}/translate`, requestParamsString))
-          .data
+        return (
+          await rateLimitedPost.withOptions(
+            {
+              priority:
+                typeof priority == 'number' ? priority : DEEPL_PRIORITY_DEFAULT,
+            },
+            `${apiURL}/translate`,
+            requestParamsString
+          )
+        ).data
       })
     )
   )
@@ -57,6 +89,7 @@ function parseLocale(strapiLocale) {
     case 'FI':
     case 'FR':
     case 'HU':
+    case 'ID':
     case 'IT':
     case 'JA':
     case 'LT':
@@ -68,12 +101,22 @@ function parseLocale(strapiLocale) {
     case 'SK':
     case 'SL':
     case 'SV':
+    case 'TR':
+    case 'UK':
     case 'ZH':
       return stripped
     case 'PT':
       if (unstripped == 'PT-PT') return unstripped
       if (unstripped == 'PT-BR') return unstripped
       return stripped
+    // english creole variants. Translating them to english by default
+    case 'AIG':
+    case 'BAH':
+    case 'SVC':
+    case 'VIC':
+    case 'LIR':
+    case 'TCH':
+      return 'EN'
     case 'EN':
       if (unstripped == 'EN-GB') return unstripped
       if (unstripped == 'EN-US') return unstripped

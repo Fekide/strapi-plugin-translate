@@ -1,3 +1,5 @@
+'use strict'
+
 const { translateRelations } = require('../translate-relations')
 
 const { createComponentWithRelation } = require('../../../__mocks__/components')
@@ -564,11 +566,11 @@ describe('relation', () => {
             contentTypes: {
               'api::first.notRepeated': createContentTypeWithComponent(
                 'shared.first',
-                { translated: true }
+                { localized: true }
               ),
               'api::first.repeated': createContentTypeWithComponent(
                 'shared.first',
-                { translated: true, repeatable: true }
+                { localized: true, repeatable: true }
               ),
               'api::second.second':
                 createSimpleContentType(relationIsLocalized),
@@ -785,11 +787,11 @@ describe('relation', () => {
             contentTypes: {
               'api::first.notRepeated': createContentTypeWithComponent(
                 'shared.first',
-                { translated: true }
+                { localized: true }
               ),
               'api::first.repeated': createContentTypeWithComponent(
                 'shared.first',
-                { translated: true, repeatable: true }
+                { localized: true, repeatable: true }
               ),
               'api::second.second':
                 createSimpleContentType(relationIsLocalized),
@@ -1379,9 +1381,12 @@ describe('relation', () => {
           translateRelations: false,
         },
         contentTypes: {
-          'api::first.first': createComponentWithRelation(
+          'api::first.first': createRelationContentType(
             'oneToOne',
-            'api::second.second'
+            {},
+            true,
+            'api::second.second',
+            'api::first.first'
           ),
           'api::second.second': createSimpleContentType(true),
         },
@@ -1417,6 +1422,76 @@ describe('relation', () => {
         related: undefined,
       })
     })
+  })
+
+  describe('plugin options', () => {
+    describe.each([
+      { relationIsLocalized: true, bothWays: true },
+      { relationIsLocalized: false, bothWays: true },
+      { relationIsLocalized: true, bothWays: false },
+      { relationIsLocalized: false, bothWays: false },
+    ])(
+      'copy oneToOne with relation both ways = $bothWays and localized = $relationIsLocalized',
+      ({ relationIsLocalized, bothWays }) => {
+        beforeEach(() => {
+          const firstEnglish = { id: 1, title: 'test', locale: 'en' }
+          const firstGerman = { id: 2, title: 'test', locale: 'de' }
+          setup({
+            contentTypes: {
+              'api::first.first': createRelationContentType(
+                'oneToOne',
+                bothWays ? { inversedBy: 'related' } : {},
+                true,
+                'api::second.second',
+                'api::first.first',
+                'copy'
+              ),
+              'api::second.second': createRelationContentType(
+                'oneToOne',
+                bothWays ? { mappedBy: 'related' } : {},
+                relationIsLocalized,
+                'api::first.first',
+                'api::second.second'
+              ),
+            },
+            database: {
+              'api::second.second': [
+                {
+                  ...firstEnglish,
+                  localizations: relationIsLocalized ? [firstGerman] : [],
+                },
+                {
+                  ...firstGerman,
+                  localizations: relationIsLocalized ? [firstEnglish] : [],
+                },
+              ],
+            },
+          })
+        })
+        it('copied only if relation is not localized and does not go both ways', async () => {
+          // given
+          const data = {
+            related: { id: 1, title: 'test', locale: 'en' },
+          }
+          const schema = strapi.contentTypes['api::first.first']
+          const targetLocale = 'de'
+          // when
+          const relationsTranslated = await translateRelations(
+            data,
+            schema,
+            targetLocale
+          )
+          const result =
+            !bothWays && !relationIsLocalized
+              ? data
+              : {
+                  related: undefined,
+                }
+          // then
+          expect(relationsTranslated).toEqual(result)
+        })
+      }
+    )
   })
 
   describe('localizations', () => {

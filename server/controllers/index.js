@@ -1,7 +1,11 @@
 'use strict'
 
-const deeplController = require('./deepl-controller')
+const batchTranslateJob = require('./batch-translate-job')
+const deepl = require('./deepl')
+const translate = require('./translate')
 
 module.exports = {
-  deeplController,
+  'batch-translate-job': batchTranslateJob,
+  deepl,
+  translate,
 }

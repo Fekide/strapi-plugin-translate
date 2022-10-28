@@ -1,6 +1,9 @@
+'use strict'
+const { URLSearchParams } = require('url')
 const axios = require('axios')
 const MockAdapter = require('axios-mock-adapter')
 const faker = require('@faker-js/faker').default
+const locales = require('@strapi/plugin-i18n/server/constants/iso-locales.json')
 
 const {
   DEEPL_FREE_API,
@@ -8,12 +11,9 @@ const {
   DEEPL_API_MAX_REQUEST_SIZE,
 } = require('../constants')
 
-const { URLSearchParams } = require('url')
+const { stringByteLength } = require('../byte-length')
 
 const { usage, translate, parseLocale } = require('../deepl-api')
-
-const locales = require('@strapi/plugin-i18n/server/constants/iso-locales.json')
-const { stringByteLength } = require('../byte-length')
 
 function supportedLocale({ code, name }) {
   // Swiss German is not supported
@@ -30,6 +30,7 @@ function supportedLocale({ code, name }) {
     'Finnish',
     'French',
     'Hungarian',
+    'Indonesian',
     'Italian',
     'Japanese',
     'Lithuanian',
@@ -42,6 +43,8 @@ function supportedLocale({ code, name }) {
     'Slovak',
     'Slovenian',
     'Swedish',
+    'Turkish',
+    'Ukrainian',
     'Chinese',
   ].some((l) => name.toLowerCase().includes(l.toLowerCase()))
 }
@@ -292,7 +295,6 @@ describe('deepl api', () => {
 
         it('with a field larger than request size limit', async () => {
           // given
-          const textLength = 1
           const params = {
             free_api: freeApi,
             auth_key: authKey,
@@ -384,7 +386,7 @@ describe('deepl api', () => {
           }
           await expect(
             // when
-            async () => await translate(params)
+            async () => translate(params)
             // then
           ).rejects.toThrow('403')
           expect(mock.history.post[0].url).toEqual(
@@ -400,7 +402,7 @@ describe('deepl api', () => {
           }
           await expect(
             // when
-            async () => await translate(params)
+            async () => translate(params)
             // then
           ).rejects.toThrow('400')
           expect(mock.history.post[0].url).toEqual(

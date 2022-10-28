@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  default: ({ env }) => {
+  default({ env }) {
     return {
       apiKey: env('DEEPL_API_KEY', null),
       freeApi: env.bool('DEEPL_API_FREE', true),

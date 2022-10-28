@@ -1,28 +1,12 @@
+'use strict'
+
+const { getService } = require('../../utils')
+
 // Every text to translate becomes "translated" in this mock so it can be verified to have been changed
 const translatedText = 'translated'
 
 jest.mock('../../utils/deepl-api', () => {
-  return {
-    translate(props) {
-      if (Array.isArray(props.text)) {
-        return {
-          translations: props.text.map((t) => ({
-            detected_source_language: 'EN',
-            text: translatedText,
-          })),
-        }
-      } else if (props.text) {
-        return {
-          translations: [
-            { detected_source_language: 'EN', text: translatedText },
-          ],
-        }
-      } else {
-        return { translations: [] }
-      }
-    },
-    parseLocale: jest.fn(),
-  }
+  return require('../../../__mocks__/deepl-api').createMock(translatedText)
 })
 
 const setup = function (params) {
@@ -49,9 +33,12 @@ describe('deepl service', () => {
       const fieldsToTranslate = ['title']
 
       // when
-      const result = await strapi.plugins.deepl
-        .service('deeplService')
-        .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
+      const result = await getService('translate').translate({
+        data,
+        sourceLocale,
+        targetLocale,
+        fieldsToTranslate,
+      })
 
       // then
       expect(result).toEqual({
@@ -70,9 +57,12 @@ describe('deepl service', () => {
       const fieldsToTranslate = []
 
       // when
-      const result = await strapi.plugins.deepl
-        .service('deeplService')
-        .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
+      const result = await getService('translate').translate({
+        data,
+        sourceLocale,
+        targetLocale,
+        fieldsToTranslate,
+      })
 
       // then
       expect(result).toEqual(data)
@@ -102,7 +92,7 @@ describe('deepl service', () => {
 
       // when
       const result = await strapi.plugins.deepl
-        .service('deeplService')
+        .service('translate')
         .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
 
       // then

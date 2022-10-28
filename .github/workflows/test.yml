@@ -4,11 +4,20 @@ on: push
 
 jobs:
   build:
+    strategy:
+      matrix:
+        version: [14, 16, 18]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: ${{ matrix.version }}
       - run: yarn
       - run: yarn test
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/clover.xml
+          flags: unittests
+          name: codecov-umbrella
