@@ -54,7 +54,7 @@ module.exports = {
       },
     },
     {
-      files: ['plugin/admin/src/**/*.js'],
+      files: ['plugin/admin/src/**/*.js', 'playground/src/admin/**/*.js'],
       parser: '@babel/eslint-parser',
       extends: ['eslint:recommended', 'plugin:react/recommended', 'prettier'],
       plugins: ['react', 'react-hooks', 'import', 'jsx-a11y'],

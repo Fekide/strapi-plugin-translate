@@ -2,7 +2,8 @@
   "private": true,
   "workspaces": [
     "plugin",
-    "providers/deepl"
+    "providers/deepl",
+    "playground"
   ],
   "scripts": {
     "semantic-release": "semantic-release",
