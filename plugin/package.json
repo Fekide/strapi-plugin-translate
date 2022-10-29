@@ -1,9 +1,9 @@
 {
-  "name": "strapi-plugin-deepl",
+  "name": "strapi-plugin-translate",
   "version": "0.0.0-development",
   "description": "Strapi plugin for managing and automating translation of content",
   "strapi": {
-    "name": "deepl",
+    "name": "translate",
     "description": "Manage and automate content translation",
     "kind": "plugin"
   },
@@ -32,16 +32,16 @@
   "keywords": [
     "strapi",
     "plugin",
-    "deepl",
+    "translate",
     "translation",
     "i18n"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Fekide/strapi-plugin-deepl.git"
+    "url": "https://github.com/Fekide/strapi-plugin-translate.git"
   },
   "bugs": {
-    "url": "https://github.com/Fekide/strapi-plugin-deepl/issues"
+    "url": "https://github.com/Fekide/strapi-plugin-translate/issues"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.2.0",

@@ -1,6 +1,6 @@
 const permissions = {
-  translate: [{ action: 'plugin::deepl.translate', subject: null }],
-  usage: [{ action: 'plugin::deepl.usage', subject: null }],
+  translate: [{ action: 'plugin::translate.translate', subject: null }],
+  usage: [{ action: 'plugin::translate.usage', subject: null }],
 }
 
 export default permissions

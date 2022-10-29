@@ -13,7 +13,7 @@ const { flatten_and_compact } = require('./lodash-helpers')
  */
 async function getAllTranslatableFields(data, schema) {
   const attributesSchema = _.get(schema, 'attributes', [])
-  const { translatedFieldTypes } = strapi.config.get('plugin.deepl')
+  const { translatedFieldTypes } = strapi.config.get('plugin.translate')
   return flatten_and_compact(
     await Promise.all(
       Object.keys(attributesSchema).map(async (attr) => {
@@ -46,7 +46,7 @@ async function getTranslateFields(data, schema, attr, translatedFieldTypes) {
   if (
     translatedFieldTypes.includes(schema.type) &&
     _.get(data, attr, undefined) &&
-    schema.pluginOptions?.deepl?.translate === 'translate'
+    schema.pluginOptions?.translate?.translate === 'translate'
   ) {
     if (schema.type == 'component') {
       return (

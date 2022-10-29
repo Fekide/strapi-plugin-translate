@@ -6,7 +6,7 @@ const PluginHeader = () => {
   return (
     <Box background="neutral100">
       <BaseHeaderLayout
-        title="DeepL"
+        title="Translate"
         subtitle="Manage integration and batch translations"
         as="h2"
       />

@@ -10,7 +10,7 @@ module.exports = [
         'admin::isAuthenticatedAdmin',
         {
           name: 'plugin::content-manager.hasPermissions',
-          config: { actions: ['plugin::deepl.translate'] },
+          config: { actions: ['plugin::translate.translate'] },
         },
       ],
     },
@@ -24,7 +24,7 @@ module.exports = [
         'admin::isAuthenticatedAdmin',
         {
           name: 'plugin::content-manager.hasPermissions',
-          config: { actions: ['plugin::deepl.batch-translate'] },
+          config: { actions: ['plugin::translate.batch-translate'] },
         },
       ],
     },
@@ -38,7 +38,7 @@ module.exports = [
         'admin::isAuthenticatedAdmin',
         {
           name: 'plugin::content-manager.hasPermissions',
-          config: { actions: ['plugin::deepl.batch-translate'] },
+          config: { actions: ['plugin::translate.batch-translate'] },
         },
       ],
     },
@@ -52,7 +52,7 @@ module.exports = [
         'admin::isAuthenticatedAdmin',
         {
           name: 'plugin::content-manager.hasPermissions',
-          config: { actions: ['plugin::deepl.batch-translate'] },
+          config: { actions: ['plugin::translate.batch-translate'] },
         },
       ],
     },
@@ -66,7 +66,7 @@ module.exports = [
         'admin::isAuthenticatedAdmin',
         {
           name: 'plugin::content-manager.hasPermissions',
-          config: { actions: ['plugin::deepl.batch-translate'] },
+          config: { actions: ['plugin::translate.batch-translate'] },
         },
       ],
     },
@@ -80,7 +80,7 @@ module.exports = [
         'admin::isAuthenticatedAdmin',
         {
           name: 'plugin::content-manager.hasPermissions',
-          config: { actions: ['plugin::deepl.batch-translate'] },
+          config: { actions: ['plugin::translate.batch-translate'] },
         },
       ],
     },
@@ -94,7 +94,7 @@ module.exports = [
         'admin::isAuthenticatedAdmin',
         {
           name: 'plugin::content-manager.hasPermissions',
-          config: { actions: ['plugin::deepl.batch-translate'] },
+          config: { actions: ['plugin::translate.batch-translate'] },
         },
       ],
     },

@@ -2,7 +2,7 @@ import { has, get, omit } from 'lodash'
 import TRANSLATABLE_FIELDS from './translatableFields'
 
 const localizedPath = ['pluginOptions', 'i18n', 'localized']
-const translatePath = ['pluginOptions', 'deepl', 'translate']
+const translatePath = ['pluginOptions', 'translate', 'translate']
 
 const addTranslationToFields = (attributes) =>
   Object.keys(attributes).reduce((acc, current) => {
@@ -17,7 +17,7 @@ const addTranslationToFields = (attributes) =>
       attributeDefaultTranslated &&
       TRANSLATABLE_FIELDS.includes(currentAttribute.type)
     ) {
-      const deepl = {
+      const translate = {
         translate: get(
           currentAttribute,
           translatePath,
@@ -27,7 +27,7 @@ const addTranslationToFields = (attributes) =>
 
       const pluginOptions = {
         ...(currentAttribute.pluginOptions ?? {}),
-        deepl,
+        translate,
       }
 
       acc[current] = { ...currentAttribute, pluginOptions }
@@ -42,7 +42,7 @@ const addTranslationToFields = (attributes) =>
 
 const disableAttributesLocalisation = (attributes) =>
   Object.keys(attributes).reduce((acc, current) => {
-    acc[current] = omit(attributes[current], 'pluginOptions.deepl')
+    acc[current] = omit(attributes[current], 'pluginOptions.translate')
 
     return acc
   }, {})
@@ -61,7 +61,7 @@ const mutateCTBContentTypeSchema = (nextSchema) => {
     return { ...nextSchema, attributes }
   }
 
-  // Remove the deepl object from the pluginOptions
+  // Remove the translate object from the pluginOptions
   if (!isNextSchemaLocalized) {
     const attributes = disableAttributesLocalisation(nextSchema.attributes)
 

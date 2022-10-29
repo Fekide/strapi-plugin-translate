@@ -6,4 +6,4 @@
 
 const { createCoreRouter } = require('@strapi/strapi').factories
 
-module.exports = createCoreRouter('plugin::deepl.batch-translate-job')
+module.exports = createCoreRouter('plugin::translate.batch-translate-job')

@@ -3,7 +3,6 @@
 const get = require('lodash/get')
 const set = require('lodash/set')
 
-const deepl = require('../utils/deepl-api')
 const { getService } = require('../utils/get-service')
 const { BatchTranslateManager } = require('./batch-translate')
 
@@ -22,25 +21,22 @@ module.exports = ({ strapi }) => ({
       return data
     }
 
-    const { apiKey, freeApi, glossaryId } = strapi.config.get('plugin.deepl')
-
     const textsToTranslate = fieldsToTranslate.map((field) => {
       return get(data, field, '')
     })
 
-    const translateResult = await deepl.translate({
-      text: textsToTranslate,
-      auth_key: apiKey,
-      free_api: freeApi,
-      target_lang: deepl.parseLocale(targetLocale),
-      source_lang: deepl.parseLocale(sourceLocale),
-      glossary_id: glossaryId,
-      priority,
-    })
+    const translateResult = await strapi
+      .plugin('translate')
+      .provider.translate({
+        text: textsToTranslate,
+        targetLocale,
+        sourceLocale,
+        priority,
+      })
 
     const translatedData = { ...data }
     fieldsToTranslate.forEach((field, index) => {
-      set(translatedData, field, translateResult.translations[index]?.text)
+      set(translatedData, field, translateResult[index])
     })
 
     return translatedData
@@ -69,7 +65,7 @@ module.exports = ({ strapi }) => ({
       localizedContentTypes.map(async (contentType) => {
         // get jobs
         const jobs = await strapi.db
-          .query('plugin::deepl.batch-translate-job')
+          .query('plugin::translate.batch-translate-job')
           .findMany({
             where: { contentType: { $eq: contentType } },
             orderBy: { updatedAt: 'desc' },

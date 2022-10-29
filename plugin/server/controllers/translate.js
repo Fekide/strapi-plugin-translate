@@ -3,7 +3,7 @@
 const { getService } = require('../utils/get-service')
 const { getAllTranslatableFields } = require('../utils/translatable-fields')
 const { translateRelations } = require('../utils/translate-relations')
-const { DEEPL_PRIORITY_DIRECT_TRANSLATION } = require('../utils/constants')
+const { TRANSLATE_PRIORITY_DIRECT_TRANSLATION } = require('../utils/constants')
 const { filterAllDeletedFields } = require('../utils/delete-fields')
 
 module.exports = ({ strapi }) => ({
@@ -31,7 +31,7 @@ module.exports = ({ strapi }) => ({
         sourceLocale,
         targetLocale,
         fieldsToTranslate,
-        priority: DEEPL_PRIORITY_DIRECT_TRANSLATION,
+        priority: TRANSLATE_PRIORITY_DIRECT_TRANSLATION,
       })
       const translatedRelations = await translateRelations(
         translatedData,
@@ -49,31 +49,31 @@ module.exports = ({ strapi }) => ({
       if (error.response?.status !== undefined) {
         switch (error.response.status) {
           case 400:
-            return ctx.badRequest('deepl.error.badRequest', {
+            return ctx.badRequest('translate.error.badRequest', {
               message: error.message,
             })
           case 403:
-            return ctx.forbidden('deepl.error.forbidden', {
+            return ctx.forbidden('translate.error.forbidden', {
               message: error.message,
             })
           case 404:
-            return ctx.notFound('deepl.error.notFound', {
+            return ctx.notFound('translate.error.notFound', {
               message: error.message,
             })
           case 413:
-            return ctx.payloadTooLarge('deepl.error.payloadTooLarge', {
+            return ctx.payloadTooLarge('translate.error.payloadTooLarge', {
               message: error.message,
             })
           case 414:
-            return ctx.uriTooLong('deepl.error.uriTooLong', {
+            return ctx.uriTooLong('translate.error.uriTooLong', {
               message: error.message,
             })
           case 429:
-            return ctx.tooManyRequests('deepl.error.tooManyRequests', {
+            return ctx.tooManyRequests('translate.error.tooManyRequests', {
               message: error.message,
             })
           case 456:
-            return ctx.paymentRequired('deepl.error.paymentRequired', {
+            return ctx.paymentRequired('translate.error.paymentRequired', {
               message: error.message,
             })
           default:
@@ -134,7 +134,7 @@ module.exports = ({ strapi }) => ({
     } catch (error) {
       if (
         typeof error.message === 'string' &&
-        error.message.startsWith('deepl')
+        error.message.startsWith('translate')
       ) {
         return ctx.badRequest(error.message)
       } else {
@@ -157,7 +157,7 @@ module.exports = ({ strapi }) => ({
     } catch (error) {
       if (
         typeof error.message === 'string' &&
-        error.message.startsWith('deepl')
+        error.message.startsWith('translate')
       ) {
         return ctx.badRequest(error.message)
       } else {
@@ -180,7 +180,7 @@ module.exports = ({ strapi }) => ({
     } catch (error) {
       if (
         typeof error.message === 'string' &&
-        error.message.startsWith('deepl')
+        error.message.startsWith('translate')
       ) {
         return ctx.badRequest(error.message)
       } else {

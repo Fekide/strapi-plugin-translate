@@ -18,7 +18,7 @@ async function updateUids(data, contentTypeUid) {
       if (attributeSchema.type === 'uid') {
         const onTranslate = _.get(
           attributeSchema,
-          ['pluginOptions', 'deepl', 'translate'],
+          ['pluginOptions', 'translate', 'translate'],
           'translate'
         )
         switch (onTranslate) {

@@ -46,7 +46,7 @@ describe('translatable fields', () => {
       const data = { field: 'some text' }
       const schema = {
         type: 'text',
-        pluginOptions: { deepl: { translate: 'translate' } },
+        pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'field'
       const translatedFieldTypes = ['text']
@@ -68,7 +68,7 @@ describe('translatable fields', () => {
       const data = { field: 'some text' }
       const schema = {
         type: 'text',
-        pluginOptions: { deepl: { translate: 'copy' } },
+        pluginOptions: { translate: { translate: 'copy' } },
       }
       const attr = 'field'
       const translatedFieldTypes = ['text']
@@ -90,7 +90,7 @@ describe('translatable fields', () => {
       const data = { field: 'some text' }
       const schema = {
         type: 'text',
-        pluginOptions: { deepl: { translate: 'delete' } },
+        pluginOptions: { translate: { translate: 'delete' } },
       }
       const attr = 'field'
       const translatedFieldTypes = ['text']
@@ -132,7 +132,7 @@ describe('translatable fields', () => {
       const schema = {
         type: 'component',
         component: 'simpleComponent',
-        pluginOptions: { deepl: { translate: 'translate' } },
+        pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
       const translatedFieldTypes = ['text', 'component']
@@ -155,7 +155,7 @@ describe('translatable fields', () => {
       const schema = {
         type: 'component',
         component: 'simpleComponentCopy',
-        pluginOptions: { deepl: { translate: 'translate' } },
+        pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
       const translatedFieldTypes = ['text', 'component']
@@ -178,7 +178,7 @@ describe('translatable fields', () => {
       const schema = {
         type: 'component',
         component: 'simpleComponentDelete',
-        pluginOptions: { deepl: { translate: 'translate' } },
+        pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
       const translatedFieldTypes = ['text', 'component']
@@ -204,7 +204,7 @@ describe('translatable fields', () => {
         type: 'component',
         component: 'simpleComponent',
         repeatable: true,
-        pluginOptions: { deepl: { translate: 'translate' } },
+        pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
       const translatedFieldTypes = ['text', 'component']
@@ -241,7 +241,7 @@ describe('translatable fields', () => {
       const schema = {
         type: 'component',
         component: 'nestedComponent',
-        pluginOptions: { deepl: { translate: 'translate' } },
+        pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'comp'
       const translatedFieldTypes = ['text', 'component']
@@ -278,7 +278,7 @@ describe('translatable fields', () => {
       const schema = {
         type: 'dynamiczone',
         components: ['simpleComponent', 'twoFieldComponent'],
-        pluginOptions: { deepl: { translate: 'translate' } },
+        pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'dynamic_zone'
       const translatedFieldTypes = ['text', 'dynamiczone', 'component']
