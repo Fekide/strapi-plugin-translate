@@ -1,5 +1,4 @@
 module.exports = {
-  name: 'Unit test',
   // setupFilesAfterEnv: ['<rootDir>/test/unit.setup.js'],
   transform: {},
   coverageDirectory: './coverage/',
