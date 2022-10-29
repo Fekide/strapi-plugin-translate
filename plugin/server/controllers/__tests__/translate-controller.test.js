@@ -13,12 +13,12 @@ const setup = function (params) {
 jest.mock('../../utils/translatable-fields')
 jest.mock('../../utils/translate-relations')
 
-describe('deepl controller', () => {
-  const translateServiceMock = jest.fn()
+describe('translate controller', () => {
+  const mockTranslateService = jest.fn()
   beforeEach(() => {
     jest.mock('../../services/translate', () => {
       return () => ({
-        translate: translateServiceMock,
+        translate: mockTranslateService,
       })
     })
     setup({
@@ -30,7 +30,7 @@ describe('deepl controller', () => {
 
   afterEach(() => {
     Object.defineProperty(global, 'strapi', {})
-    translateServiceMock.mockReset()
+    mockTranslateService.mockReset()
   })
 
   it('should call translate service', async () => {
@@ -47,10 +47,10 @@ describe('deepl controller', () => {
     })
 
     // when
-    await strapi.plugin('deepl').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller('translate').translate(ctx)
 
     // then
-    expect(translateServiceMock).toHaveBeenCalled()
+    expect(mockTranslateService).toHaveBeenCalled()
   })
 
   it('bad request if source locale is missing', async () => {
@@ -65,11 +65,11 @@ describe('deepl controller', () => {
     })
 
     // when
-    await strapi.plugin('deepl').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller('translate').translate(ctx)
 
     // then
     expect(ctx.badRequest).toHaveBeenCalled()
-    expect(translateServiceMock).not.toHaveBeenCalled()
+    expect(mockTranslateService).not.toHaveBeenCalled()
   })
 
   it('bad request if target locale is missing', async () => {
@@ -84,11 +84,11 @@ describe('deepl controller', () => {
     })
 
     // when
-    await strapi.plugin('deepl').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller('translate').translate(ctx)
 
     // then
     expect(ctx.badRequest).toHaveBeenCalled()
-    expect(translateServiceMock).not.toHaveBeenCalled()
+    expect(mockTranslateService).not.toHaveBeenCalled()
   })
 
   it('not found if content type does not exist', async () => {
@@ -105,10 +105,10 @@ describe('deepl controller', () => {
     })
 
     // when
-    await strapi.plugin('deepl').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller('translate').translate(ctx)
 
     // then
     expect(ctx.notFound).toHaveBeenCalled()
-    expect(translateServiceMock).not.toHaveBeenCalled()
+    expect(mockTranslateService).not.toHaveBeenCalled()
   })
 })

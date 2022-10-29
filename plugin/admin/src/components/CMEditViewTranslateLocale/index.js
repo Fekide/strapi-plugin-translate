@@ -132,7 +132,7 @@ const Content = ({
     }
 
     const requestDataURL = `/content-manager/collection-types/${slug}/${value}`
-    const translateURL = `/deepl/translate`
+    const translateURL = `/translate/translate`
 
     setIsLoading(true)
     try {
@@ -200,7 +200,10 @@ const Content = ({
   return (
     <Box paddingTop={6}>
       <Typography variant="sigma" textColor="neutral600">
-        {formatMessage({ id: getTrad('plugin.name'), defaultMessage: 'DeepL' })}
+        {formatMessage({
+          id: getTrad('plugin.name'),
+          defaultMessage: 'Translate',
+        })}
       </Typography>
       <Box paddingTop={2} paddingBottom={6}>
         <Divider />

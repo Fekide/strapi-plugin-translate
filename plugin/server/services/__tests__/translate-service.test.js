@@ -5,10 +5,6 @@ const { getService } = require('../../utils')
 // Every text to translate becomes "translated" in this mock so it can be verified to have been changed
 const translatedText = 'translated'
 
-jest.mock('../../utils/deepl-api', () => {
-  return require('../../../__mocks__/deepl-api').createMock(translatedText)
-})
-
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {
     value: require('../../../__mocks__/initSetup')(params),
@@ -19,9 +15,37 @@ afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
 })
 
-describe('deepl service', () => {
+describe('provider service', () => {
   describe('translate', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() =>
+      setup({
+        provider: {
+          provider: 'dummy',
+          name: 'Dummy',
+          init() {
+            return {
+              async translate({ text, sourceLocale, targetLocale }) {
+                if (!text) {
+                  return []
+                }
+                if (!sourceLocale | !targetLocale) {
+                  throw new Error('source and target locale must be defined')
+                }
+
+                const textArray = Array.isArray(text) ? text : [text]
+                return textArray.map(() => 'translated')
+              },
+              async usage() {
+                return {
+                  count: 1000,
+                  limit: 10000,
+                }
+              },
+            }
+          },
+        },
+      })
+    )
 
     it('single field', async () => {
       // given
@@ -91,7 +115,7 @@ describe('deepl service', () => {
       ]
 
       // when
-      const result = await strapi.plugins.deepl
+      const result = await strapi.plugins.translate
         .service('translate')
         .translate({ data, sourceLocale, targetLocale, fieldsToTranslate })
 

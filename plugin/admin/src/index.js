@@ -22,15 +22,15 @@ export default {
       },
       Component: async () => {
         const component = await import(
-          /* webpackChunkName: "[deepl-app]" */ './pages/App'
+          /* webpackChunkName: "[translate-app]" */ './pages/App'
         )
 
         return component
       },
       permissions: [
-        { action: 'plugin::deepl.batch-translate', subject: null },
-        { action: 'plugin::deepl.translate', subject: null },
-        { action: 'plugin::deepl.usage', subject: null },
+        { action: 'plugin::translate.batch-translate', subject: null },
+        { action: 'plugin::translate.translate', subject: null },
+        { action: 'plugin::translate.usage', subject: null },
       ],
     })
     app.registerPlugin({
@@ -43,7 +43,7 @@ export default {
 
   bootstrap(app) {
     app.injectContentManagerComponent('editView', 'informations', {
-      name: 'deepl-locale-translate',
+      name: 'translate-locale',
       Component: CMEditViewTranslateLocale,
     })
 
@@ -80,7 +80,7 @@ export default {
 
             return [
               {
-                name: 'pluginOptions.deepl.translate',
+                name: 'pluginOptions.translate.translate',
                 type: 'select',
                 intlLabel: {
                   id: getTrad('content-type-builder.form.label'),
@@ -90,7 +90,7 @@ export default {
                 description: {
                   id: getTrad('content-type-builder.form.description'),
                   defaultMessage:
-                    'How should the DeepL plugin handle the translation of this field?',
+                    'How should the Translate plugin handle the translation of this field?',
                 },
                 validations: {},
                 options: [

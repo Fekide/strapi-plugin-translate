@@ -5,7 +5,7 @@ function createSimpleComponent(translate = 'translate') {
     attributes: {
       text: {
         pluginOptions: {
-          deepl: {
+          translate: {
             translate,
           },
         },
@@ -22,7 +22,7 @@ function createNestedComponent(translate = 'translate') {
     attributes: {
       text: {
         pluginOptions: {
-          deepl: {
+          translate: {
             translate: 'translate',
           },
         },
@@ -30,7 +30,7 @@ function createNestedComponent(translate = 'translate') {
       },
       nested: {
         pluginOptions: {
-          deepl: {
+          translate: {
             translate,
           },
         },
@@ -45,7 +45,7 @@ const twoFieldComponent = {
   attributes: {
     title: {
       pluginOptions: {
-        deepl: {
+        translate: {
           translate: 'translate',
         },
       },

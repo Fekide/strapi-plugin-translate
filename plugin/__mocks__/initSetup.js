@@ -1,5 +1,7 @@
 const { get, set, isEmpty } = require('lodash')
 
+const dummyProvider = require('../server/utils/dummy-provider')
+
 module.exports = ({
   config = {},
   toStore = false,
@@ -10,11 +12,12 @@ module.exports = ({
   contentTypes = {},
   plugins = {},
   db = {},
+  provider = dummyProvider,
 }) => {
   const dbConfig = toStore
     ? {
         plugin: {
-          deepl: {
+          translate: {
             config: { ...config },
           },
         },
@@ -80,7 +83,7 @@ module.exports = ({
     },
     plugins: {
       ...plugins,
-      deepl: {
+      translate: {
         service: function (name) {
           return this.services[name]({ strapi: mock.getRef() })
         },
@@ -89,10 +92,10 @@ module.exports = ({
         },
         package: require('../package.json'),
         services: {
-          deepl: require('../server/services/deepl'),
+          provider: require('../server/services/provider'),
           translate: require('../server/services/translate'),
           'batch-translate-job': () => {
-            const uid = 'plugin::deepl.batch-translate-job'
+            const uid = 'plugin::translate.batch-translate-job'
             return {
               findOne: this.db.query(uid).findOne,
               find: this.db.query(uid).findMany,
@@ -104,12 +107,13 @@ module.exports = ({
           },
         },
         controllers: {
-          deepl: require('../server/controllers/deepl'),
+          provider: require('../server/controllers/provider'),
           translate: require('../server/controllers/translate'),
         },
         contentTypes: {
           'batch-translate-job': require('../server/content-types/batch-translate-job/schema.json'),
         },
+        provider: provider.init(),
       },
       'content-type-builder': {
         service: function (name) {
@@ -138,9 +142,8 @@ module.exports = ({
         return set(this.plugins, prop.replace('plugin.', ''), value)
       },
       plugins: {
-        deepl: {
-          apiKey: 'mocked_key',
-          freeApi: true,
+        translate: {
+          provider: provider.provider,
           translatedFieldTypes: [
             'string',
             'text',

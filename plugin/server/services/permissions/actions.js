@@ -3,19 +3,19 @@
 const actions = [
   {
     section: 'plugins',
-    pluginName: 'deepl',
+    pluginName: 'translate',
     displayName: 'Translate',
     uid: 'translate',
   },
   {
     section: 'plugins',
-    pluginName: 'deepl',
+    pluginName: 'translate',
     displayName: 'Batch Translate',
     uid: 'batch-translate',
   },
   {
     section: 'plugins',
-    pluginName: 'deepl',
+    pluginName: 'translate',
     displayName: 'Usage',
     uid: 'usage',
   },

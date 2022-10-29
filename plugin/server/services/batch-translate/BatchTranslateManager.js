@@ -28,7 +28,7 @@ class BatchTranslateManager {
       },
     })
     if (sameEntities.length > 0) {
-      throw new Error('deepl.batch-translate.job-already-exists')
+      throw new Error('translate.batch-translate.job-already-exists')
     }
     const entity = await strapi
       .service(batchContentTypeUid)
@@ -48,7 +48,7 @@ class BatchTranslateManager {
       await this.runningJobs.get(id).pause()
       return strapi.service(batchContentTypeUid).findOne(id)
     } else {
-      throw new Error('deepl.batch-translate.job-not-running')
+      throw new Error('translate.batch-translate.job-not-running')
     }
   }
 
@@ -56,7 +56,7 @@ class BatchTranslateManager {
     if (!this.runningJobs.has(id)) {
       const entity = await strapi.service(batchContentTypeUid).findOne(id)
       if (!entity) {
-        throw new Error('deepl.batch-translate.job-does-not-exist')
+        throw new Error('translate.batch-translate.job-does-not-exist')
       }
       this._resumeJob(entity)
       return {
@@ -64,7 +64,7 @@ class BatchTranslateManager {
         status: 'running',
       }
     } else {
-      throw new Error('deepl.batch-translate.job-already-running')
+      throw new Error('translate.batch-translate.job-already-running')
     }
   }
 
@@ -81,7 +81,7 @@ class BatchTranslateManager {
         this.runningJobs.delete(entity.id)
       })
     } else {
-      throw new Error('deepl.batch-translate.job-cannot-be-resumed')
+      throw new Error('translate.batch-translate.job-cannot-be-resumed')
     }
   }
 
@@ -90,7 +90,7 @@ class BatchTranslateManager {
       await this.runningJobs.get(id).cancel()
       return strapi.service(batchContentTypeUid).findOne(id)
     } else {
-      throw new Error('deepl.batch-translate.job-not-running')
+      throw new Error('translate.batch-translate.job-not-running')
     }
   }
 

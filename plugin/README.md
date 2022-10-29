@@ -3,16 +3,16 @@
 </p>
 
 <div align="center">
-  <h1>Strapi v4 - DeepL plugin</h1>
-  <p>Integration with the <a href="https://www.deepl.com/pro-api">DeepL-API</a> to provide quick automated translation of content fields.</p>
-  <a href="https://www.npmjs.org/package/strapi-plugin-deepl">
-    <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/Fekide/strapi-plugin-deepl?label=npm&logo=npm">
+  <h1>Strapi v4 - Translate plugin</h1>
+  <p>Manage and automate the translation of content fields.</p>
+  <a href="https://www.npmjs.org/package/strapi-plugin-translate">
+    <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/Fekide/strapi-plugin-translate?label=npm&logo=npm">
   </a>
-  <a href="https://www.npmjs.org/package/strapi-plugin-deepl">
-    <img src="https://img.shields.io/npm/dm/strapi-plugin-deepl.svg" alt="Monthly download on NPM" />
+  <a href="https://www.npmjs.org/package/strapi-plugin-translate">
+    <img src="https://img.shields.io/npm/dm/strapi-plugin-translate.svg" alt="Monthly download on NPM" />
   </a>
-  <a href="https://github.com/Fekide/strapi-plugin-deepl/actions">
-    <img src="https://img.shields.io/github/workflow/status/Fekide/strapi-plugin-deepl/Test" alt="Build" />
+  <a href="https://github.com/Fekide/strapi-plugin-translate/actions">
+    <img src="https://img.shields.io/github/workflow/status/Fekide/strapi-plugin-translate/Test" alt="Build" />
   </a>
   <a href="http://commitizen.github.io/cz-cli/">
     <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly" />
@@ -39,9 +39,9 @@ Unless you have the previous set up, the field on the right where you can transl
 
 ```bash
 # with npm
-$ npm install strapi-plugin-deepl
+$ npm install strapi-plugin-translate
 # or with yarn
-$ yarn add strapi-plugin-deepl
+$ yarn add strapi-plugin-translate
 ```
 
 After successful installation you have to build a fresh package that includes plugin UI:

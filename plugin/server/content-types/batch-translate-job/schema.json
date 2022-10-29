@@ -1,10 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "deepl_batch_translate_jobs",
+  "collectionName": "translate_batch_translate_jobs",
   "info": {
     "singularName": "batch-translate-job",
     "pluralName": "batch-translate-jobs",
-    "displayName": "DeepL Batch Translate Job"
+    "displayName": "Translate Batch Translate Job"
   },
   "options": {
     "draftAndPublish": false,

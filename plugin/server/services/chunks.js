@@ -1,10 +1,6 @@
 'use strict'
 
-const { stringByteLengthEncoded } = require('./byte-length')
-const {
-  DEEPL_API_MAX_TEXTS,
-  DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
-} = require('./constants')
+const { stringByteLengthEncoded } = require('../utils/byte-length')
 
 /**
  * Splits the given array of strings into chunks a maximum length
@@ -12,15 +8,9 @@ const {
  *
  * @param {string[]} textArray
  * @param {{maxLength: number, maxByteSize: number}} options Configuration options
- * @returns
+ * @returns {string[][]}
  */
-function splitTextArrayIntoChunks(
-  textArray,
-  { maxLength, maxByteSize } = {
-    maxLength: DEEPL_API_MAX_TEXTS,
-    maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
-  }
-) {
+function splitTextArray(textArray, { maxLength, maxByteSize }) {
   // Information about how to join chunks back together
   const reduceInformation = []
 
@@ -43,7 +33,7 @@ function splitTextArrayIntoChunks(
   // - the string itself is too big and needs to be split before it can be put into chunks
   textArray.forEach((textField) => {
     const fieldByteLength = stringByteLengthEncoded(textField)
-    if (fieldByteLength > maxByteSize) {
+    if (maxByteSize && fieldByteLength > maxByteSize) {
       strapi.log.warn(
         'There is a field being translated, that is itself longer than the maxByteSize parameter. ' +
           'This may result in issues because the field content needs to be split into multiple requests!' +
@@ -54,7 +44,10 @@ function splitTextArrayIntoChunks(
       const splitTextField = textField.split(/\n+/)
 
       // Recursively call this method to split the array into chunks of appropriate length and size
-      const { chunks } = splitTextArrayIntoChunks(splitTextField)
+      const { chunks } = splitTextArray(splitTextField, {
+        maxLength,
+        maxByteSize,
+      })
 
       if (chunkedText[chunkIndex].length === 0) {
         // When we are at the beginning or after another too big field, there will be a new empty chunk
@@ -76,8 +69,8 @@ function splitTextArrayIntoChunks(
       nextChunk()
     } else {
       if (
-        chunkedText[chunkIndex].length >= maxLength ||
-        currentChunkByteLength + fieldByteLength >= maxByteSize
+        (maxLength && chunkedText[chunkIndex].length >= maxLength) ||
+        (maxByteSize && currentChunkByteLength + fieldByteLength >= maxByteSize)
       ) {
         reduceInformation.push({ type: 'append', index: chunkIndex })
         nextChunk()
@@ -96,48 +89,35 @@ function splitTextArrayIntoChunks(
   }
 
   const reduceFunction = (translationResults) => {
-    return reduceInformation.reduce(
-      (prev, { type, ...props }) => {
-        if (type === 'append' && 'index' in props) {
-          // Just concatenate the translation texts in the append case
-          return {
-            translations: prev.translations.concat(
-              translationResults[props.index].translations
-            ),
-          }
-        } else if (type === 'join' && 'from' in props && 'to' in props) {
-          const joinedText = translationResults
-            // Get all of the relevant chunks for joining
-            .slice(props.from, props.to)
-            // Get the translations
-            .map((v) => v.translations)
-            .flat()
-            .reduce((prev, cur) => {
-              return {
-                detected_source_language: cur.detected_source_language,
-                // FIXME: Adding the texts back together with only a new line might be breaking content layout
-                text: prev.text ? prev.text + '\n' + cur.text : cur.text,
-              }
-            }, {})
-          return {
-            translations: prev.translations.concat(joinedText),
-          }
-        } else {
-          throw new Error(
-            `Unrecognized props for reducing: ${JSON.stringify({
-              type,
-              ...props,
-            })}`
-          )
-        }
-      },
-      { translations: [] }
-    )
+    return reduceInformation.reduce((prev, { type, ...props }) => {
+      if (type === 'append' && 'index' in props) {
+        // Just concatenate the translation texts in the append case
+        return prev.concat(translationResults[props.index])
+      } else if (type === 'join' && 'from' in props && 'to' in props) {
+        const joinedText = translationResults
+          // Get all of the relevant chunks for joining
+          .slice(props.from, props.to)
+          // Get the translations
+          .flat()
+          .reduce((prev, cur) => {
+            // FIXME: Adding the texts back together with only a new line might be breaking content layout
+            return prev ? prev + '\n' + cur : cur
+          }, '')
+        return prev.concat(joinedText)
+      } else {
+        throw new Error(
+          `Unrecognized props for reducing: ${JSON.stringify({
+            type,
+            ...props,
+          })}`
+        )
+      }
+    }, [])
   }
 
   return { chunks: chunkedText, reduceFunction }
 }
 
-module.exports = {
-  splitTextArrayIntoChunks,
-}
+module.exports = () => ({
+  split: splitTextArray,
+})

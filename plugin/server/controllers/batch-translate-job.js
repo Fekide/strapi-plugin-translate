@@ -6,4 +6,4 @@
 
 const { createCoreController } = require('@strapi/strapi').factories
 
-module.exports = createCoreController('plugin::deepl.batch-translate-job')
+module.exports = createCoreController('plugin::translate.batch-translate-job')

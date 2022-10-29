@@ -3,7 +3,7 @@
 const { cleanData } = require('../../utils/clean-data')
 const {
   batchContentTypeUid,
-  DEEPL_PRIORITY_BATCH_TRANSLATION,
+  TRANSLATE_PRIORITY_BATCH_TRANSLATION,
 } = require('../../utils/constants')
 const { filterAllDeletedFields } = require('../../utils/delete-fields')
 const { getService } = require('../../utils/get-service')
@@ -30,7 +30,7 @@ class BatchTranslateJob {
     this.contentType = contentType
     this.contentTypeSchema = strapi.contentTypes[contentType]
     if (!this.contentTypeSchema.pluginOptions?.i18n?.localized) {
-      throw new Error('deepl.batch-translate.content-type-not-localized')
+      throw new Error('translate.batch-translate.content-type-not-localized')
     }
     this.sourceLocale = sourceLocale
     this.targetLocale = targetLocale
@@ -183,7 +183,7 @@ class BatchTranslateJob {
           sourceLocale: this.sourceLocale,
           targetLocale: this.targetLocale,
           fieldsToTranslate,
-          priority: DEEPL_PRIORITY_BATCH_TRANSLATION,
+          priority: TRANSLATE_PRIORITY_BATCH_TRANSLATION,
         })
 
         const withRelations = await translateRelations(

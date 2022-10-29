@@ -21,7 +21,7 @@ async function getRelevantLocalization(contentType, id, locale) {
  */
 async function translateRelations(data, schema, targetLocale) {
   const { translateRelations: shouldTranslateRelations } =
-    strapi.config.get('plugin.deepl')
+    strapi.config.get('plugin.translate')
 
   const attributesSchema = _.get(schema, 'attributes', [])
   const resultData = _.cloneDeep(data)
@@ -41,7 +41,7 @@ async function translateRelations(data, schema, targetLocale) {
 
       const onTranslate = _.get(
         attributeSchema,
-        ['pluginOptions', 'deepl', 'translate'],
+        ['pluginOptions', 'translate', 'translate'],
         'translate'
       )
       if (
@@ -125,7 +125,7 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
 
   const onTranslate = _.get(
     attributeSchema,
-    'pluginOptions.deepl.translate',
+    'pluginOptions.translate.translate',
     'translate'
   )
 

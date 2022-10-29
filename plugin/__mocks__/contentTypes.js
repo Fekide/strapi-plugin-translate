@@ -19,7 +19,7 @@ function createSimpleContentType(
           i18n: {
             localized: true,
           },
-          deepl: {
+          translate: {
             translate,
           },
         },
@@ -55,7 +55,7 @@ function createRelationContentType(
     attributes: {
       related: {
         pluginOptions: {
-          deepl: {
+          translate: {
             translate,
           },
         },
@@ -124,7 +124,7 @@ function createContentTypeWithComponent(
           i18n: {
             localized: true,
           },
-          deepl: {
+          translate: {
             translate,
           },
         },
@@ -172,7 +172,7 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'translate',
         },
       },
@@ -183,7 +183,7 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'translate',
         },
       },
@@ -205,7 +205,7 @@ const complexContentType = {
         i18n: {
           localized: false,
         },
-        deepl: {
+        translate: {
           translate: 'copy',
         },
       },
@@ -225,7 +225,7 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'translate',
         },
       },
@@ -237,7 +237,7 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'translate',
         },
       },
@@ -249,7 +249,7 @@ const complexContentType = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'translate',
         },
       },
@@ -274,7 +274,7 @@ const complexContentTypeDelete = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'translate',
         },
       },
@@ -285,7 +285,7 @@ const complexContentTypeDelete = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'delete',
         },
       },
@@ -307,7 +307,7 @@ const complexContentTypeDelete = {
         i18n: {
           localized: false,
         },
-        deepl: {
+        translate: {
           translate: 'copy',
         },
       },
@@ -327,7 +327,7 @@ const complexContentTypeDelete = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'delete',
         },
       },
@@ -339,7 +339,7 @@ const complexContentTypeDelete = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'delete',
         },
       },
@@ -351,7 +351,7 @@ const complexContentTypeDelete = {
         i18n: {
           localized: true,
         },
-        deepl: {
+        translate: {
           translate: 'delete',
         },
       },
