@@ -20,9 +20,11 @@ module.exports = {
   name: 'DeepL',
 
   init(providerOptions = {}) {
-    const client = new deepl.Translator(providerOptions.apiKey, {
-      // By default this is inferred, serverUrl on providerOptions is probably undefined
-      serverUrl: providerOptions.serverUrl,
+    const apiKey = process.env.DEEPL_API_KEY || providerOptions.apiKey
+    const apiUrl = process.env.DEEPL_API_URL || providerOptions.apiUrl
+
+    const client = new deepl.Translator(apiKey, {
+      serverUrl: apiUrl,
     })
 
     const limiter = new Bottleneck({
