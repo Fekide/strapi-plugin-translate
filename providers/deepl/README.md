@@ -5,7 +5,7 @@ Configure the provider through the pluginOptions:
 ```js
 module.exports = {
   // ...
-  deepl: {
+  translate: {
     enabled: true,
     config: {
       // Choose one of the available providers
@@ -17,7 +17,7 @@ module.exports = {
         // use custom api url - optional
         apiUrl: 'https://api-free.deepl.com',
       },
-      // ...
+      // other options ...
     },
   },
   // ...
