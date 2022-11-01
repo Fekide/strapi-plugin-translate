@@ -19,8 +19,6 @@
   </a>
 </div>
 
-> This plugin is still a work in progress
-
 ![plugin showcase](assets/showcase.gif)
 
 ## Requirements
@@ -31,7 +29,7 @@ This plugin requires the following, in order to work correctly:
 - The plugin **i18n** installed and enabled (`@strapi/plugin-i18n` [[npm](https://www.npmjs.com/package/@strapi/plugin-i18n)])
 - The content type to have internationalization enabled (advanced settings in the content type builder)
 - In the internationalization settings at least **two** locales
-- In the config an apiKey defined (see [Configuration](#configuration))
+- A translation provider that executes the actual tanslation (see [Configuration](#configuration))
 
 Unless you have the previous set up, the field on the right where you can translate will not show up. Also it will not show up when editing the currently only available translation of an entry.
 
@@ -62,13 +60,14 @@ $ yarn build && yarn develop
 ```js
 module.exports = {
   // ...
-  deepl: {
+  translate: {
     enabled: true,
     config: {
-      // your DeepL API key
-      apiKey: 'key',
-      // whether to use the free or paid api, default true
-      freeApi: true,
+      // Add the name of your provider here (for example 'deepl' for strapi-provider-translate-deepl or the full package name)
+      provider: '[name]',
+      providerOptions: {
+        // Your provider might define some custom options like an apiKey
+      },
       // Which field types are translated (default string, text, richtext, components and dynamiczones)
       translatedFieldTypes: [
         'string',
@@ -79,20 +78,15 @@ module.exports = {
       ],
       // If relations should be translated (default true)
       translateRelations: true,
-      // You can define a custom glossary to be used here (see https://www.deepl.com/docs-api/managing-glossaries/)
-      glossaryId: 'customGlossary',
     },
   },
   // ...
 }
 ```
 
-or using the default environment variables:
+#### Available providers
 
-- `DEEPL_API_KEY` - default `null`
-- `DEEPL_API_FREE` - default `true`
-
-To get an API key, register for free at [www.deepl.com/pro#developer](https://www.deepl.com/pro#developer).
+- [strapi-provider-translate-deepl](../providers/deepl/)
 
 ### Configure translation of individual fields/attributes
 
@@ -108,7 +102,7 @@ Set this value to false, and the field will not be translated. However it will b
 
 For the field types `component`, `dynamiczone`, `media`, `relation`, `richtext`, `string`, `text`, you can additionally configure the behavior when translating automatically under the name `Configure automated translation for this field?`. There are three options:
 
-- `translate`: The field in automatically translated using DeepL
+- `translate`: The field is automatically translated using the provider
 - `copy`: The original value of the source localization is copied
 - `delete`: The field is let empty after translation
 
@@ -124,7 +118,7 @@ For the field types `component`, `dynamiczone`, `media`, `relation`, `richtext`,
     "customField": {
       "type": "customField",
       "pluginOptions": {
-        "deepl": {
+        "translate": {
           "translate": "copy"
         },
         "i18n": {
@@ -155,7 +149,7 @@ The following features are included:
 
 - Open the entity that you want to translate
 - Select a different (possibly unconfigured) locale in the `Internationalization` section on the right sidebar
-- Click the link for `Translate from another locale` in the `DeepL` section on the right sidebar
+- Click the link for `Translate from another locale` in the `Translate` section on the right sidebar
 - Select the desired source to translate from
 - Press the confirmation button
 
@@ -163,7 +157,7 @@ The following features are included:
 
 ![Batch translation showcase](assets/batch-translation.gif)
 
-- Open the DeepL plugin section in the left menu
+- Open the Translate plugin section in the left menu
 - You now see an overview of all localized content types
 - For each language and each content type you have 4 actions: `translate`, `cancel`, `pause` and `resume`. Most actions are disabled, since no job is running.
 - Press the `translate` button, select the source locale and if already published entries should be published as well (Auto-Publish option)
@@ -190,14 +184,71 @@ _The related objects are not translated directly, only the relation itself is tr
 - the relation goes both ways and would be removed from another object or localization if it was used (the case with oneToOne or oneToMany) -> it is removed
 - otherwise the relation is kept
 
+## Creating your own translation provider
+
+A translation provider should have the following:
+
+- be a npm package that starts with `strapi-provider-translate` and then your provider name (for example `google`)
+- a main file declared in the package.json, that exports a provider object:
+
+```js
+module.exports = {
+  provider: 'google',
+  name: 'Google',
+  /**
+   * @param {object} providerOptions all config values in the providerOptions property
+   * @param {object} pluginOptions all config values from the plugin
+   */
+  init(providerOptions = {}, pluginConfig = {}) {
+    // Do some setup here
+
+    return {
+      /**
+       * @param {{text:string|string[], sourceLocale: string, targetLocale: string, priority: number}} options all translate options
+       * @returns {string[]} the input text(s) translated
+       */
+      async translate(options) {
+        // Implement translation
+      },
+      /**
+       * @returns {{count: number, limit: number}} count for the number of characters used, limit for how many can be used in the current period
+       */
+      async usage() {
+        // Implement usage
+      },
+    }
+  },
+}
+```
+
+If your provider has some limits on how many texts or how many bytes can be submitted at once, you can use the `chunks` service to split it:
+
+```js
+const { chunks, reduceFunction } = strapi
+  .service('plugin::translate.chunks')
+  .split(textArray, {
+    // max length of arrays
+    maxLength: 100,
+    // maximum byte size the request should have, if a single text is larger it is split on new lines
+    maxByteSize: 1024 * 1000 * 1000,
+  })
+// The reduceFunction combines the splitted text array and possibly split texts back together in the right order
+return reduceFunction(
+  await Promise.all(
+    chunks.map(async (texts) => {
+      // Execute the translation here
+      return providerClient.translateTexts(texts)
+    })
+  )
+)
+```
+
 ## (Current) Limitations:
 
-- Only the [deepl supported languages](https://www.deepl.com/docs-api/translating-text/request/) can be translated
-- The translation of Markdown using DeepL works relatively well but is not perfect. Watch out especially if you have links in Markdown that could be changed by translation
+- The translation of Markdown using the DeepL-Provider works relatively well but is not perfect. Watch out especially if you have links in Markdown that could be changed by translation
 - HTML in `richtext` created using a different WYSIWYG editor is not supported
 - **Only super admins can translate**. This is currently the case, since permissions were added to the `translate` endpoint. Probably you can change the permissions with an enterprise subscription but I am not sure. If you know how to do that also in the community edition please tell me or open a merge request!
 - Relations that do not have a translation of the desired locale will not be translated. To keep the relation you will need to translate both in succession (Behaviour for multi-relations has not yet been analyzed)
-- The API-Limits of DeepL ([size](https://www.deepl.com/de/docs-api/accessing-the-api/limits/) and [number of fields](https://www.deepl.com/de/docs-api/translating-text/request/)) should not be an issue, however if you have a very large entity you might be sending too many requests. Also if one field is larger than the reqest size limit, the content needs to be split and merged at some character, which may break the content layout!
 
 ## Legal Disclaimer
 
