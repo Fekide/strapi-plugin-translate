@@ -94,7 +94,7 @@ describe('deepl provider', () => {
   afterAll(async () => {
     server.close()
   })
-  describe.skip('usage', () => {
+  describe('usage', () => {
     describe.each([
       [true, true],
       [true, false],
@@ -134,7 +134,7 @@ describe('deepl provider', () => {
     })
   })
 
-  describe.skip('translate', () => {
+  describe('translate', () => {
     describe.each([
       [true, true],
       [true, false],
