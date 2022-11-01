@@ -8,7 +8,8 @@
   "scripts": {
     "semantic-release": "semantic-release",
     "commit": "cz",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
