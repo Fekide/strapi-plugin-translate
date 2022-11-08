@@ -1,4 +1,4 @@
-## DeepL provider for Strapi Translate Plugin
+# DeepL provider for Strapi Translate Plugin
 
 Configure the provider through the pluginOptions:
 
