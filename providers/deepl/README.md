@@ -31,7 +31,7 @@ or use the default environment variables:
 
 To get an API key, register for free at [www.deepl.com/pro#developer](https://www.deepl.com/pro#developer).
 
-### Limitations:
+## Limitations:
 
 - Only the [deepl supported languages](https://www.deepl.com/docs-api/translating-text/request/) can be translated
 - The API-Limits of DeepL ([size](https://www.deepl.com/de/docs-api/accessing-the-api/limits/), [number of fields](https://www.deepl.com/de/docs-api/translating-text/request/)) and [too many requests](https://www.deepl.com/de/docs-api/api-access/error-handling/) should be respected. If one field is larger than the request size limit, the content needs to be split and merged at some character, which may break the content layout!
