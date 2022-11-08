@@ -55,7 +55,7 @@ $ yarn build && yarn develop
 
 ### Overall plugin configuration
 
-> The overall plugin configurtion is done through `config[/env]/plugins.js` or environment variables
+> The overall plugin configuration is done through `config[/env]/plugins.js` or environment variables
 
 ```js
 module.exports = {
