@@ -232,7 +232,7 @@ const { chunks, reduceFunction } = strapi
     // maximum byte size the request should have, if a single text is larger it is split on new lines
     maxByteSize: 1024 * 1000 * 1000,
   })
-// The reduceFunction combines the splitted text array and possibly split texts back together in the right order
+// The reduceFunction combines the split text array and possibly split texts back together in the right order
 return reduceFunction(
   await Promise.all(
     chunks.map(async (texts) => {
