@@ -1,0 +1,52 @@
+{
+  "name": "strapi-plugin-translate",
+  "version": "0.0.0-development",
+  "description": "Strapi plugin for managing and automating translation of content",
+  "strapi": {
+    "name": "translate",
+    "description": "Manage and automate content translation",
+    "kind": "plugin"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "axios": "^0.26.0",
+    "bottleneck": "^2.19.5"
+  },
+  "peerDependencies": {
+    "@strapi/plugin-i18n": "^4.1.4",
+    "@strapi/strapi": "^4.1.4"
+  },
+  "author": {
+    "name": "Felix Haase",
+    "email": "felix.haase@feki.de"
+  },
+  "maintainers": [],
+  "engines": {
+    "node": ">=14 <=18",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "strapi",
+    "plugin",
+    "translate",
+    "translation",
+    "i18n"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fekide/strapi-plugin-translate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Fekide/strapi-plugin-translate/issues"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^6.2.0",
+    "@strapi/plugin-i18n": "^4.4.5",
+    "axios-mock-adapter": "^1.20.0",
+    "lodash": "^4.17.21"
+  }
+}
