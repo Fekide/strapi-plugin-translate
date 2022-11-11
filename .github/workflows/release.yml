@@ -1,7 +1,7 @@
 name: Release
 on:
   workflow_run:
-    workflows: ['lint', 'test']
+    workflows: ['Lint', 'Test']
     branches: [main, next]
     types:
       - completed
