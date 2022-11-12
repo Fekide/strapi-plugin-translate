@@ -91,7 +91,7 @@ module.exports = {
 
 #### Available providers
 
-- [strapi-provider-translate-deepl](../providers/deepl/)
+- [strapi-provider-translate-deepl](./providers/deepl/)
 
 ### Configure translation of individual fields/attributes
 
