@@ -14,6 +14,9 @@
   <a href="https://github.com/Fekide/strapi-plugin-translate/actions">
     <img src="https://img.shields.io/github/workflow/status/Fekide/strapi-plugin-translate/Test" alt="Build" />
   </a>
+  <a href="https://codecov.io/gh/Fekide/strapi-plugin-translate" > 
+    <img src="https://codecov.io/gh/Fekide/strapi-plugin-translate/branch/main/graph/badge.svg?token=CP9ZH3UPF2"/> 
+  </a>
   <a href="http://commitizen.github.io/cz-cli/">
     <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly" />
   </a>
