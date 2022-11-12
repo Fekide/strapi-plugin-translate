@@ -12,7 +12,7 @@
     <img src="https://img.shields.io/npm/dm/strapi-plugin-translate.svg" alt="Monthly download on NPM" />
   </a>
   <a href="https://github.com/Fekide/strapi-plugin-translate/actions">
-    <img src="https://img.shields.io/github/workflow/status/Fekide/strapi-plugin-translate/Test" alt="Build" />
+    <img src="https://img.shields.io/github/workflow/status/Fekide/strapi-plugin-translate/Build" alt="Build" />
   </a>
   <a href="https://codecov.io/gh/Fekide/strapi-plugin-translate" > 
     <img src="https://codecov.io/gh/Fekide/strapi-plugin-translate/branch/main/graph/badge.svg?token=CP9ZH3UPF2"/> 
