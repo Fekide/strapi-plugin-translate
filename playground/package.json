@@ -18,7 +18,8 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "test": "echo no tests"
   },
   "devDependencies": {},
   "author": {

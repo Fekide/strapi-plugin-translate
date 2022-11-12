@@ -9,7 +9,7 @@
   "scripts": {
     "semantic-release": "semantic-release",
     "commit": "cz",
-    "test": "jest",
+    "test": "yarn workspaces run test",
     "lint": "eslint ."
   },
   "devDependencies": {
