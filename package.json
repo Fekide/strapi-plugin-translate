@@ -10,7 +10,8 @@
     "semantic-release": "semantic-release",
     "commit": "cz",
     "test": "yarn workspaces run test",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "release": "multi-semantic-release --ignore-private-packages"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
