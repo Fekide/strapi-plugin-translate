@@ -9,7 +9,7 @@ function createSimpleComponent(translate = 'translate') {
             translate,
           },
         },
-        type: 'text',
+        type: 'richtext',
       },
     },
   }

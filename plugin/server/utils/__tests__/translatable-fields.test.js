@@ -60,7 +60,7 @@ describe('translatable fields', () => {
       )
 
       // then
-      expect(translatedField).toEqual(attr)
+      expect(translatedField).toEqual({ field: attr, format: 'plain' })
     })
 
     it('text field copy not translated', async () => {
@@ -146,7 +146,9 @@ describe('translatable fields', () => {
       )
 
       // then
-      expect(translatedField).toEqual(['child_component.text'])
+      expect(translatedField).toEqual([
+        { field: 'child_component.text', format: 'markdown' },
+      ])
     })
 
     it('component with copy field not translated', async () => {
@@ -219,8 +221,8 @@ describe('translatable fields', () => {
 
       // then
       expect(translatedField).toEqual([
-        'child_component.0.text',
-        'child_component.1.text',
+        { field: 'child_component.0.text', format: 'markdown' },
+        { field: 'child_component.1.text', format: 'markdown' },
       ])
     })
 
@@ -256,9 +258,9 @@ describe('translatable fields', () => {
 
       // then
       expect(translatedField).toEqual([
-        'comp.text',
-        'comp.nested.text',
-        'comp.nested.nested.text',
+        { field: 'comp.text', format: 'plain' },
+        { field: 'comp.nested.text', format: 'plain' },
+        { field: 'comp.nested.nested.text', format: 'plain' },
       ])
     })
 
@@ -293,9 +295,9 @@ describe('translatable fields', () => {
 
       // then
       expect(translatedField).toEqual([
-        'dynamic_zone.0.text',
-        'dynamic_zone.1.title',
-        'dynamic_zone.2.text',
+        { field: 'dynamic_zone.0.text', format: 'markdown' },
+        { field: 'dynamic_zone.1.title', format: 'plain' },
+        { field: 'dynamic_zone.2.text', format: 'markdown' },
       ])
     })
   })
@@ -319,7 +321,7 @@ describe('translatable fields', () => {
       const translatedField = await getAllTranslatableFields(data, schema)
 
       // then
-      expect(translatedField).toEqual(['title'])
+      expect(translatedField).toEqual([{ field: 'title', format: 'plain' }])
     })
 
     it('complex content type translated', async () => {
@@ -359,13 +361,13 @@ describe('translatable fields', () => {
 
       // then
       expect(translatedField).toEqual([
-        'title',
-        'content',
-        'dynamic_zone.0.text',
-        'dynamic_zone.1.title',
-        'child_component.text',
-        'repeated_child_component.0.title',
-        'repeated_child_component.1.title',
+        { field: 'title', format: 'plain' },
+        { field: 'content', format: 'markdown' },
+        { field: 'dynamic_zone.0.text', format: 'markdown' },
+        { field: 'dynamic_zone.1.title', format: 'plain' },
+        { field: 'child_component.text', format: 'markdown' },
+        { field: 'repeated_child_component.0.title', format: 'plain' },
+        { field: 'repeated_child_component.1.title', format: 'plain' },
       ])
     })
   })

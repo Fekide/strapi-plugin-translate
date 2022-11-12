@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash')
+const { isTranslatedFieldType } = require('./translated-field-types')
 
 /**
  * Return new data without all attributes that have the config option pluginOptions.translate.translate=delete
@@ -11,19 +12,13 @@ const _ = require('lodash')
  */
 function filterAllDeletedFields(data, schema) {
   const attributesSchema = _.get(schema, 'attributes', [])
-  const { translatedFieldTypes } = strapi.config.get('plugin.translate')
   const newData = _.cloneDeep(data)
 
   Object.keys(attributesSchema).map((attr) => {
     const fieldSchema = attributesSchema[attr]
 
     if (fieldSchema.pluginOptions?.i18n?.localized) {
-      return filterDeletedFields(
-        newData,
-        fieldSchema,
-        attr,
-        translatedFieldTypes
-      )
+      return filterDeletedFields(newData, fieldSchema, attr)
     }
   })
 
@@ -36,39 +31,25 @@ function filterAllDeletedFields(data, schema) {
  * @param {object} data The data at the current level
  * @param {object} schema The schema of the attribute
  * @param {string} attr The name of the attribute
- * @param {array} translatedFieldTypes The types of fields that are translated
  * @returns The attribute or a list of child attributes if this attribute is a component or a dynamic zone
  */
-function filterDeletedFields(data, schema, attr, translatedFieldTypes) {
+function filterDeletedFields(data, schema, attr) {
   const onTranslate = _.get(
     schema,
     'pluginOptions.translate.translate',
     'translate'
   )
-  if (
-    translatedFieldTypes.includes(schema.type) &&
-    _.get(data, attr, undefined)
-  ) {
+  if (isTranslatedFieldType(schema.type) && _.get(data, attr, undefined)) {
     if (onTranslate === 'translate') {
       if (schema.type == 'component') {
         const componenData = _.get(data, attr, undefined)
-        recursiveComponentDeleteFields(
-          schema,
-          componenData,
-          translatedFieldTypes,
-          attr
-        )
+        recursiveComponentDeleteFields(schema, componenData, attr)
         if (componenData !== undefined) {
           data[attr] = componenData
         }
       } else if (schema.type == 'dynamiczone') {
         data[attr] = data[attr].map((object) => {
-          recursiveComponentDeleteFields(
-            schema,
-            object,
-            translatedFieldTypes,
-            attr
-          )
+          recursiveComponentDeleteFields(schema, object, attr)
           return object
         })
       }
@@ -82,13 +63,8 @@ function filterDeletedFields(data, schema, attr, translatedFieldTypes) {
  * Unsets all attributes of data that have the config option pluginOptions.translate.translate=delete
  * @param {object} componentReference The schema of the component in the content-type or component (to know if it is repeated or not)
  * @param {object} data The data of the component
- * @param {array} translatedFieldTypes The types of fields that are translated
  */
-function recursiveComponentDeleteFields(
-  componentReference,
-  data,
-  translatedFieldTypes
-) {
+function recursiveComponentDeleteFields(componentReference, data) {
   const componentSchema =
     componentReference.type == 'dynamiczone'
       ? strapi.components[data.__component]
@@ -101,15 +77,10 @@ function recursiveComponentDeleteFields(
 
     if (componentReference.repeatable) {
       data.map((_value, index) =>
-        filterDeletedFields(
-          data,
-          schema,
-          `${index}.${attr}`,
-          translatedFieldTypes
-        )
+        filterDeletedFields(data, schema, `${index}.${attr}`)
       )
     }
-    return filterDeletedFields(data, schema, attr, translatedFieldTypes)
+    return filterDeletedFields(data, schema, attr)
   })
 }
 

@@ -69,10 +69,12 @@ module.exports = {
         // Your provider might define some custom options like an apiKey
       },
       // Which field types are translated (default string, text, richtext, components and dynamiczones)
+      // Either string or object with type and format
+      // Possible formats: plain, markdown, html (default plain)
       translatedFieldTypes: [
         'string',
-        'text',
-        'richtext',
+        { type: 'text', format: 'plain' },
+        { type: 'richtext', format: 'markdown' },
         'component',
         'dynamiczone',
       ],
@@ -204,7 +206,13 @@ module.exports = {
 
     return {
       /**
-       * @param {{text:string|string[], sourceLocale: string, targetLocale: string, priority: number}} options all translate options
+       * @param {{
+       *  text:string|string[],
+       *  sourceLocale: string,
+       *  targetLocale: string,
+       *  priority: number,
+       *  format?: 'plain'|'markdown'|'html'
+       * }} options all translate options
        * @returns {string[]} the input text(s) translated
        */
       async translate(options) {
@@ -243,10 +251,22 @@ return reduceFunction(
 )
 ```
 
+The translate function receives the format of the text as `plain`, `markdown` or `html`. If your translation provider supports only html, but no markdown, you can use the `format` service to change the format before translating to `html` and afterwards back to `markdown`:
+
+```js
+const { markdownToHtml, htmlToMarkdown } = strapi.service(
+  'plugin::translate.format'
+)
+
+if (format === 'markdown') {
+  return htmlToMarkdown(providerClient.translateTexts(markdownToHtml(text)))
+}
+return providerClient.translateTexts(texts)
+```
+
 ## (Current) Limitations:
 
-- The translation of Markdown using the DeepL-Provider works relatively well but is not perfect. Watch out especially if you have links in Markdown that could be changed by translation
-- HTML in `richtext` created using a different WYSIWYG editor is not supported
+- The translation of Markdown and HTML may vary between different providers
 - **Only super admins can translate**. This is currently the case, since permissions were added to the `translate` endpoint. Probably you can change the permissions with an enterprise subscription but I am not sure. If you know how to do that also in the community edition please tell me or open a merge request!
 - Relations that do not have a translation of the desired locale will not be translated. To keep the relation you will need to translate both in succession (Behaviour for multi-relations has not yet been analyzed)
 

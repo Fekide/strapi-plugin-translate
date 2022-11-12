@@ -3,7 +3,11 @@
 const { getService } = require('../../utils')
 
 // Every text to translate becomes "translated" in this mock so it can be verified to have been changed
-const translatedText = 'translated'
+const translatedByFormat = {
+  plain: 'translatedPlain',
+  markdown: 'translatedMarkdown',
+  html: 'translatedHTML',
+}
 
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {
@@ -24,7 +28,10 @@ describe('provider service', () => {
           name: 'Dummy',
           init() {
             return {
-              async translate({ text, sourceLocale, targetLocale }) {
+              async translate({ text, sourceLocale, targetLocale, format }) {
+                if (!['plain', 'html', 'markdown'].includes(format)) {
+                  throw new Error(`Unknown format ${format}`)
+                }
                 if (!text) {
                   return []
                 }
@@ -33,7 +40,7 @@ describe('provider service', () => {
                 }
 
                 const textArray = Array.isArray(text) ? text : [text]
-                return textArray.map(() => 'translated')
+                return textArray.map(() => translatedByFormat[format])
               },
               async usage() {
                 return {
@@ -54,7 +61,7 @@ describe('provider service', () => {
       }
       const sourceLocale = 'en'
       const targetLocale = 'de'
-      const fieldsToTranslate = ['title']
+      const fieldsToTranslate = [{ field: 'title', format: 'plain' }]
 
       // when
       const result = await getService('translate').translate({
@@ -67,7 +74,7 @@ describe('provider service', () => {
       // then
       expect(result).toEqual({
         ...data,
-        title: translatedText,
+        title: translatedByFormat.plain,
       })
     })
 
@@ -107,11 +114,11 @@ describe('provider service', () => {
       const sourceLocale = 'en'
       const targetLocale = 'de'
       const fieldsToTranslate = [
-        'title',
-        'content',
-        'component.text',
-        'repeated.0.text',
-        'repeated.1.text',
+        { field: 'title', format: 'plain' },
+        { field: 'content', format: 'markdown' },
+        { field: 'component.text', format: 'plain' },
+        { field: 'repeated.0.text', format: 'plain' },
+        { field: 'repeated.1.text', format: 'plain' },
       ]
 
       // when
@@ -121,14 +128,17 @@ describe('provider service', () => {
 
       // then
       expect(result).toEqual({
-        title: translatedText,
-        content: translatedText,
+        title: translatedByFormat.plain,
+        content: translatedByFormat.markdown,
         untranslated: 'not translated',
         component: {
-          text: translatedText,
+          text: translatedByFormat.plain,
           number: 6,
         },
-        repeated: [{ text: translatedText }, { text: translatedText }],
+        repeated: [
+          { text: translatedByFormat.plain },
+          { text: translatedByFormat.plain },
+        ],
       })
     })
   })
