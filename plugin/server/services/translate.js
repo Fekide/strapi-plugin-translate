@@ -2,6 +2,7 @@
 
 const get = require('lodash/get')
 const set = require('lodash/set')
+const groupBy = require('lodash/groupBy')
 
 const { getService } = require('../utils/get-service')
 const { BatchTranslateManager } = require('./batch-translate')
@@ -21,23 +22,29 @@ module.exports = ({ strapi }) => ({
       return data
     }
 
-    const textsToTranslate = fieldsToTranslate.map((field) => {
-      return get(data, field, '')
-    })
-
-    const translateResult = await strapi
-      .plugin('translate')
-      .provider.translate({
-        text: textsToTranslate,
-        targetLocale,
-        sourceLocale,
-        priority,
-      })
+    const groupedFields = groupBy(fieldsToTranslate, 'format')
 
     const translatedData = { ...data }
-    fieldsToTranslate.forEach((field, index) => {
-      set(translatedData, field, translateResult[index])
-    })
+    await Promise.all(
+      Object.keys(groupedFields).map(async (format) => {
+        const textsToTranslate = groupedFields[format].map(({ field }) =>
+          get(data, field, '')
+        )
+        const translateResult = await strapi
+          .plugin('translate')
+          .provider.translate({
+            text: textsToTranslate,
+            targetLocale,
+            sourceLocale,
+            priority,
+            format,
+          })
+
+        groupedFields[format].forEach(({ field }, index) => {
+          set(translatedData, field, translateResult[index])
+        })
+      })
+    )
 
     return translatedData
   },

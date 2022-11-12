@@ -177,6 +177,25 @@ describe('deepl provider', () => {
             // then
             expect(result).toEqual(params.text)
           }
+
+          async function markdownTexts() {
+            // given
+            const params = {
+              sourceLocale: 'en',
+              targetLocale: 'de',
+              text: [
+                '# Heading\n\nSome text',
+                '## Subheading\n\nSome more text',
+              ],
+              format: 'markdown',
+            }
+            // when
+            const result = await deeplProvider.translate(params)
+
+            // then
+            expect(result).toEqual(params.text)
+          }
+
           async function forMissingText() {
             // given
             const params = {
@@ -215,6 +234,10 @@ describe('deepl provider', () => {
 
           it('with missing text', async () => {
             await forMissingText()
+          })
+
+          it('with markdown texts', async () => {
+            await markdownTexts()
           })
 
           it('with more than 50 texts', async () => {

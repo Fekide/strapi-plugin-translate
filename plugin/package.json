@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "axios": "^0.26.0",
-    "bottleneck": "^2.19.5"
+    "bottleneck": "^2.19.5",
+    "jsdom": "^20.0.2",
+    "showdown": "^2.1.0"
   },
   "peerDependencies": {
     "@strapi/plugin-i18n": "^4.1.4",

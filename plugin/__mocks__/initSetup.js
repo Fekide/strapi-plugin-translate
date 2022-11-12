@@ -1,6 +1,7 @@
-const { get, set, isEmpty } = require('lodash')
+const { get, set, isEmpty, defaults } = require('lodash')
 
 const dummyProvider = require('../server/utils/dummy-provider')
+const configModule = require('../server/config')
 
 module.exports = ({
   config = {},
@@ -23,6 +24,9 @@ module.exports = ({
         },
       }
     : {}
+
+  defaults(config, configModule.default())
+  configModule.validator(config)
 
   let mock = {
     db: {
@@ -94,6 +98,7 @@ module.exports = ({
         services: {
           provider: require('../server/services/provider'),
           translate: require('../server/services/translate'),
+          format: require('../server/services/format'),
           'batch-translate-job': () => {
             const uid = 'plugin::translate.batch-translate-job'
             return {
@@ -143,17 +148,8 @@ module.exports = ({
       },
       plugins: {
         translate: {
-          provider: provider.provider,
-          translatedFieldTypes: [
-            'string',
-            'text',
-            'richtext',
-            'component',
-            'dynamiczone',
-          ],
-          translateRelations: true,
-          glossaryId: null,
-          ...(toStore ? {} : config),
+          ...config,
+          provider: provider?.provider,
         },
       },
     },

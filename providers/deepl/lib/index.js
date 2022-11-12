@@ -35,24 +35,41 @@ module.exports = {
     const rateLimitedTranslate = limiter.wrap(client.translateText.bind(client))
 
     return {
-      async translate({ text, priority, sourceLocale, targetLocale }) {
+      /**
+       * @param {{
+       *  text:string|string[],
+       *  sourceLocale: string,
+       *  targetLocale: string,
+       *  priority: number,
+       *  format?: 'plain'|'markdown'|'html'
+       * }} options all translate options
+       * @returns {string[]} the input text(s) translated
+       */
+      async translate({ text, priority, sourceLocale, targetLocale, format }) {
         if (!text) {
           return []
         }
-        if (!sourceLocale | !targetLocale) {
+        if (!sourceLocale || !targetLocale) {
           throw new Error('source and target locale must be defined')
         }
 
-        const textArray = Array.isArray(text) ? text : [text]
-
         const chunksService = getService('chunks')
+        const formatService = getService('format')
+
+        const tagHandlingMode = format === 'plain' ? undefined : 'html'
+
+        let textArray = Array.isArray(text) ? text : [text]
+
+        if (format === 'markdown') {
+          textArray = formatService.markdownToHtml(textArray)
+        }
 
         const { chunks, reduceFunction } = chunksService.split(textArray, {
           maxLength: DEEPL_API_MAX_TEXTS,
           maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
         })
 
-        return reduceFunction(
+        const result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
               const result = await rateLimitedTranslate.withOptions(
@@ -64,13 +81,19 @@ module.exports = {
                 },
                 texts,
                 parseLocale(sourceLocale),
-                parseLocale(targetLocale)
-                // TODO: other options
+                parseLocale(targetLocale),
+                { tagHandlingMode }
               )
               return result.map((value) => value.text)
             })
           )
         )
+
+        if (format === 'markdown') {
+          return formatService.htmlToMarkdown(result)
+        }
+
+        return result
       },
       async usage() {
         return (await client.getUsage()).character

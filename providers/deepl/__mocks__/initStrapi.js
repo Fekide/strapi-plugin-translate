@@ -19,6 +19,7 @@ module.exports = ({ plugins = {} }) => {
         },
         services: {
           chunks: require('strapi-plugin-translate/server/services/chunks'),
+          format: require('strapi-plugin-translate/server/services/format'),
         },
       },
       'content-type-builder': {

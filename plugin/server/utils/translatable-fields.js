@@ -3,6 +3,10 @@
 const _ = require('lodash')
 
 const { flatten_and_compact } = require('./lodash-helpers')
+const {
+  isTranslatedFieldType,
+  getFieldTypeFormat,
+} = require('./translated-field-types')
 
 /**
  * Get the field or fields to translate of a content type
@@ -13,19 +17,13 @@ const { flatten_and_compact } = require('./lodash-helpers')
  */
 async function getAllTranslatableFields(data, schema) {
   const attributesSchema = _.get(schema, 'attributes', [])
-  const { translatedFieldTypes } = strapi.config.get('plugin.translate')
   return flatten_and_compact(
     await Promise.all(
       Object.keys(attributesSchema).map(async (attr) => {
         const fieldSchema = attributesSchema[attr]
 
         if (fieldSchema.pluginOptions?.i18n?.localized) {
-          return getTranslateFields(
-            data,
-            fieldSchema,
-            attr,
-            translatedFieldTypes
-          )
+          return getTranslateFields(data, fieldSchema, attr)
         }
         return null
       })
@@ -39,12 +37,11 @@ async function getAllTranslatableFields(data, schema) {
  * @param {object} data The data at the current level
  * @param {object} schema The schema of the attribute
  * @param {string} attr The name of the attribute
- * @param {array} translatedFieldTypes The types of fields that are translated
  * @returns The attribute or a list of child attributes if this attribute is a component or a dynamic zone
  */
-async function getTranslateFields(data, schema, attr, translatedFieldTypes) {
+async function getTranslateFields(data, schema, attr) {
   if (
-    translatedFieldTypes.includes(schema.type) &&
+    isTranslatedFieldType(schema.type) &&
     _.get(data, attr, undefined) &&
     schema.pluginOptions?.translate?.translate === 'translate'
   ) {
@@ -53,27 +50,30 @@ async function getTranslateFields(data, schema, attr, translatedFieldTypes) {
         await recursiveComponentFieldsToTranslate(
           schema,
           _.get(data, attr, undefined),
-          translatedFieldTypes,
           attr
         )
-      ).map((path) => `${attr}.${path}`)
+      ).map(({ field, format }) => ({
+        field: `${attr}.${field}`,
+        format,
+      }))
     } else if (schema.type == 'dynamiczone') {
       return flatten_and_compact(
         await Promise.all(
           data[attr].map(async (object, index) => {
             return (
-              await recursiveComponentFieldsToTranslate(
-                schema,
-                object,
-                translatedFieldTypes,
-                attr
-              )
-            ).map((path) => `${attr}.${index}.${path}`)
+              await recursiveComponentFieldsToTranslate(schema, object, attr)
+            ).map(({ field, format }) => ({
+              field: `${attr}.${index}.${field}`,
+              format,
+            }))
           })
         )
       )
     } else {
-      return attr
+      return {
+        field: attr,
+        format: getFieldTypeFormat(schema.type),
+      }
     }
   }
   return null
@@ -83,14 +83,9 @@ async function getTranslateFields(data, schema, attr, translatedFieldTypes) {
  *
  * @param {object} componentReference The schema of the component in the content-type or component (to know if it is repeated or not)
  * @param {object} data The data of the component
- * @param {array} translatedFieldTypes The types of fields that are translated
  * @returns A list of attributes to translate for this component
  */
-async function recursiveComponentFieldsToTranslate(
-  componentReference,
-  data,
-  translatedFieldTypes
-) {
+async function recursiveComponentFieldsToTranslate(componentReference, data) {
   const componentSchema =
     componentReference.type == 'dynamiczone'
       ? strapi.components[data.__component]
@@ -105,17 +100,12 @@ async function recursiveComponentFieldsToTranslate(
         return flatten_and_compact(
           await Promise.all(
             data.map(async (_value, index) =>
-              getTranslateFields(
-                data,
-                schema,
-                `${index}.${attr}`,
-                translatedFieldTypes
-              )
+              getTranslateFields(data, schema, `${index}.${attr}`)
             )
           )
         )
       }
-      return getTranslateFields(data, schema, attr, translatedFieldTypes)
+      return getTranslateFields(data, schema, attr)
     })
   )
   return flatten_and_compact(translateFields)
