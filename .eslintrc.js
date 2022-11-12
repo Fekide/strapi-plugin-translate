@@ -5,7 +5,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['plugin/server/**/*.js', 'providers/**/*.js'],
+      files: ['plugin/server/**/*.js', 'providers/**/lib/**/*.js'],
       parser: '@babel/eslint-parser',
       extends: [
         'eslint:recommended',
