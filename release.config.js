@@ -8,7 +8,7 @@ module.exports = {
       },
     ],
     '@semantic-release/release-notes-generator',
-    '@semantic-release/npm',
+    '@feki.de/semantic-release-yarn',
     '@semantic-release/github',
     '@semantic-release/git',
   ],

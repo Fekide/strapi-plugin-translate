@@ -1686,6 +1686,24 @@
   resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-7.6.0.tgz#9ea331766084288634a9247fcd8b84f16ff4ba07"
   integrity sha512-XK6BTq1NDMo9Xqw/YkYyGjSsg44fbNwYRx7QK2CuoQgyy+f1rrTDHoExVM5PsyXCtfl2vs2vVJ0MN0yN6LppRw==
 
+"@feki.de/semantic-release-yarn@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@feki.de/semantic-release-yarn/-/semantic-release-yarn-1.0.1.tgz#fc74ff10ec4d0a7d2ed736af3b93146fcdb62ba9"
+  integrity sha512-7y6PSJfJAnKu35exuPO32Iiy9e+Nab577bk4y+kO8Led3Zl/UcjiZxaYZenXZjMZg6Ms9vhNEXvUWUA3D9f5Pg==
+  dependencies:
+    "@semantic-release/error" "^3.0.0"
+    aggregate-error "^3.0.0"
+    execa "^5.0.0"
+    fs-extra "^10.0.0"
+    lodash "^4.17.15"
+    nerf-dart "^1.0.0"
+    normalize-url "^6.0.0"
+    rc "^1.2.8"
+    read-pkg "^5.0.0"
+    registry-auth-token "^4.0.0"
+    semver "^7.1.2"
+    tempy "^1.0.0"
+
 "@fingerprintjs/fingerprintjs@3.3.3":
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/@fingerprintjs/fingerprintjs/-/fingerprintjs-3.3.3.tgz#ead445032c92a79d5f585953019402ed223edc7d"
