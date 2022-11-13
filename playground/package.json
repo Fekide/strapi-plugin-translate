@@ -7,8 +7,8 @@
     "@strapi/plugin-users-permissions": "4.4.5",
     "@strapi/plugin-i18n": "4.4.5",
     "better-sqlite3": "7.4.6",
-    "strapi-plugin-translate": "0.0.0-development",
-    "strapi-provider-translate-deepl": "0.0.0-development"
+    "strapi-plugin-translate": "1.0.0-next.1",
+    "strapi-provider-translate-deepl": "1.0.0-next.1"
   },
   "name": "playground",
   "private": true,
