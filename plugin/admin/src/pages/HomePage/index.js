@@ -6,13 +6,13 @@
 
 import React, { memo } from 'react'
 import PluginHeader from '../../components/PluginHeader'
-import PluginTabs from '../../components/PluginTabs'
+import PluginPage from '../../components/PluginPage'
 
 const HomePage = () => {
   return (
     <div>
       <PluginHeader />
-      <PluginTabs />
+      <PluginPage />
     </div>
   )
 }
