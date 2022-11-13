@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" alt="Strapi-Translate" width="300" height="150" />
+  <img src="../assets/logo.svg" alt="Strapi-Translate" width="300" height="150" />
 </p>
 
 <div align="center">
