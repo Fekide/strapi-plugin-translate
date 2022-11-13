@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" alt="Strapi-Translate" width="300" height="150" />
+  <img src="https://raw.githubusercontent.com/Fekide/strapi-plugin-translate/HEAD/assets/logo.svg" alt="Strapi-Translate" height="100" />
 </p>
 
 <div align="center">
@@ -22,9 +22,9 @@
   </a>
 </div>
 
-![plugin showcase](assets/showcase.gif)
+![plugin showcase](https://raw.githubusercontent.com/Fekide/strapi-plugin-translate/HEAD/assets/showcase.gif)
 
-## Requirements
+## 📭 Requirements
 
 This plugin requires the following, in order to work correctly:
 
@@ -36,7 +36,7 @@ This plugin requires the following, in order to work correctly:
 
 Unless you have the previous set up, the field on the right where you can translate will not show up. Also it will not show up when editing the currently only available translation of an entry.
 
-## Installation
+## ⏳ Installation
 
 ```bash
 # with npm
@@ -54,11 +54,11 @@ $ npm run build && npm run develop
 $ yarn build && yarn develop
 ```
 
-## Configuration
+## ⚙ Configuration
 
 ### Overall plugin configuration
 
-> The overall plugin configurtion is done through `config[/env]/plugins.js` or environment variables
+> The overall plugin configuration is done through `config[/env]/plugins.js` or environment variables
 
 ```js
 module.exports = {
@@ -91,7 +91,7 @@ module.exports = {
 
 #### Available providers
 
-- [strapi-provider-translate-deepl](./providers/deepl/)
+- [strapi-provider-translate-deepl](https://www.npmjs.com/package/strapi-provider-translate-deepl)
 
 ### Configure translation of individual fields/attributes
 
@@ -137,7 +137,7 @@ For the field types `component`, `dynamiczone`, `media`, `relation`, `richtext`,
 }
 ```
 
-## Features
+## 🚀 Features
 
 This plugin allows you to automatically translate content types. This can be done either on a single entity, or for all entities of a content type.
 
@@ -160,7 +160,7 @@ The following features are included:
 
 ### Translate all entities of a content type
 
-![Batch translation showcase](assets/batch-translation.gif)
+![Batch translation showcase](https://raw.githubusercontent.com/Fekide/strapi-plugin-translate/HEAD/assets/batch-translation.gif)
 
 - Open the Translate plugin section in the left menu
 - You now see an overview of all localized content types
@@ -189,7 +189,7 @@ _The related objects are not translated directly, only the relation itself is tr
 - the relation goes both ways and would be removed from another object or localization if it was used (the case with oneToOne or oneToMany) -> it is removed
 - otherwise the relation is kept
 
-## Creating your own translation provider
+## 🧑‍💻 Creating your own translation provider
 
 A translation provider should have the following:
 
@@ -267,12 +267,8 @@ if (format === 'markdown') {
 return providerClient.translateTexts(texts)
 ```
 
-## (Current) Limitations:
+## ⚠ Limitations:
 
 - The translation of Markdown and HTML may vary between different providers
 - **Only super admins can translate**. This is currently the case, since permissions were added to the `translate` endpoint. Probably you can change the permissions with an enterprise subscription but I am not sure. If you know how to do that also in the community edition please tell me or open a merge request!
 - Relations that do not have a translation of the desired locale will not be translated. To keep the relation you will need to translate both in succession (Behaviour for multi-relations has not yet been analyzed)
-
-## Legal Disclaimer
-
-Feki.de e.V. do not hold the copyright to the Logos of Strapi Inc. or DeepL SE. There is no cooperation or any other sort of affiliation between Feki.de e.V. and Strapi Inc. or DeepL SE. The Logos are used under fair use in order to not confuse Users as to what this plugin does.
