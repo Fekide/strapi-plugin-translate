@@ -99,6 +99,7 @@ module.exports = ({
           provider: require('../server/services/provider'),
           translate: require('../server/services/translate'),
           format: require('../server/services/format'),
+          chunks: require('../server/services/chunks'),
           'batch-translate-job': () => {
             const uid = 'plugin::translate.batch-translate-job'
             return {

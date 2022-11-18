@@ -7,10 +7,10 @@ const { stringByteLengthEncoded } = require('../utils/byte-length')
  * and each chunk beaing at most a specific byte size.
  *
  * @param {string[]} textArray
- * @param {{maxLength: number, maxByteSize: number}} options Configuration options
+ * @param {{maxLength?: number, maxByteSize?: number} | undefined}  options Configuration options
  * @returns {string[][]}
  */
-function splitTextArray(textArray, { maxLength, maxByteSize }) {
+function splitTextArray(textArray, { maxLength, maxByteSize } = {}) {
   // Information about how to join chunks back together
   const reduceInformation = []
 
