@@ -5,11 +5,12 @@ const { getAllTranslatableFields } = require('../utils/translatable-fields')
 const { translateRelations } = require('../utils/translate-relations')
 const { TRANSLATE_PRIORITY_DIRECT_TRANSLATION } = require('../utils/constants')
 const { filterAllDeletedFields } = require('../utils/delete-fields')
+const { populateAll } = require('../utils/populate-all')
+const { cleanData } = require('../utils/clean-data')
 
 module.exports = ({ strapi }) => ({
   async translate(ctx) {
-    const { data, sourceLocale, targetLocale, contentTypeUid } =
-      ctx.request.body
+    const { id, sourceLocale, targetLocale, contentTypeUid } = ctx.request.body
 
     if (!targetLocale || !sourceLocale) {
       return ctx.badRequest('target and source locale are both required')
@@ -21,13 +22,20 @@ module.exports = ({ strapi }) => ({
       return ctx.notFound('corresponding content type not found')
     }
 
+    const populateRule = populateAll(contentSchema)
+
+    const fullyPopulatedData = await strapi.db.query(contentTypeUid).findOne({
+      where: { id, locale: sourceLocale },
+      populate: populateRule,
+    })
+
     const fieldsToTranslate = await getAllTranslatableFields(
-      data,
+      fullyPopulatedData,
       contentSchema
     )
     try {
       const translatedData = await getService('translate').translate({
-        data,
+        data: fullyPopulatedData,
         sourceLocale,
         targetLocale,
         fieldsToTranslate,
@@ -42,8 +50,11 @@ module.exports = ({ strapi }) => ({
         translatedRelations,
         contentSchema
       )
+      const cleanedData = cleanData(withFieldsDeleted, contentSchema, true)
 
-      ctx.body = withFieldsDeleted
+      cleanedData.localizations.push({ id })
+
+      ctx.body = cleanedData
     } catch (error) {
       strapi.log.error('Translating entity failed: ' + error.message)
       if (error.response?.status !== undefined) {
