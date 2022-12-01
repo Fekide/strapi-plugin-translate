@@ -24,10 +24,10 @@ function deleteInvalidFields(data, schema) {
  * @param {object} schema The schema of the content-type
  * @returns The input data with invalid fields (like id or localizations) removed
  */
-function cleanData(data, schema) {
+function cleanData(data, schema, forFrontend = false) {
   const resultData = _.cloneDeep(data)
 
-  deleteInvalidFields(resultData, schema)
+  deleteInvalidFields(resultData, schema, forFrontend)
 
   const attributesSchema = _.get(schema, 'attributes', [])
 
@@ -41,13 +41,14 @@ function cleanData(data, schema) {
     if (attributeSchema.type === 'component') {
       resultData[attr] = cleanComponent(
         _.get(data, attr, undefined),
-        attributeSchema
+        attributeSchema,
+        forFrontend
       )
     } else if (attributeSchema.type === 'dynamiczone') {
       resultData[attr] = _.get(data, attr, []).map((object) =>
-        cleanComponent(object, attributeSchema)
+        cleanComponent(object, attributeSchema, forFrontend)
       )
-    } else if (attributeSchema.type === 'relation') {
+    } else if (attributeSchema.type === 'relation' && !forFrontend) {
       const relatedEntity = _.get(data, attr, [])
       if (Array.isArray(relatedEntity)) {
         resultData[attr] = relatedEntity.map((e) => e.id)
@@ -60,7 +61,7 @@ function cleanData(data, schema) {
   return resultData
 }
 
-function cleanComponent(data, componentReference) {
+function cleanComponent(data, componentReference, forFrontend) {
   if (!data) {
     return data
   }
@@ -69,9 +70,9 @@ function cleanComponent(data, componentReference) {
       ? strapi.components[data.__component]
       : strapi.components[componentReference.component]
   if (componentReference.repeatable) {
-    return data.map((value) => cleanData(value, componentSchema))
+    return data.map((value) => cleanData(value, componentSchema, forFrontend))
   }
-  return cleanData(data, componentSchema)
+  return cleanData(data, componentSchema, forFrontend)
 }
 
 module.exports = {
