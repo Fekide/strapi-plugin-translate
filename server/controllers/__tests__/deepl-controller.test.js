@@ -35,12 +35,12 @@ describe('deepl controller', () => {
 
   it('should call translate service', async () => {
     // given
-    const data = { id: 1, title: 'test' }
+    const id = 1
     const sourceLocale = 'en'
     const targetLocale = 'de'
     const contentTypeUid = 'api::first.first'
     const ctx = createContext({
-      data,
+      id,
       sourceLocale,
       targetLocale,
       contentTypeUid,
@@ -50,16 +50,17 @@ describe('deepl controller', () => {
     await strapi.plugin('deepl').controller('translate').translate(ctx)
 
     // then
+    expect(ctx.badRequest).not.toHaveBeenCalled()
     expect(translateServiceMock).toHaveBeenCalled()
   })
 
   it('bad request if source locale is missing', async () => {
     // given
-    const data = { id: 1, title: 'test' }
+    const id = 1
     const sourceLocale = 'en'
     const contentTypeUid = 'api::first.first'
     const ctx = createContext({
-      data,
+      id,
       sourceLocale,
       contentTypeUid,
     })
@@ -74,11 +75,11 @@ describe('deepl controller', () => {
 
   it('bad request if target locale is missing', async () => {
     // given
-    const data = { id: 1, title: 'test' }
+    const id = 1
     const targetLocale = 'de'
     const contentTypeUid = 'api::first.first'
     const ctx = createContext({
-      data,
+      id,
       targetLocale,
       contentTypeUid,
     })
@@ -93,12 +94,12 @@ describe('deepl controller', () => {
 
   it('not found if content type does not exist', async () => {
     // given
-    const data = { id: 1, title: 'test' }
+    const id = 1
     const sourceLocale = 'en'
     const targetLocale = 'de'
     const contentTypeUid = 'api::unknown.unknown'
     const ctx = createContext({
-      data,
+      id,
       sourceLocale,
       targetLocale,
       contentTypeUid,
@@ -109,6 +110,27 @@ describe('deepl controller', () => {
 
     // then
     expect(ctx.notFound).toHaveBeenCalled()
+    expect(translateServiceMock).not.toHaveBeenCalled()
+  })
+
+  it('id has to be a number or string', async () => {
+    // given
+    const id = null
+    const sourceLocale = 'en'
+    const targetLocale = 'de'
+    const contentTypeUid = 'api::unknown.unknown'
+    const ctx = createContext({
+      id,
+      sourceLocale,
+      targetLocale,
+      contentTypeUid,
+    })
+
+    // when
+    await strapi.plugin('deepl').controller('translate').translate(ctx)
+
+    // then
+    expect(ctx.badRequest).toHaveBeenCalled()
     expect(translateServiceMock).not.toHaveBeenCalled()
   })
 })

@@ -28,7 +28,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import get from 'lodash/get'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useIntl } from 'react-intl'
 import { Dialog, DialogBody, DialogFooter } from '@strapi/design-system/Dialog'
 import { Select, Option } from '@strapi/design-system/Select'
@@ -50,9 +50,10 @@ import { generateOptions } from '@strapi/plugin-i18n/admin/src/components/CMEdit
 import useContentTypePermissions from '@strapi/plugin-i18n/admin/src/hooks/useContentTypePermissions'
 import selectI18NLocales from '@strapi/plugin-i18n/admin/src/selectors/selectI18nLocales'
 import { axiosInstance } from '@strapi/plugin-i18n/admin/src/utils'
+import _ from 'lodash'
 import { getTrad } from '../../utils'
 import permissions from '../../permissions'
-import cleanData from './utils/cleanData'
+import parseRelations from './utils/parse-relations'
 
 const StyledTypography = styled(Typography)`
   svg {
@@ -108,7 +109,8 @@ const Content = ({
   localizations,
   readPermissions,
 }) => {
-  const { allLayoutData, initialData, slug } = useCMEditViewDataManager()
+  const { allLayoutData, initialData, slug, onChange } =
+    useCMEditViewDataManager()
 
   const options = generateOptions(
     appLocales,
@@ -119,7 +121,6 @@ const Content = ({
 
   const toggleNotification = useNotification()
   const { formatMessage } = useIntl()
-  const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [value, setValue] = useState(options[0]?.value || '')
@@ -131,40 +132,46 @@ const Content = ({
       return
     }
 
-    const requestDataURL = `/content-manager/collection-types/${slug}/${value}`
     const translateURL = `/deepl/translate`
 
     setIsLoading(true)
     try {
-      const { data: response } = await axiosInstance.get(requestDataURL)
-
-      const cleanedData = cleanData(response, allLayoutData, localizations)
-
       const { locale: sourceLocale } = localizations.find(
         ({ id }) => id == value
       )
       const { data: translatedData } = await axiosInstance.post(translateURL, {
-        data: cleanedData,
+        id: value,
         sourceLocale,
         targetLocale: currentLocale,
         contentTypeUid: slug,
       })
 
-      ;['createdBy', 'updatedBy', 'publishedAt', 'id', 'createdAt'].forEach(
-        (key) => {
-          if (!initialData[key]) return
-          translatedData[key] = initialData[key]
-        }
-      )
+      const parsedData = parseRelations(translatedData, allLayoutData)
 
-      // FIXME: Two issues here
-      // - Date/time field is only shown with value after save
-      // - The dispatch updates not just modified data but also the initial data
-      //   -> Saving is impossible until manual modification if object already existed
-      dispatch({
-        type: 'ContentManager/CrudReducer/GET_DATA_SUCCEEDED',
-        data: translatedData,
+      ;[
+        'createdBy',
+        'updatedBy',
+        'publishedAt',
+        'id',
+        'createdAt',
+        'updatedAt',
+      ].forEach((key) => {
+        _.omit(parsedData, key)
+
+        if (!initialData[key]) return
+        parsedData[key] = initialData[key]
       })
+
+      for (const key in parsedData) {
+        if (Object.hasOwnProperty.call(parsedData, key)) {
+          const value = parsedData[key]
+          const attribute = allLayoutData.contentType.attributes[key]
+
+          if (attribute) {
+            onChange({ target: { name: key, value, type: attribute.type } })
+          }
+        }
+      }
 
       toggleNotification({
         type: 'success',
