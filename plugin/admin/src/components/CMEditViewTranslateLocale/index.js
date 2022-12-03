@@ -148,7 +148,6 @@ const Content = ({
 
       const parsedData = parseRelations(translatedData, allLayoutData)
 
-      console.log(parsedData)
       ;[
         'createdBy',
         'updatedBy',

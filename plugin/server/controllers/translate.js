@@ -15,6 +15,9 @@ module.exports = ({ strapi }) => ({
     if (!targetLocale || !sourceLocale) {
       return ctx.badRequest('target and source locale are both required')
     }
+    if (!['string', 'number'].includes(typeof id)) {
+      return ctx.badRequest('id has to be a string or a number')
+    }
 
     const contentSchema = strapi.contentTypes[contentTypeUid]
 
