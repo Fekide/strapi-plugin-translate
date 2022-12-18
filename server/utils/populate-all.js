@@ -11,7 +11,10 @@ const _ = require('lodash')
  * @returns a populate object with all components, nested components,
  *  dynamic zones and relations
  */
-function populateAll(schema, maxDepth = 10) {
+function populateAll(
+  schema,
+  { maxDepth, populateMedia } = { maxDepth: 10, populateMedia: false }
+) {
   const attributesSchema = _.get(schema, 'attributes', [])
   const populateResult = {}
 
@@ -19,17 +22,20 @@ function populateAll(schema, maxDepth = 10) {
     const fieldSchema = attributesSchema[attr]
     if (fieldSchema.type === 'component') {
       populateResult[attr] = {
-        populate: recursiveComponentPopulate(
-          fieldSchema.component,
-          maxDepth - 1
-        ),
+        populate: recursiveComponentPopulate(fieldSchema.component, {
+          maxDepth: maxDepth - 1,
+          populateMedia,
+        }),
       }
     } else if (fieldSchema.type === 'dynamiczone') {
       const dynamicZonePopulate = fieldSchema.components.reduce(
         (combined, component) => {
           return _.merge(
             combined,
-            recursiveComponentPopulate(component, maxDepth - 1)
+            recursiveComponentPopulate(component, {
+              maxDepth: maxDepth - 1,
+              populateMedia,
+            })
           )
         },
         {}
@@ -41,8 +47,12 @@ function populateAll(schema, maxDepth = 10) {
             : dynamicZonePopulate,
       }
     } else if (['relation', 'media'].includes(fieldSchema.type)) {
-      populateResult[attr] = {
-        select: ['id'],
+      if (fieldSchema.type === 'media' && populateMedia) {
+        populateResult[attr] = true
+      } else {
+        populateResult[attr] = {
+          select: ['id'],
+        }
       }
     }
   })
@@ -59,12 +69,12 @@ function populateAll(schema, maxDepth = 10) {
  * @param {array} translatedFieldTypes The types of fields that are translated
  * @returns A list of attributes to translate for this component
  */
-function recursiveComponentPopulate(component, maxDepth) {
+function recursiveComponentPopulate(component, options) {
   const componentSchema = strapi.components[component]
-  if (maxDepth == 0) {
+  if (options.maxDepth == 0) {
     return true
   }
-  return populateAll(componentSchema, maxDepth)
+  return populateAll(componentSchema, options)
 }
 
 module.exports = {
