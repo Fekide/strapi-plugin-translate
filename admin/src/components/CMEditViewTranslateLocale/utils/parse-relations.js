@@ -1,7 +1,57 @@
 import _ from 'lodash'
-import { normalizeRelation } from '@strapi/admin/admin/src/content-manager/components/RelationInputDataManager/utils/normalizeRelations'
+import { getRequestUrl } from '@strapi/admin/admin/src/content-manager/utils'
+
+export const PUBLICATION_STATES = {
+  DRAFT: 'draft',
+  PUBLISHED: 'published',
+}
+
+/**
+ * Function is copied from https://github.com/strapi/strapi/blob/v4.5.3/packages/core/admin/admin/src/content-manager/components/RelationInputDataManager/utils/getRelationLink.js
+ * and lies under the MIT Expat License with  Copyright (c) 2015-present Strapi Solutions SAS
+ * @param {*} targetModel
+ * @param {*} id
+ * @returns
+ */
+export function getRelationLink(targetModel, id) {
+  return `${getRequestUrl(`collectionType/${targetModel}/${id ?? ''}`)}`
+}
+
+/**
+ * Function is copied from https://github.com/strapi/strapi/blob/v4.5.3/packages/core/admin/admin/src/content-manager/components/RelationInputDataManager/utils/normalizeRelations.js
+ * and lies under the MIT Expat License with  Copyright (c) 2015-present Strapi Solutions SAS
+ * @param {*} relation
+ * @param {*} options
+ * @returns
+ */
+const normalizeRelation = (
+  relation,
+  { shouldAddLink, mainFieldName, targetModel }
+) => {
+  const nextRelation = { ...relation }
+
+  if (shouldAddLink) {
+    nextRelation.href = getRelationLink(targetModel, nextRelation.id)
+  }
+
+  nextRelation.publicationState = false
+
+  if (nextRelation?.publishedAt !== undefined) {
+    nextRelation.publicationState = nextRelation.publishedAt
+      ? PUBLICATION_STATES.PUBLISHED
+      : PUBLICATION_STATES.DRAFT
+  }
+
+  nextRelation.mainField = nextRelation[mainFieldName]
+
+  return nextRelation
+}
 
 function parseRelation(data, metadata, relationEditLayout) {
+  if (!relationEditLayout) {
+    // In this case, strapi is <4.5
+    return data
+  }
   const result = normalizeRelation(data, {
     mainFieldName: metadata.edit.mainField.name,
     shouldAddLink: relationEditLayout.queryInfos.shouldDisplayRelationLink,
