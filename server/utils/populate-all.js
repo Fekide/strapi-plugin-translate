@@ -68,7 +68,6 @@ function populateAll(
 /**
  *
  * @param {object} componentReference The schema of the component in the content-type or component (to know if it is repeated or not)
- * @param {object} data The data of the component
  * @param {object} options - options for recursion and population
  * @param {number} options.maxDepth - maximum recursive depth
  * @param {boolean} options.populateMedia - see {@link populateAll}
