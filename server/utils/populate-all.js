@@ -8,6 +8,9 @@ const _ = require('lodash')
  * - from all relations only the ID (more is not necessary for translation)
  *
  * @param {object} schema The schema of the content type
+ * @param {object} options - options for recursion and population
+ * @param {number} options.maxDepth - maximum depth for recursive population, defaults to 10
+ * @param {boolean} options.populateMedia - whether to include media, defaults to false
  * @returns a populate object with all components, nested components,
  *  dynamic zones and relations
  */
