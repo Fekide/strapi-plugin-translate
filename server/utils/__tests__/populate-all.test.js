@@ -8,6 +8,7 @@ const {
 } = require('../../../__mocks__/components')
 const {
   simpleContentType,
+  mediaContentType,
   createRelationContentType,
   createContentTypeWithComponent,
   createContentTypeWithDynamicZone,
@@ -41,6 +42,7 @@ describe('populate all', () => {
       },
       contentTypes: {
         'api::simple.simple': simpleContentType,
+        'api::media.media': mediaContentType,
         'api::simple.localized': createSimpleContentType(
           true,
           'api::simple.localized'
@@ -169,11 +171,37 @@ describe('populate all', () => {
     const schema = strapi.components['nestedComponent']
 
     // when
-    const population = populateAll(schema, 2)
+    const population = populateAll(schema, { maxDepth: 2 })
 
     // then
     expect(population).toEqual({
       nested: { populate: { nested: { populate: true } } },
+    })
+  })
+
+  it('media is fully populated if requested', () => {
+    // given
+    const schema = strapi.contentTypes['api::media.media']
+
+    // when
+    const population = populateAll(schema, { populateMedia: true })
+
+    // then
+    expect(population).toEqual({
+      media: true,
+    })
+  })
+
+  it('media is not fully populated by default', () => {
+    // given
+    const schema = strapi.contentTypes['api::media.media']
+
+    // when
+    const population = populateAll(schema)
+
+    // then
+    expect(population).toEqual({
+      media: { select: ['id'] },
     })
   })
 })
