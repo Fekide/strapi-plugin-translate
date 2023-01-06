@@ -7,17 +7,21 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    target-branch: "next"
     schedule:
       interval: "weekly"
   - package-ecosystem: "npm"
     directory: "/plugin/"
+    target-branch: "next"
     schedule:
       interval: "weekly"
   - package-ecosystem: "npm"
     directory: "/providers/deepl/"
+    target-branch: "next"
     schedule:
       interval: "weekly"
   - package-ecosystem: "npm"
     directory: "/playground/"
+    target-branch: "next"
     schedule:
       interval: "weekly"
