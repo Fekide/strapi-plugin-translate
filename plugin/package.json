@@ -12,7 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "axios": "^0.26.0",
+    "axios": "^1.2.2",
     "bottleneck": "^2.19.5",
     "jsdom": "^20.0.2",
     "showdown": "^2.1.0"
