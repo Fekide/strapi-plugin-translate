@@ -37,6 +37,30 @@ function createSimpleContentType(
   }
 }
 
+const mediaContentType = {
+  pluginOptions: {
+    i18n: {
+      localized: true,
+    },
+  },
+  kind: 'collectionType',
+  attributes: {
+    media: {
+      allowedTypes: ['images', 'files', 'videos', 'audios'],
+      type: 'media',
+      multiple: false,
+      pluginOptions: {
+        i18n: {
+          localized: true,
+        },
+        deepl: {
+          translate: 'translate',
+        },
+      },
+    },
+  },
+}
+
 function createRelationContentType(
   relationType,
   inverseOrMapped,
@@ -365,6 +389,7 @@ const complexContentTypeDelete = {
 module.exports = {
   complexContentTypeDelete,
   simpleContentType,
+  mediaContentType,
   createSimpleContentType,
   complexContentType,
   createRelationContentType,

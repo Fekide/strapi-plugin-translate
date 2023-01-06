@@ -25,7 +25,7 @@ module.exports = ({ strapi }) => ({
       return ctx.notFound('corresponding content type not found')
     }
 
-    const populateRule = populateAll(contentSchema)
+    const populateRule = populateAll(contentSchema, { populateMedia: true })
 
     const fullyPopulatedData = await strapi.db.query(contentTypeUid).findOne({
       where: { id, locale: sourceLocale },
