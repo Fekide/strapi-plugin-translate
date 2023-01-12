@@ -6,13 +6,13 @@
   <h1>Strapi v4 - Translate plugin</h1>
   <p>Manage and automate the translation of content fields.</p>
   <a href="https://www.npmjs.org/package/strapi-plugin-translate">
-    <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/Fekide/strapi-plugin-translate?label=npm&logo=npm">
+    <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/fekide/strapi-plugin-translate?filename=plugin%2Fpackage.json&label=npm&logo=npm">
   </a>
   <a href="https://www.npmjs.org/package/strapi-plugin-translate">
     <img src="https://img.shields.io/npm/dm/strapi-plugin-translate.svg" alt="Monthly download on NPM" />
   </a>
   <a href="https://github.com/Fekide/strapi-plugin-translate/actions">
-    <img src="https://img.shields.io/github/workflow/status/Fekide/strapi-plugin-translate/Build" alt="Build" />
+    <img src="https://img.shields.io/github/actions/workflow/status/fekide/strapi-plugin-translate/build.yml?branch=main" alt="Build" />
   </a>
   <a href="https://codecov.io/gh/Fekide/strapi-plugin-translate" > 
     <img src="https://codecov.io/gh/Fekide/strapi-plugin-translate/branch/main/graph/badge.svg?token=CP9ZH3UPF2"/> 
