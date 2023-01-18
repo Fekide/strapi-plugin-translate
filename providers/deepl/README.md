@@ -16,6 +16,11 @@ module.exports = {
         apiKey: 'key',
         // use custom api url - optional
         apiUrl: 'https://api-free.deepl.com',
+        // use custom locale mapping (for example 'en' locale is deprecated so need to choose between 'EN-GB' and 'EN-US')
+        localeMap: {
+          // use uppercase here!
+          EN: 'EN-US',
+        },
       },
       // other options ...
     },

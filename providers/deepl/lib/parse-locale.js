@@ -1,8 +1,25 @@
 'use strict'
 
-function parseLocale(strapiLocale) {
+const defaults = require('lodash/defaults')
+
+const defaultLocaleMap = {
+  PT: 'PT-PT',
+  EN: 'EN-US',
+  // english creole variants. Translating them to english by default
+  AIG: 'EN-US',
+  BAH: 'EN-US',
+  SVC: 'EN-US',
+  VIC: 'EN-US',
+  LIR: 'EN-US',
+  TCH: 'EN-US',
+}
+
+function parseLocale(strapiLocale, localeMap = {}) {
   const unstripped = strapiLocale.toUpperCase()
   const stripped = unstripped.split('-')[0]
+
+  defaults(localeMap, defaultLocaleMap)
+
   switch (stripped) {
     case 'BG':
     case 'CS':
@@ -29,25 +46,20 @@ function parseLocale(strapiLocale) {
     case 'TR':
     case 'UK':
     case 'ZH':
-      return stripped
+      return localeMap[stripped] || stripped
     case 'PT':
       if (unstripped == 'PT-PT') return unstripped
       if (unstripped == 'PT-BR') return unstripped
-      return stripped
-    // english creole variants. Translating them to english by default
-    case 'AIG':
-    case 'BAH':
-    case 'SVC':
-    case 'VIC':
-    case 'LIR':
-    case 'TCH':
-      return 'EN'
+      return localeMap[stripped]
     case 'EN':
       if (unstripped == 'EN-GB') return unstripped
       if (unstripped == 'EN-US') return unstripped
-      return stripped
+      return localeMap[stripped]
 
     default:
+      if (localeMap[stripped]) return localeMap[stripped]
+      if (localeMap[unstripped]) return localeMap[unstripped]
+      if (localeMap[strapiLocale]) return localeMap[strapiLocale]
       throw new Error('unsupported locale')
   }
 }
