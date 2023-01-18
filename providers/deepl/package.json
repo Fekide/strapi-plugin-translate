@@ -54,6 +54,7 @@
     "msw": "^0.47.4"
   },
   "peerDependencies": {
-    "strapi-plugin-translate": "1.0.0"
+    "strapi-plugin-translate": "1.0.0",
+    "lodash": "*"
   }
 }

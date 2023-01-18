@@ -22,6 +22,10 @@ module.exports = {
   init(providerOptions = {}) {
     const apiKey = process.env.DEEPL_API_KEY || providerOptions.apiKey
     const apiUrl = process.env.DEEPL_API_URL || providerOptions.apiUrl
+    const localeMap =
+      typeof providerOptions.localeMap === 'object'
+        ? providerOptions.localeMap
+        : {}
 
     const client = new deepl.Translator(apiKey, {
       serverUrl: apiUrl,
@@ -80,8 +84,8 @@ module.exports = {
                       : DEEPL_PRIORITY_DEFAULT,
                 },
                 texts,
-                parseLocale(sourceLocale),
-                parseLocale(targetLocale),
+                parseLocale(sourceLocale, localeMap),
+                parseLocale(targetLocale, localeMap),
                 { tagHandlingMode }
               )
               return result.map((value) => value.text)
