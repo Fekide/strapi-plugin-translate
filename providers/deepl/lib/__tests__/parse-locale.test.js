@@ -52,4 +52,10 @@ describe('locale parser', () => {
       expect(() => parseLocale(code)).toThrow()
     })
   })
+  it('uses locale mapping', () => {
+    const localeMap = {
+      EN: 'EN-GB',
+    }
+    expect(parseLocale('en', localeMap)).toMatch('EN-GB')
+  })
 })
