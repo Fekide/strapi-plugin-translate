@@ -33,7 +33,7 @@ function parseLocale(strapiLocale) {
     case 'PT':
       if (unstripped == 'PT-PT') return unstripped
       if (unstripped == 'PT-BR') return unstripped
-      return stripped
+      return 'PT-PT'
     // english creole variants. Translating them to english by default
     case 'AIG':
     case 'BAH':
@@ -41,11 +41,11 @@ function parseLocale(strapiLocale) {
     case 'VIC':
     case 'LIR':
     case 'TCH':
-      return 'EN'
+      return 'EN-US'
     case 'EN':
       if (unstripped == 'EN-GB') return unstripped
       if (unstripped == 'EN-US') return unstripped
-      return stripped
+      return 'EN-US'
 
     default:
       throw new Error('unsupported locale')

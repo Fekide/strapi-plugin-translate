@@ -52,4 +52,10 @@ describe('locale parser', () => {
       expect(() => parseLocale(code)).toThrow()
     })
   })
+  it('does not parse en to EN as that is deprecated', () => {
+    expect(parseLocale('en')).not.toEqual('EN')
+  })
+  it('does not parse pt to PT as that is deprecated', () => {
+    expect(parseLocale('pt')).not.toEqual('PT')
+  })
 })
