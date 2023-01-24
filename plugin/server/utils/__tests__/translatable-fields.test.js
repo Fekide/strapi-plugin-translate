@@ -37,6 +37,7 @@ describe('translatable fields', () => {
           nestedComponent,
           simpleComponentCopy: createSimpleComponent('copy'),
           simpleComponentDelete: createSimpleComponent('delete'),
+          simpleComponentUnset: createSimpleComponent(null),
         },
       })
     )
@@ -47,6 +48,28 @@ describe('translatable fields', () => {
       const schema = {
         type: 'text',
         pluginOptions: { translate: { translate: 'translate' } },
+      }
+      const attr = 'field'
+      const translatedFieldTypes = ['text']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toEqual({ field: attr, format: 'plain' })
+    })
+
+    it('text field without configuration translated', async () => {
+      // given
+      const data = { field: 'some text' }
+      const schema = {
+        type: 'text',
+        pluginOptions: { i18n: { localized: true } },
       }
       const attr = 'field'
       const translatedFieldTypes = ['text']
@@ -133,6 +156,56 @@ describe('translatable fields', () => {
         type: 'component',
         component: 'simpleComponent',
         pluginOptions: { translate: { translate: 'translate' } },
+      }
+      const attr = 'child_component'
+      const translatedFieldTypes = ['text', 'component']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toEqual([
+        { field: 'child_component.text', format: 'markdown' },
+      ])
+    })
+
+    it('component field without configuration translated nested', async () => {
+      // given
+      const data = { child_component: { text: 'some text' } }
+      const schema = {
+        type: 'component',
+        component: 'simpleComponent',
+        pluginOptions: { i18n: { localized: true } },
+      }
+      const attr = 'child_component'
+      const translatedFieldTypes = ['text', 'component']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toEqual([
+        { field: 'child_component.text', format: 'markdown' },
+      ])
+    })
+
+    it('component field with field without configuration translated nested', async () => {
+      // given
+      const data = { child_component: { text: 'some text' } }
+      const schema = {
+        type: 'component',
+        component: 'simpleComponentUnset',
+        pluginOptions: { i18n: { localized: true } },
       }
       const attr = 'child_component'
       const translatedFieldTypes = ['text', 'component']
