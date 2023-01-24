@@ -1,5 +1,6 @@
 'use strict'
 const { URLSearchParams } = require('url')
+const { fail } = require('assert')
 const { faker } = require('@faker-js/faker')
 const {
   stringByteLength,
@@ -378,6 +379,91 @@ describe('deepl provider', () => {
         })
 
         await expect(deeplProvider.usage()).resolves.toBeTruthy()
+      })
+
+      describe('api options used', () => {
+        const registerHandlerEnforceParams = (
+          requiredParams,
+          forbiddenParams = []
+        ) => {
+          const handler = async (req, res, ctx) => {
+            const body = await req.text()
+            const params = new URLSearchParams(body)
+
+            for (const key of forbiddenParams) {
+              if (params.has(key)) {
+                fail(`Server should not have received param ${key}`)
+              }
+            }
+            for (const key of Object.keys(requiredParams)) {
+              if (!params.has(key)) {
+                fail(`Server did not receive required param ${key}`)
+              } else if (params.get(key) !== requiredParams[key]) {
+                fail(
+                  `Required param ${key}=${
+                    requiredParams[key]
+                  } did not match received ${key}=${params.get(key)}`
+                )
+              }
+            }
+
+            // skip authentication and validation
+            let text = params.getAll('text')
+            return res(
+              ctx.json({
+                translations: text.map((t) => ({
+                  detected_source_language: 'EN',
+                  text: t,
+                })),
+              })
+            )
+          }
+          server.use(rest.post(`${DEEPL_PAID_API}/translate`, handler))
+        }
+
+        afterEach(() => server.resetHandlers())
+
+        it('uses formality when provided', async () => {
+          registerHandlerEnforceParams({ formality: 'prefer_less' })
+
+          const deeplProvider = provider.init({
+            apiKey: authKey,
+            apiOptions: { formality: 'prefer_less' },
+          })
+
+          // given
+          const params = {
+            sourceLocale: 'en',
+            targetLocale: 'de',
+            text: 'Some text',
+          }
+          // when
+          const result = await deeplProvider.translate(params)
+
+          // then
+          expect(result).toEqual([params.text])
+        })
+
+        it('does not use tagHandling even if provided', async () => {
+          registerHandlerEnforceParams({}, ['tagHandling'])
+
+          const deeplProvider = provider.init({
+            apiKey: authKey,
+            apiOptions: { tagHandling: 'html' },
+          })
+
+          // given
+          const params = {
+            sourceLocale: 'en',
+            targetLocale: 'de',
+            text: 'Some text',
+          }
+          // when
+          const result = await deeplProvider.translate(params)
+
+          // then
+          expect(result).toEqual([params.text])
+        })
       })
     })
 
