@@ -43,5 +43,8 @@
   "batch-translate.table.actions.labels.cancel": "Cancel",
   "batch-translate.table.actions.labels.pause": "Pause",
   "batch-translate.table.actions.labels.resume": "Resume",
-  "errors.unknown-error": "Unknown error"
+  "errors.unknown-error": "Unknown error",
+  "usage.title": "API usage",
+  "usage.failed-to-load": "failed to load usage data",
+  "usage.characters-used": "characters used"
 }
