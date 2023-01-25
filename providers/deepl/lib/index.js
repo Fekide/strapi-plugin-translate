@@ -80,8 +80,8 @@ module.exports = {
                       : DEEPL_PRIORITY_DEFAULT,
                 },
                 texts,
-                parseLocale(sourceLocale),
-                parseLocale(targetLocale),
+                parseLocale(sourceLocale, 'source'),
+                parseLocale(targetLocale, 'target'),
                 { tagHandling }
               )
               return result.map((value) => value.text)
