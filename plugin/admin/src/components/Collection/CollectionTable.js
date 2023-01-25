@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import { Table, Tbody } from '@strapi/design-system/Table'
 import { Box } from '@strapi/design-system/Box'
 import { Dialog, DialogBody, DialogFooter } from '@strapi/design-system/Dialog'
@@ -13,6 +13,7 @@ import { Button } from '@strapi/design-system/Button'
 import { ToggleInput } from '@strapi/design-system/ToggleInput'
 import useCollection from '../../Hooks/useCollection'
 import { getTrad } from '../../utils'
+import useUsage from '../../Hooks/useUsage'
 import CollectionTableHeader from './CollectionHeader'
 import CollectionRow from './CollectionRow'
 
@@ -27,6 +28,7 @@ const CollectionTable = () => {
   } = useCollection()
   const { formatMessage } = useIntl()
   const toggleNotification = useNotification()
+  const { usage, estimateUsageForCollection } = useUsage()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [targetLocale, setTargetLocale] = useState(null)
@@ -35,6 +37,24 @@ const CollectionTable = () => {
   const [collection, setCollection] = useState(null)
   const [action, setAction] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [expectedCost, setExpectedCost] = useState(undefined)
+
+  useEffect(() => {
+    if (dialogOpen && action === 'translate' && sourceLocale && targetLocale) {
+      estimateUsageForCollection({
+        contentType: collection.contentType,
+        sourceLocale,
+        targetLocale,
+      }).then(setExpectedCost, () => {})
+    }
+  }, [
+    dialogOpen,
+    sourceLocale,
+    targetLocale,
+    collection,
+    estimateUsageForCollection,
+    action,
+  ])
 
   const handleAction = ({ action, targetLocale, collection }) => {
     setTargetLocale(targetLocale)
@@ -160,7 +180,7 @@ const CollectionTable = () => {
               </Flex>
               <Box>
                 {action === 'translate' && (
-                  <Stack spacing="2">
+                  <Stack spacing={2}>
                     <Select
                       label={formatMessage({
                         id: getTrad('Settings.locales.modal.locales.label'),
@@ -198,6 +218,27 @@ const CollectionTable = () => {
                       checked={autoPublish}
                       onChange={toggleAutoPublish}
                     />
+                    {expectedCost && (
+                      <Typography>
+                        {formatMessage({
+                          id: getTrad('usage.estimatedUsage'),
+                          defaultMessage:
+                            'This action is expected to increase your API usage by: ',
+                        })}
+                        {expectedCost}
+                      </Typography>
+                    )}
+                    {usage &&
+                      expectedCost &&
+                      expectedCost > usage.limit - usage.count && (
+                        <Typography>
+                          {formatMessage({
+                            id: getTrad('usage.estimatedUsageExceedsQuota'),
+                            defaultMessage:
+                              'This action is expected to exceed your API Quota',
+                          })}
+                        </Typography>
+                      )}
                   </Stack>
                 )}
               </Box>

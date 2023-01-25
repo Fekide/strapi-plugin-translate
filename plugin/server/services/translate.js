@@ -10,6 +10,14 @@ const { BatchTranslateManager } = require('./batch-translate')
 module.exports = ({ strapi }) => ({
   batchTranslateManager: new BatchTranslateManager(),
 
+  async estimateUsage({ data, fieldsToTranslate }) {
+    const text = fieldsToTranslate
+      .map(({ field }) => get(data, field, ''))
+      .join('')
+
+    return text.length
+  },
+
   async translate({
     data,
     sourceLocale,

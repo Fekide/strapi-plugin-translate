@@ -24,7 +24,7 @@
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import get from 'lodash/get'
@@ -53,6 +53,7 @@ import { axiosInstance } from '@strapi/plugin-i18n/admin/src/utils'
 import _ from 'lodash'
 import { getTrad } from '../../utils'
 import permissions from '../../permissions'
+import useUsage from '../../Hooks/useUsage'
 import parseRelations from './utils/parse-relations'
 
 const StyledTypography = styled(Typography)`
@@ -124,6 +125,19 @@ const Content = ({
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [value, setValue] = useState(options[0]?.value || '')
+  const [expectedCost, setExpectedCost] = useState(undefined)
+
+  const { usage, estimateUsage } = useUsage()
+
+  useEffect(() => {
+    if (isOpen) {
+      estimateUsage({
+        id: value,
+        contentTypeUid: slug,
+        sourceLocale: localizations.find(({ id }) => id == value).locale,
+      }).then(setExpectedCost, () => {})
+    }
+  }, [value, isOpen, slug, localizations, estimateUsage])
 
   const handleConfirmCopyLocale = async () => {
     if (!value) {
@@ -262,6 +276,27 @@ const Content = ({
                   })}
                 </Select>
               </Box>
+              {expectedCost && (
+                <CenteredTypography>
+                  {formatMessage({
+                    id: getTrad('usage.estimatedUsage'),
+                    defaultMessage:
+                      'This action is expected to increase your API usage by: ',
+                  })}
+                  {expectedCost}
+                </CenteredTypography>
+              )}
+              {usage &&
+                expectedCost &&
+                expectedCost > usage.limit - usage.count && (
+                  <CenteredTypography>
+                    {formatMessage({
+                      id: getTrad('usage.estimatedUsageExceedsQuota'),
+                      defaultMessage:
+                        'This action is expected to exceed your API Quota',
+                    })}
+                  </CenteredTypography>
+                )}
             </Stack>
           </DialogBody>
           <DialogFooter

@@ -27,6 +27,57 @@ export function useCollection() {
     }
   }
 
+  const estimateUsageForCollection = async ({
+    contentType,
+    sourceLocale,
+    targetLocale,
+  }) => {
+    const { error, data } = await request(
+      `/${pluginId}/usage/estimateCollection`,
+      {
+        method: 'POST',
+        body: {
+          contentType,
+          sourceLocale,
+          targetLocale,
+        },
+      }
+    )
+
+    if (error) {
+      handleNotification({
+        type: 'warning',
+        id: error.message,
+        defaultMessage: 'Failed to estimate usage',
+        link: error.link,
+      })
+    }
+
+    return data
+  }
+
+  const estimateUsage = async ({ id, contentTypeUid, sourceLocale }) => {
+    const { error, data } = await request(`/${pluginId}/usage/estimate`, {
+      method: 'POST',
+      body: {
+        id,
+        contentTypeUid,
+        sourceLocale,
+      },
+    })
+
+    if (error) {
+      handleNotification({
+        type: 'warning',
+        id: error.message,
+        defaultMessage: 'Failed to estimate usage',
+        link: error.link,
+      })
+    }
+
+    return data
+  }
+
   useEffect(() => {
     fetchUsage()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,6 +87,8 @@ export function useCollection() {
     usage,
     refetch,
     handleNotification,
+    estimateUsage,
+    estimateUsageForCollection,
   }
 }
 

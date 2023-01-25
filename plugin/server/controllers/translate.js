@@ -226,4 +226,102 @@ module.exports = ({ strapi }) => ({
       data: await getService('translate').contentTypes(),
     }
   },
+  async usageEstimate(ctx) {
+    const { id, contentTypeUid, sourceLocale } = ctx.request.body
+
+    if (!id) {
+      return ctx.badRequest('id is missing')
+    }
+
+    if (!contentTypeUid) {
+      return ctx.badRequest('contentTypeUid is missing')
+    }
+
+    if (!sourceLocale) {
+      return ctx.badRequest('sourceLocale is missing')
+    }
+
+    const contentSchema = strapi.contentTypes[contentTypeUid]
+
+    if (!contentSchema) {
+      return ctx.notFound('corresponding content type not found')
+    }
+
+    const populateRule = populateAll(contentSchema, { populateMedia: true })
+
+    const fullyPopulatedData = await strapi.db.query(contentTypeUid).findOne({
+      where: { id, locale: sourceLocale },
+      populate: populateRule,
+    })
+
+    const fieldsToTranslate = await getAllTranslatableFields(
+      fullyPopulatedData,
+      contentSchema
+    )
+
+    ctx.body = {
+      data: await getService('translate').estimateUsage({
+        fieldsToTranslate,
+        data: fullyPopulatedData,
+      }),
+    }
+  },
+  async usageEstimateCollection(ctx) {
+    const { contentType, sourceLocale, targetLocale } = ctx.request.body
+
+    if (!contentType) {
+      return ctx.badRequest('contentType is missing')
+    }
+
+    if (!sourceLocale) {
+      return ctx.badRequest('sourceLocale is missing')
+    }
+
+    if (!targetLocale) {
+      return ctx.badRequest('targetLocale is missing')
+    }
+
+    const contentSchema = strapi.contentTypes[contentType]
+
+    if (!contentSchema) {
+      return ctx.notFound('corresponding content type not found')
+    }
+
+    const contentTypeSchema = strapi.contentTypes[contentType]
+
+    const entityIDs = await getService('untranslated').getUntranslatedEntityIDs(
+      {
+        uid: contentType,
+        targetLocale,
+        sourceLocale,
+      }
+    )
+
+    let sum = 0
+
+    for (const id of entityIDs) {
+      const populateRule = populateAll(contentTypeSchema, {
+        populateMedia: true,
+      })
+
+      const fullyPopulatedData = await strapi.db.query(contentType).findOne({
+        where: { id, locale: sourceLocale },
+        populate: populateRule,
+      })
+
+      const fieldsToTranslate = await getAllTranslatableFields(
+        fullyPopulatedData,
+        contentTypeSchema
+      )
+
+      sum = +(await getService('translate').estimateUsage({
+        fieldsToTranslate,
+        data: fullyPopulatedData,
+      }))
+    }
+
+    ctx.body = {
+      data: sum,
+    }
+  },
 })

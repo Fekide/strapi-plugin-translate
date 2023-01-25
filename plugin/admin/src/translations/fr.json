@@ -46,5 +46,7 @@
   "errors.unknown-error": "Erreur inconnue",
   "usage.title": "Contingent de l'API",
   "usage.failed-to-load": "échec de la récupération des données",
-  "usage.characters-used": "caractères consommés"
+  "usage.characters-used": "caractères consommés",
+  "usage.estimatedUsage": "Cette action devrait augmenter l'utilisation de votre API de: ",
+  "usage.estimatedUsageExceedsQuota": "Cette action devrait dépasser votre quota d'API."
 }
