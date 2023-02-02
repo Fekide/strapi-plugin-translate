@@ -28,7 +28,7 @@ const CollectionTable = () => {
   } = useCollection()
   const { formatMessage } = useIntl()
   const toggleNotification = useNotification()
-  const { usage, estimateUsageForCollection } = useUsage()
+  const { usage, estimateUsageForCollection, hasUsageInformation } = useUsage()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [targetLocale, setTargetLocale] = useState(null)
@@ -40,7 +40,13 @@ const CollectionTable = () => {
   const [expectedCost, setExpectedCost] = useState(undefined)
 
   useEffect(() => {
-    if (dialogOpen && action === 'translate' && sourceLocale && targetLocale) {
+    if (
+      dialogOpen &&
+      action === 'translate' &&
+      sourceLocale &&
+      targetLocale &&
+      hasUsageInformation
+    ) {
       estimateUsageForCollection({
         contentType: collection.contentType,
         sourceLocale,
@@ -54,6 +60,7 @@ const CollectionTable = () => {
     collection,
     estimateUsageForCollection,
     action,
+    hasUsageInformation,
   ])
 
   const handleAction = ({ action, targetLocale, collection }) => {
@@ -218,7 +225,7 @@ const CollectionTable = () => {
                       checked={autoPublish}
                       onChange={toggleAutoPublish}
                     />
-                    {expectedCost && (
+                    {expectedCost && hasUsageInformation && (
                       <Typography>
                         {formatMessage({
                           id: getTrad('usage.estimatedUsage'),
@@ -228,7 +235,7 @@ const CollectionTable = () => {
                         {expectedCost}
                       </Typography>
                     )}
-                    {usage &&
+                    {hasUsageInformation &&
                       expectedCost &&
                       expectedCost > usage.limit - usage.count && (
                         <Typography>

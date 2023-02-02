@@ -127,17 +127,17 @@ const Content = ({
   const [value, setValue] = useState(options[0]?.value || '')
   const [expectedCost, setExpectedCost] = useState(undefined)
 
-  const { usage, estimateUsage } = useUsage()
+  const { usage, estimateUsage, hasUsageInformation } = useUsage()
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && hasUsageInformation) {
       estimateUsage({
         id: value,
         contentTypeUid: slug,
         sourceLocale: localizations.find(({ id }) => id == value).locale,
       }).then(setExpectedCost, () => {})
     }
-  }, [value, isOpen, slug, localizations, estimateUsage])
+  }, [value, isOpen, slug, localizations, estimateUsage, hasUsageInformation])
 
   const handleConfirmCopyLocale = async () => {
     if (!value) {
@@ -276,7 +276,7 @@ const Content = ({
                   })}
                 </Select>
               </Box>
-              {expectedCost && (
+              {expectedCost && hasUsageInformation && (
                 <CenteredTypography>
                   {formatMessage({
                     id: getTrad('usage.estimatedUsage'),
@@ -286,7 +286,7 @@ const Content = ({
                   {expectedCost}
                 </CenteredTypography>
               )}
-              {usage &&
+              {hasUsageInformation &&
                 expectedCost &&
                 expectedCost > usage.limit - usage.count && (
                   <CenteredTypography>

@@ -87,6 +87,8 @@ export function useCollection() {
   }, [refetchIndex])
 
   return {
+    hasUsageInformation:
+      typeof usage?.count === 'number' && typeof usage?.limit === 'number',
     usage,
     error,
     refetch,
