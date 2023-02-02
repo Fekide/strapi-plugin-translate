@@ -5,6 +5,7 @@ import useAlert from './useAlert'
 
 export function useCollection() {
   const [usage, setUsage] = useState([])
+  const [error, setError] = useState(undefined)
   const [refetchIndex, setRefetchIndex] = useState(true)
   const { handleNotification } = useAlert()
 
@@ -16,6 +17,7 @@ export function useCollection() {
     })
 
     if (error) {
+      setError(error)
       handleNotification({
         type: 'warning',
         id: error.message,
@@ -23,6 +25,7 @@ export function useCollection() {
         link: error.link,
       })
     } else {
+      setError(undefined)
       setUsage(data)
     }
   }
@@ -85,6 +88,7 @@ export function useCollection() {
 
   return {
     usage,
+    error,
     refetch,
     handleNotification,
     estimateUsage,

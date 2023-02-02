@@ -1,13 +1,13 @@
 import React, { memo } from 'react'
 import {
   Box,
-  Card,
-  CardBody,
-  CardContent,
   CardBadge,
-  CardSubtitle,
-  CardTitle,
   ProgressBar,
+  Table,
+  Tr,
+  Td,
+  Tbody,
+  Typography,
 } from '@strapi/design-system'
 import { useIntl } from 'react-intl'
 
@@ -15,57 +15,69 @@ import useUsage from '../../Hooks/useUsage'
 import { getTrad } from '../../utils'
 
 const UsageOverview = () => {
-  const { usage } = useUsage()
+  let { usage, error } = useUsage()
 
   const { formatMessage } = useIntl()
 
-  if (!(typeof usage?.count === 'number' && typeof usage?.limit === 'number')) {
-    return (
-      <Card marginTop={4}>
-        <CardBody>
-          <CardTitle>
-            {formatMessage({
-              id: getTrad('usage.failed-to-load'),
-              defaultMessage: 'Failed to load Usage data',
-            })}
-          </CardTitle>
-        </CardBody>
-      </Card>
-    )
+  if (
+    !error &&
+    !(typeof usage?.count === 'number' && typeof usage?.limit === 'number')
+  ) {
+    return null
   }
 
-  return (
-    <Card marginTop={4}>
-      <CardBody style={{ alignItems: 'center' }}>
-        <CardTitle>
-          {' '}
+  const content = error ? (
+    <Td>
+      <Typography textColor="neutral800">
+        {formatMessage({
+          id: getTrad('usage.failed-to-load'),
+          defaultMessage: 'Failed to load Usage data',
+        })}
+      </Typography>
+    </Td>
+  ) : (
+    <>
+      <Td>
+        <Typography textColor="neutral800">
+          {usage.count}/{usage.limit}{' '}
           {formatMessage({
-            id: getTrad('usage.title'),
-            defaultMessage: 'Usage',
+            id: getTrad('usage.characters-used'),
+            defaultMessage: 'characters used',
           })}
-          :
-        </CardTitle>
-        <CardContent paddingLeft={2} style={{ flexGrow: '1' }}>
-          <CardSubtitle>
-            <Box background="neutral150" padding={2}>
-              <ProgressBar
-                style={{ width: 'auto' }}
-                value={usage ? (usage.count / usage.limit) * 100 : 0}
-              >
-                {usage.count}/{usage.limit}{' '}
-                {formatMessage({
-                  id: getTrad('usage.characters-used'),
-                  defaultMessage: 'characters used',
-                })}
-              </ProgressBar>
-            </Box>
-          </CardSubtitle>
-        </CardContent>
+        </Typography>
+      </Td>
+      <Td>
         <CardBadge>
-          {usage.count} / {usage.limit}
+          <ProgressBar value={usage ? (usage.count / usage.limit) * 100 : 0}>
+            {usage.count}/{usage.limit}{' '}
+            {formatMessage({
+              id: getTrad('usage.characters-used'),
+              defaultMessage: 'characters used',
+            })}
+          </ProgressBar>
         </CardBadge>
-      </CardBody>
-    </Card>
+      </Td>
+    </>
+  )
+
+  return (
+    <Box background="neutral100" marginTop={4}>
+      <Table colCount={3} rowCount={1}>
+        <Tbody>
+          <Tr>
+            <Td>
+              <Typography variant="sigma">
+                {formatMessage({
+                  id: getTrad('usage.title'),
+                  defaultMessage: 'Usage',
+                })}
+              </Typography>
+            </Td>
+            {content}
+          </Tr>
+        </Tbody>
+      </Table>
+    </Box>
   )
 }
 
