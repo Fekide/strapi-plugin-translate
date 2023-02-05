@@ -6,7 +6,7 @@
     "@strapi/strapi": "4.5.5",
     "@strapi/plugin-users-permissions": "4.5.5",
     "@strapi/plugin-i18n": "4.4.5",
-    "better-sqlite3": "7.4.6",
+    "better-sqlite3": "8.0.1",
     "strapi-plugin-translate": "1.0.0-next.2",
     "strapi-provider-translate-deepl": "1.0.0-next.2"
   },
