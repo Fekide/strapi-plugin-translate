@@ -57,7 +57,10 @@ function populateAll(
     } else if (['relation', 'media'].includes(fieldSchema.type)) {
       if (
         (fieldSchema.type === 'media' && populateMedia) ||
-        populateRelations
+        (populateRelations &&
+          !['plugin::users-permissions.user', 'admin::user'].includes(
+            fieldSchema.target
+          ))
       ) {
         populateResult[attr] = true
       } else {
