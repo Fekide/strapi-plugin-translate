@@ -1,6 +1,5 @@
 'use strict'
 const { URLSearchParams } = require('url')
-const { fail } = require('assert')
 const { faker } = require('@faker-js/faker')
 const {
   stringByteLength,
@@ -27,69 +26,67 @@ const usage_result = {
 describe('deepl provider', () => {
   let server
 
-  beforeAll(() => {
-    const isAuthenticated = (req) => {
-      const passedAuthKey = req.headers
-        .get('authorization')
-        .replace('DeepL-Auth-Key', '')
-        .trim()
-      let matchAuthKey = authKey
-      if (req.url.toString().startsWith(DEEPL_FREE_API)) {
-        matchAuthKey += ':fx'
-      } else if (req.url.toString().startsWith(deeplTestApi)) {
-        matchAuthKey += ':test'
-      }
-      return matchAuthKey === passedAuthKey
+  const isAuthenticated = (req) => {
+    const passedAuthKey = req.headers
+      .get('authorization')
+      .replace('DeepL-Auth-Key', '')
+      .trim()
+    let matchAuthKey = authKey
+    if (req.url.toString().startsWith(DEEPL_FREE_API)) {
+      matchAuthKey += ':fx'
+    } else if (req.url.toString().startsWith(deeplTestApi)) {
+      matchAuthKey += ':test'
     }
+    return matchAuthKey === passedAuthKey
+  }
 
-    const usageHandler = async (req, res, ctx) => {
-      if (isAuthenticated(req)) {
-        return res(ctx.json(usage_result))
-      }
-      return res(ctx.status(403))
+  const usageHandler = async (req, res, ctx) => {
+    if (isAuthenticated(req)) {
+      return res(ctx.json(usage_result))
     }
-    const translateHandler = async (req, res, ctx) => {
-      const body = await req.text()
-      if (stringByteLength(body || '') > DEEPL_API_MAX_REQUEST_SIZE) {
-        console.log({ length: stringByteLength(body || '') })
+    return res(ctx.status(403))
+  }
+  const translateHandler = async (req, res, ctx) => {
+    const body = await req.text()
+    if (stringByteLength(body || '') > DEEPL_API_MAX_REQUEST_SIZE) {
+      console.log({ length: stringByteLength(body || '') })
+      return res(ctx.status(413))
+    }
+    const params = new URLSearchParams(body)
+    if (isAuthenticated(req)) {
+      let text = params.getAll('text')
+      if (text.length == 0) {
+        return res(ctx.status(400))
+      }
+      if (text.length > 50) {
         return res(ctx.status(413))
       }
-      const params = new URLSearchParams(body)
-      if (isAuthenticated(req)) {
-        let text = params.getAll('text')
-        if (text.length == 0) {
-          return res(ctx.status(400))
-        }
-        if (text.length > 50) {
-          return res(ctx.status(413))
-        }
-        let targetLang = params.get('target_lang')
-        if (!targetLang) {
-          return res(ctx.status(400))
-        }
-        return res(
-          ctx.json({
-            translations: text.map((t) => ({
-              detected_source_language: 'EN',
-              text: t,
-            })),
-          })
-        )
+      let targetLang = params.get('target_lang')
+      if (!targetLang) {
+        return res(ctx.status(400))
       }
-      return res(ctx.status(403))
+      return res(
+        ctx.json({
+          translations: text.map((t) => ({
+            detected_source_language: 'EN',
+            text: t,
+          })),
+        })
+      )
     }
-    server = getServer(
-      rest.post(`${DEEPL_FREE_API}/usage`, usageHandler),
-      rest.post(`${DEEPL_PAID_API}/usage`, usageHandler),
-      rest.post(`${deeplTestApi}/v2/usage`, usageHandler),
-      rest.post(`${DEEPL_FREE_API}/translate`, translateHandler),
-      rest.post(`${DEEPL_PAID_API}/translate`, translateHandler)
-    )
+    return res(ctx.status(403))
+  }
+  beforeAll(() => {
+    server = getServer()
 
     Object.defineProperty(global, 'strapi', {
       value: require('../../__mocks__/initStrapi')({}),
       writable: true,
     })
+  })
+
+  afterEach(async () => {
+    server.resetHandlers()
   })
 
   afterAll(async () => {
@@ -109,6 +106,12 @@ describe('deepl provider', () => {
         deeplProvider = provider.init({
           apiKey: freeApi ? `${usedKey}:fx` : usedKey,
         })
+      })
+      beforeEach(() => {
+        server.use(
+          rest.post(`${DEEPL_FREE_API}/usage`, usageHandler),
+          rest.post(`${DEEPL_PAID_API}/usage`, usageHandler)
+        )
       })
       if (validKey) {
         describe('succeeds', () => {
@@ -136,6 +139,12 @@ describe('deepl provider', () => {
   })
 
   describe('translate', () => {
+    beforeEach(() => {
+      server.use(
+        rest.post(`${DEEPL_FREE_API}/translate`, translateHandler),
+        rest.post(`${DEEPL_PAID_API}/translate`, translateHandler)
+      )
+    })
     describe.each([
       [true, true],
       [true, false],
@@ -363,6 +372,13 @@ describe('deepl provider', () => {
   })
 
   describe('setup', () => {
+    beforeEach(() => {
+      server.use(
+        rest.post(`${DEEPL_FREE_API}/usage`, usageHandler),
+        rest.post(`${DEEPL_PAID_API}/usage`, usageHandler),
+        rest.post(`${deeplTestApi}/v2/usage`, usageHandler)
+      )
+    })
     describe('provider options', () => {
       it('key used', async () => {
         const deeplProvider = provider.init({
@@ -392,14 +408,14 @@ describe('deepl provider', () => {
 
             for (const key of forbiddenParams) {
               if (params.has(key)) {
-                fail(`Server should not have received param ${key}`)
+                res.networkError(`Server should not have received param ${key}`)
               }
             }
             for (const key of Object.keys(requiredParams)) {
               if (!params.has(key)) {
-                fail(`Server did not receive required param ${key}`)
+                res.networkError(`Server did not receive required param ${key}`)
               } else if (params.get(key) !== requiredParams[key]) {
-                fail(
+                res.networkError(
                   `Required param ${key}=${
                     requiredParams[key]
                   } did not match received ${key}=${params.get(key)}`
@@ -420,8 +436,6 @@ describe('deepl provider', () => {
           }
           server.use(rest.post(`${DEEPL_PAID_API}/translate`, handler))
         }
-
-        afterEach(() => server.resetHandlers())
 
         it('uses formality when provided', async () => {
           registerHandlerEnforceParams({ formality: 'prefer_less' })
