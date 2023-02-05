@@ -41,8 +41,10 @@ function parseLocale(strapiLocale, localeMap = {}, direction = 'target') {
     case 'ID':
     case 'IT':
     case 'JA':
+    case 'KO':
     case 'LT':
     case 'LV':
+    case 'NB':
     case 'NL':
     case 'PL':
     case 'RO':
