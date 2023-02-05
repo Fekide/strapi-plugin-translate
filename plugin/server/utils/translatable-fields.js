@@ -43,7 +43,7 @@ async function getTranslateFields(data, schema, attr) {
   if (
     isTranslatedFieldType(schema.type) &&
     _.get(data, attr, undefined) &&
-    schema.pluginOptions?.translate?.translate === 'translate'
+    !['copy', 'delete'].includes(schema.pluginOptions?.translate?.translate)
   ) {
     if (schema.type == 'component') {
       return (

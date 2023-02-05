@@ -64,7 +64,7 @@ module.exports = {
         const chunksService = getService('chunks')
         const formatService = getService('format')
 
-        const tagHandlingMode = format === 'plain' ? undefined : 'html'
+        const tagHandling = format === 'plain' ? undefined : 'html'
 
         let textArray = Array.isArray(text) ? text : [text]
 
@@ -88,9 +88,9 @@ module.exports = {
                       : DEEPL_PRIORITY_DEFAULT,
                 },
                 texts,
-                parseLocale(sourceLocale, localeMap),
-                parseLocale(targetLocale, localeMap),
-                { ...apiOptions, tagHandlingMode }
+                parseLocale(sourceLocale, localeMap, 'source'),
+                parseLocale(targetLocale, localeMap, 'target'),
+                { ...apiOptions, tagHandling }
               )
               return result.map((value) => value.text)
             })

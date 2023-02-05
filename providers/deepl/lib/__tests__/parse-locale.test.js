@@ -58,4 +58,16 @@ describe('locale parser', () => {
     }
     expect(parseLocale('en', localeMap)).toMatch('EN-GB')
   })
+  it('does not parse en to EN as that is deprecated', () => {
+    expect(parseLocale('en')).not.toEqual('EN')
+  })
+  it('does not parse pt to PT as that is deprecated', () => {
+    expect(parseLocale('pt')).not.toEqual('PT')
+  })
+  it('source language is parsed without specific locale', () => {
+    expect(parseLocale('en-GB', {}, 'source')).toEqual('EN')
+  })
+  it('source language is parsed without specific locale even with locale map', () => {
+    expect(parseLocale('en-GB', {}, 'source')).toEqual('EN')
+  })
 })

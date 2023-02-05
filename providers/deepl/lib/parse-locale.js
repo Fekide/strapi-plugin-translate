@@ -14,12 +14,19 @@ const defaultLocaleMap = {
   TCH: 'EN-US',
 }
 
-function parseLocale(strapiLocale, localeMap = {}) {
-  const unstripped = strapiLocale.toUpperCase()
+function stripAndUpper(locale) {
+  const unstripped = locale.toUpperCase()
   const stripped = unstripped.split('-')[0]
+
+  return { unstripped, stripped }
+}
+
+function parseLocale(strapiLocale, localeMap = {}, direction = 'target') {
+  const { unstripped, stripped } = stripAndUpper(strapiLocale)
 
   defaults(localeMap, defaultLocaleMap)
 
+  let possiblyUnstrippedResult = stripped
   switch (stripped) {
     case 'BG':
     case 'CS':
@@ -46,22 +53,30 @@ function parseLocale(strapiLocale, localeMap = {}) {
     case 'TR':
     case 'UK':
     case 'ZH':
-      return localeMap[stripped] || stripped
+      possiblyUnstrippedResult = localeMap[stripped] || stripped
+      break
     case 'PT':
-      if (unstripped == 'PT-PT') return unstripped
-      if (unstripped == 'PT-BR') return unstripped
-      return localeMap[stripped]
+      if (unstripped == 'PT-PT') possiblyUnstrippedResult = unstripped
+      else if (unstripped == 'PT-BR') possiblyUnstrippedResult = unstripped
+      else possiblyUnstrippedResult = localeMap[stripped] || 'PT-PT'
+      break
     case 'EN':
-      if (unstripped == 'EN-GB') return unstripped
-      if (unstripped == 'EN-US') return unstripped
-      return localeMap[stripped]
-
+      if (unstripped == 'EN-GB') possiblyUnstrippedResult = unstripped
+      else if (unstripped == 'EN-US') possiblyUnstrippedResult = unstripped
+      else possiblyUnstrippedResult = localeMap[stripped] || 'EN-US'
+      break
     default:
-      if (localeMap[stripped]) return localeMap[stripped]
-      if (localeMap[unstripped]) return localeMap[unstripped]
-      if (localeMap[strapiLocale]) return localeMap[strapiLocale]
-      throw new Error('unsupported locale')
+      if (localeMap[stripped]) possiblyUnstrippedResult = localeMap[stripped]
+      else if (localeMap[unstripped])
+        possiblyUnstrippedResult = localeMap[unstripped]
+      else if (localeMap[strapiLocale])
+        possiblyUnstrippedResult = localeMap[strapiLocale]
+      else throw new Error('unsupported locale')
   }
+  if (direction === 'source') {
+    return stripAndUpper(possiblyUnstrippedResult).stripped
+  }
+  return possiblyUnstrippedResult
 }
 
 module.exports = {
