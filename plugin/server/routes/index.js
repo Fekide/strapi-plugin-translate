@@ -3,5 +3,5 @@
 module.exports = [
   // ...require('./batch-translate-job'),
   ...require('./translate'),
-  ...require('./translate'),
+  ...require('./provider'),
 ]

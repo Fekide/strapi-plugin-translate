@@ -99,4 +99,20 @@ module.exports = [
       ],
     },
   },
+  {
+    method: 'POST',
+    path: '/usage/estimate',
+    handler: 'translate.usageEstimate',
+    config: {
+      policies: ['admin::isAuthenticatedAdmin'],
+    },
+  },
+  {
+    method: 'POST',
+    path: '/usage/estimateCollection',
+    handler: 'translate.usageEstimateCollection',
+    config: {
+      policies: ['admin::isAuthenticatedAdmin'],
+    },
+  },
 ]
