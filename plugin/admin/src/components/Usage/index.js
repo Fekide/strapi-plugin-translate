@@ -15,14 +15,11 @@ import useUsage from '../../Hooks/useUsage'
 import { getTrad } from '../../utils'
 
 const UsageOverview = () => {
-  let { usage, error } = useUsage()
+  const { usage, error, hasUsageInformation } = useUsage()
 
   const { formatMessage } = useIntl()
 
-  if (
-    !error &&
-    !(typeof usage?.count === 'number' && typeof usage?.limit === 'number')
-  ) {
+  if (!error && !hasUsageInformation) {
     return null
   }
 
