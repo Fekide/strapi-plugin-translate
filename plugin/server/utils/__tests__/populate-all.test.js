@@ -204,4 +204,17 @@ describe('populate all', () => {
       media: { select: ['id'] },
     })
   })
+
+  it('relations are fully populated if requested', () => {
+    // given
+    const schema = strapi.contentTypes['api::complex.relation']
+
+    // when
+    const population = populateAll(schema, { populateRelations: true })
+
+    // then
+    expect(population).toEqual({
+      related: true,
+    })
+  })
 })

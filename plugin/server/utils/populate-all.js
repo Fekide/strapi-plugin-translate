@@ -11,12 +11,17 @@ const _ = require('lodash')
  * @param {object} options - options for recursion and population
  * @param {number} options.maxDepth - maximum depth for recursive population, defaults to 10
  * @param {boolean} options.populateMedia - whether to include media, defaults to false
+ * @param {boolean} options.populateRelations - whether to populate relations, defaults to false
  * @returns a populate object with all components, nested components,
  *  dynamic zones and relations
  */
 function populateAll(
   schema,
-  { maxDepth, populateMedia } = { maxDepth: 10, populateMedia: false }
+  { maxDepth, populateMedia, populateRelations } = {
+    maxDepth: 10,
+    populateMedia: false,
+    populateRelations: false,
+  }
 ) {
   const attributesSchema = _.get(schema, 'attributes', [])
   const populateResult = {}
@@ -50,7 +55,13 @@ function populateAll(
             : dynamicZonePopulate,
       }
     } else if (['relation', 'media'].includes(fieldSchema.type)) {
-      if (fieldSchema.type === 'media' && populateMedia) {
+      if (
+        (fieldSchema.type === 'media' && populateMedia) ||
+        (populateRelations &&
+          !['plugin::users-permissions.user', 'admin::user'].includes(
+            fieldSchema.target
+          ))
+      ) {
         populateResult[attr] = true
       } else {
         populateResult[attr] = {
