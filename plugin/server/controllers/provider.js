@@ -4,6 +4,7 @@ const { getService } = require('../utils/get-service')
 
 module.exports = () => ({
   async usage(ctx) {
-    ctx.body = await getService('provider').usage()
+    const data = await getService('provider').usage()
+    ctx.body = { data }
   },
 })

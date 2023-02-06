@@ -10,7 +10,7 @@ module.exports = [
         'admin::isAuthenticatedAdmin',
         {
           name: 'plugin::content-manager.hasPermissions',
-          config: { actions: ['plugin::provider.usage'] },
+          config: { actions: ['plugin::translate.usage'] },
         },
       ],
     },

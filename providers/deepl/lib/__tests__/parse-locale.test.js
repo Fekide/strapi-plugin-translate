@@ -34,6 +34,8 @@ function supportedLocale({ code, name }) {
     'Turkish',
     'Ukrainian',
     'Chinese',
+    'Korean',
+    'Norwegian Bokmål',
   ].some((l) => name.toLowerCase().includes(l.toLowerCase()))
 }
 
@@ -52,6 +54,12 @@ describe('locale parser', () => {
       expect(() => parseLocale(code)).toThrow()
     })
   })
+  it('uses locale mapping', () => {
+    const localeMap = {
+      EN: 'EN-GB',
+    }
+    expect(parseLocale('en', localeMap)).toMatch('EN-GB')
+  })
   it('does not parse en to EN as that is deprecated', () => {
     expect(parseLocale('en')).not.toEqual('EN')
   })
@@ -59,9 +67,9 @@ describe('locale parser', () => {
     expect(parseLocale('pt')).not.toEqual('PT')
   })
   it('source language is parsed without specific locale', () => {
-    expect(parseLocale('en-GB', 'source')).toEqual('EN')
+    expect(parseLocale('en-GB', {}, 'source')).toEqual('EN')
   })
   it('source language is parsed without specific locale even with locale map', () => {
-    expect(parseLocale('en-GB', 'source')).toEqual('EN')
+    expect(parseLocale('en-GB', {}, 'source')).toEqual('EN')
   })
 })

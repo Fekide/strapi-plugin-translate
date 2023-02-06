@@ -1,5 +1,19 @@
 'use strict'
 
+const defaults = require('lodash/defaults')
+
+const defaultLocaleMap = {
+  PT: 'PT-PT',
+  EN: 'EN-US',
+  // english creole variants. Translating them to english by default
+  AIG: 'EN-US',
+  BAH: 'EN-US',
+  SVC: 'EN-US',
+  VIC: 'EN-US',
+  LIR: 'EN-US',
+  TCH: 'EN-US',
+}
+
 function stripAndUpper(locale) {
   const unstripped = locale.toUpperCase()
   const stripped = unstripped.split('-')[0]
@@ -7,8 +21,10 @@ function stripAndUpper(locale) {
   return { unstripped, stripped }
 }
 
-function parseLocale(strapiLocale, direction = 'target') {
+function parseLocale(strapiLocale, localeMap = {}, direction = 'target') {
   const { unstripped, stripped } = stripAndUpper(strapiLocale)
+
+  defaults(localeMap, defaultLocaleMap)
 
   let possiblyUnstrippedResult = stripped
   switch (stripped) {
@@ -25,8 +41,10 @@ function parseLocale(strapiLocale, direction = 'target') {
     case 'ID':
     case 'IT':
     case 'JA':
+    case 'KO':
     case 'LT':
     case 'LV':
+    case 'NB':
     case 'NL':
     case 'PL':
     case 'RO':
@@ -37,29 +55,25 @@ function parseLocale(strapiLocale, direction = 'target') {
     case 'TR':
     case 'UK':
     case 'ZH':
-      possiblyUnstrippedResult = stripped
+      possiblyUnstrippedResult = localeMap[stripped] || stripped
       break
     case 'PT':
       if (unstripped == 'PT-PT') possiblyUnstrippedResult = unstripped
       else if (unstripped == 'PT-BR') possiblyUnstrippedResult = unstripped
-      else possiblyUnstrippedResult = 'PT-PT'
-      break
-    // english creole variants. Translating them to english by default
-    case 'AIG':
-    case 'BAH':
-    case 'SVC':
-    case 'VIC':
-    case 'LIR':
-    case 'TCH':
-      possiblyUnstrippedResult = 'EN-US'
+      else possiblyUnstrippedResult = localeMap[stripped] || 'PT-PT'
       break
     case 'EN':
       if (unstripped == 'EN-GB') possiblyUnstrippedResult = unstripped
       else if (unstripped == 'EN-US') possiblyUnstrippedResult = unstripped
-      else possiblyUnstrippedResult = 'EN-US'
+      else possiblyUnstrippedResult = localeMap[stripped] || 'EN-US'
       break
     default:
-      throw new Error('unsupported locale')
+      if (localeMap[stripped]) possiblyUnstrippedResult = localeMap[stripped]
+      else if (localeMap[unstripped])
+        possiblyUnstrippedResult = localeMap[unstripped]
+      else if (localeMap[strapiLocale])
+        possiblyUnstrippedResult = localeMap[strapiLocale]
+      else throw new Error('unsupported locale')
   }
   if (direction === 'source') {
     return stripAndUpper(possiblyUnstrippedResult).stripped

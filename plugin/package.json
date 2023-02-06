@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-translate",
-  "version": "1.0.2",
+  "version": "1.1.0-next.1",
   "description": "Strapi plugin for managing and automating translation of content",
   "strapi": {
     "name": "translate",
@@ -12,9 +12,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "axios": "^0.26.0",
+    "axios": "^1.2.2",
     "bottleneck": "^2.19.5",
-    "jsdom": "^20.0.2",
+    "jsdom": "^21.0.0",
     "showdown": "^2.1.0"
   },
   "peerDependencies": {
@@ -47,8 +47,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
-    "@strapi/plugin-i18n": "4.6.0",
-    "axios-mock-adapter": "^1.20.0",
+    "@strapi/plugin-i18n": "^4.6.0",
+    "axios-mock-adapter": "^1.21.2",
     "lodash": "^4.17.21"
   }
 }

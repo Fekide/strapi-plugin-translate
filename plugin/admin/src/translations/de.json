@@ -43,5 +43,10 @@
   "batch-translate.table.actions.labels.cancel": "Abbrechen",
   "batch-translate.table.actions.labels.pause": "Pausieren",
   "batch-translate.table.actions.labels.resume": "Fortsetzen",
-  "errors.unknown-error": "Unbekannter Fehler"
+  "errors.unknown-error": "Unbekannter Fehler",
+  "usage.title": "API Kontingent",
+  "usage.failed-to-load": "Daten konnten nicht geladen werden",
+  "usage.characters-used": "Zeichen verbraucht",
+  "usage.estimatedUsage": "Diese Aktion wird Ihre API-Nutzung ungefähr um diesen Betrag erhöht: ",
+  "usage.estimatedUsageExceedsQuota": "Diese Aktion wird voraussichtlich Ihr API-Kontingent überschreiten."
 }
