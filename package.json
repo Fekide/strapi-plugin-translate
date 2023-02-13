@@ -21,7 +21,7 @@
     "@semantic-release/git": "^10.0.1",
     "@feki.de/semantic-release-yarn": "^1.0.1",
     "cz-conventional-changelog": "3.3.0",
-    "eslint": "^8.33.0",
+    "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.5.1",
