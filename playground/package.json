@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@strapi/plugin-graphql": "^4.0.0",
+    "@strapi/plugin-graphql": "^4.6.2",
     "lodash.set": "^4.3.2",
     "mime-types": "^2.1.27",
     "@strapi/strapi": "4.6.0",
