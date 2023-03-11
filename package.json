@@ -4,6 +4,7 @@
   "workspaces": [
     "plugin",
     "providers/deepl",
+    "providers/libretranslate",
     "playground"
   ],
   "scripts": {

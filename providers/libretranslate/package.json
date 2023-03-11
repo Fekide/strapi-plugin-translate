@@ -1,0 +1,60 @@
+{
+  "name": "strapi-provider-translate-libretranslate",
+  "version": "1.0.0",
+  "description": "Libretranslate provider for translate plugin in Strapi 4",
+  "keywords": [
+    "strapi",
+    "translate",
+    "provider",
+    "libretranslate"
+  ],
+  "homepage": "https://github.com/fekide/strapi-plugin-translate",
+  "bugs": {
+    "url": "https://github.com/fekide/strapi-plugin-translate/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fekide/strapi-plugin-translate.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Yannick Lang",
+    "email": "yannick.lang@feki.de"
+  },
+  "maintainers": [
+    {
+      "name": "Felix Haase",
+      "email": "felix.haase@feki.de"
+    },
+    {
+      "name": "Yannick Lang",
+      "email": "yannick.lang@feki.de"
+    }
+  ],
+  "contributors": [],
+  "main": "./lib",
+  "directories": {
+    "lib": "./lib"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": ">=0.21.2 <1.2.0 || >=1.2.1",
+    "bottleneck": "^2.19.5"
+  },
+  "engines": {
+    "node": ">=14 <=18",
+    "npm": ">=6.0.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "@strapi/plugin-i18n": "^4.6.0",
+    "jest": "^29.4.1",
+    "msw": "^1.0.0"
+  },
+  "peerDependencies": {
+    "lodash": "*",
+    "strapi-plugin-translate": "1.1.0"
+  }
+}
