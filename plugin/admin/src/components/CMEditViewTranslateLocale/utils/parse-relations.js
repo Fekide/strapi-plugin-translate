@@ -94,9 +94,11 @@ export default function parseRelations(data, allLayoutData, component = null) {
             value.map((r) => parseRelation(r, metadata, relationEditLayout))
           )
         } else {
-          _.set(result, attribute, [
-            parseRelation(value, metadata, relationEditLayout),
-          ])
+          _.set(
+            result,
+            attribute,
+            value ? [parseRelation(value, metadata, relationEditLayout)] : []
+          )
         }
       } else if (attributeData.type === 'component') {
         _.set(
