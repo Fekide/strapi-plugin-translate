@@ -3,7 +3,7 @@
     "@strapi/plugin-graphql": "^4.0.0",
     "lodash.set": "^4.3.2",
     "mime-types": "^2.1.27",
-    "@strapi/strapi": "4.6.0",
+    "@strapi/strapi": "4.7.1",
     "@strapi/plugin-users-permissions": "4.6.0",
     "@strapi/plugin-i18n": "4.6.0",
     "better-sqlite3": "8.0.1"
