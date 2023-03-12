@@ -15,6 +15,10 @@ module.exports = {
   init(providerOptions = {}) {
     const apiKey = process.env.LT_API_KEY || providerOptions.apiKey
     const apiUrl = process.env.LT_API_URL || providerOptions.apiUrl
+
+    if (!apiUrl)
+      throw new Error('You must provide a URL to the LibreTranslate API')
+
     const localeMap =
       typeof providerOptions.localeMap === 'object'
         ? providerOptions.localeMap

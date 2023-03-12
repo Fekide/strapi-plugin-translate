@@ -102,7 +102,7 @@ describe('deepl provider', () => {
     let ltProvider
 
     beforeAll(() => {
-      ltProvider = provider.init()
+      ltProvider = provider.init({ apiUrl: BASE_URL })
     })
 
     it('returns undefined', async () => {
@@ -336,6 +336,15 @@ describe('deepl provider', () => {
           // then
         ).rejects.toThrow('source and target locale must be defined')
       })
+    })
+  })
+
+  describe('init', () => {
+    it('throws when no URL is provided', () => {
+      delete process.env.LT_API_URL
+      expect(() => provider.init()).toThrow(
+        'You must provide a URL to the LibreTranslate API'
+      )
     })
   })
 })
