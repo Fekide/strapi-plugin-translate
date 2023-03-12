@@ -84,17 +84,9 @@ module.exports = {
           textArray = formatService.markdownToHtml(textArray)
         }
 
-        client.translateText(
-          text,
-          source,
-          target,
-          format === 'html' ? format : 'text'
-        )
-
         const result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
-              console.log(texts, source, target)
               const result = await rateLimitedTranslate.withOptions(
                 {
                   priority:

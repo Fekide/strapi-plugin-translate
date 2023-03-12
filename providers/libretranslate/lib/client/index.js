@@ -45,13 +45,12 @@ class Client {
       targets: defaultLocales.filter((locale) => locale !== code),
     }))
 
-    try {
-      this.getLocaleInformation().then((data) => {
+    this.getLocaleInformation().then(
+      (data) => {
         if (Array.isArray(data) && data.length) this.localeInformation = data
-      })
-    } catch (error) {
-      console.error('Failed to fetch locale Information: ', error)
-    }
+      },
+      (error) => console.warn('Failed to fetch locale Information: ', error)
+    )
   }
 
   async getLocaleInformation() {
