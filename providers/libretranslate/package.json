@@ -1,12 +1,12 @@
 {
-  "name": "strapi-provider-translate-deepl",
-  "version": "1.1.1",
-  "description": "DeepL provider for translate plugin in Strapi 4",
+  "name": "strapi-provider-translate-libretranslate",
+  "version": "1.0.0",
+  "description": "Libretranslate provider for translate plugin in Strapi 4",
   "keywords": [
     "strapi",
     "translate",
     "provider",
-    "deepl"
+    "libretranslate"
   ],
   "homepage": "https://github.com/fekide/strapi-plugin-translate",
   "bugs": {
@@ -18,8 +18,8 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Felix Haase",
-    "email": "felix.haase@feki.de"
+    "name": "Yannick Lang",
+    "email": "yannick.lang@feki.de"
   },
   "maintainers": [
     {
@@ -40,8 +40,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "bottleneck": "^2.19.5",
-    "deepl-node": "^1.8.0"
+    "axios": ">=0.21.2 <1.2.0 || >=1.2.1",
+    "bottleneck": "^2.19.5"
   },
   "engines": {
     "node": ">=14 <=18",

@@ -45,11 +45,11 @@ import {
   useNotification,
   useQueryParams,
   CheckPermissions,
+  request,
 } from '@strapi/helper-plugin'
 import { generateOptions } from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils'
 import useContentTypePermissions from '@strapi/plugin-i18n/admin/src/hooks/useContentTypePermissions'
 import selectI18NLocales from '@strapi/plugin-i18n/admin/src/selectors/selectI18nLocales'
-import { axiosInstance } from '@strapi/plugin-i18n/admin/src/utils'
 import _ from 'lodash'
 import { getTrad } from '../../utils'
 import permissions from '../../permissions'
@@ -153,11 +153,14 @@ const Content = ({
       const { locale: sourceLocale } = localizations.find(
         ({ id }) => id == value
       )
-      const { data: translatedData } = await axiosInstance.post(translateURL, {
-        id: value,
-        sourceLocale,
-        targetLocale: currentLocale,
-        contentTypeUid: slug,
+      const translatedData = await request(translateURL, {
+        method: 'POST',
+        body: {
+          id: value,
+          sourceLocale,
+          targetLocale: currentLocale,
+          contentTypeUid: slug,
+        },
       })
 
       const parsedData = parseRelations(translatedData, allLayoutData)
@@ -247,7 +250,7 @@ const Content = ({
       {isOpen && (
         <Dialog onClose={handleToggle} title="Confirmation" isOpen={isOpen}>
           <DialogBody icon={<ExclamationMarkCircle />}>
-            <Stack size={2}>
+            <Stack spacing={2}>
               <Flex justifyContent="center">
                 <CenteredTypography id="confirm-description">
                   {formatMessage({
