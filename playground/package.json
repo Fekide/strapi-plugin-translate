@@ -1,12 +1,13 @@
 {
   "dependencies": {
     "@strapi/plugin-graphql": "^4.7.1",
-    "lodash.set": "^4.3.2",
-    "mime-types": "^2.1.27",
-    "@strapi/strapi": "4.7.1",
     "@strapi/plugin-i18n": "4.7.1",
     "@strapi/plugin-users-permissions": "4.7.1",
-    "better-sqlite3": "8.2.0"
+    "@strapi/strapi": "4.7.1",
+    "better-sqlite3": "8.2.0",
+    "lodash.set": "^4.3.2",
+    "mime-types": "^2.1.27",
+    "strapi-plugin-init-admin-user": "^0.2.1"
   },
   "name": "playground",
   "private": true,
@@ -17,9 +18,14 @@
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
-    "test": "echo no tests"
+    "reset": "node scripts/reset.js",
+    "cy:run": "cypress run",
+    "test": "start-server-and-test start http://localhost:1337 cy:run"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "cypress": "^12.7.0",
+    "start-server-and-test": "^2.0.0"
+  },
   "author": {
     "name": "A Strapi developer"
   },
