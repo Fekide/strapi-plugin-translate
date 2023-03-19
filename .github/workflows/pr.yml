@@ -29,6 +29,7 @@ jobs:
         with:
           node-version: ${{ matrix.version }}
           cache: 'yarn'
+      - run: cp ./playground/.env.test ./playground/.env
       - run: yarn
       - run: yarn test
       - uses: codecov/codecov-action@v3
