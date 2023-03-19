@@ -171,14 +171,17 @@ async function importGlobal() {
 
 async function addLocales(locales) {
   return Promise.all(
-    locales.map((locale) =>
-      strapi
+    locales.map(async (locale) => {
+      const existing = await strapi
         .service('plugin::i18n.locales')
-        .create(locale)
-        .catch(() =>
-          console.log(`Failed to create locale ${locale.code}. Already exists`)
-        )
-    )
+        .findByCode(locale.code)
+      if (!existing) {
+        strapi
+          .service('plugin::i18n.locales')
+          .create(locale)
+          .catch(() => console.log(`Failed to create locale ${locale.code}.`))
+      }
+    })
   )
 }
 
