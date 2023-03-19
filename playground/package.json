@@ -32,7 +32,8 @@
   "strapi": {
     "uuid": "e52249f8-dcf2-4e7b-8612-7713abc46c04",
     "template": "@strapi/template-blog@^1.0.0",
-    "starter": "@strapi/starter-next-blog"
+    "starter": "@strapi/starter-next-blog",
+    "telemetryDisabled": true
   },
   "engines": {
     "node": ">=14.19.1 <=18.x.x",

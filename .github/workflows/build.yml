@@ -33,12 +33,13 @@ jobs:
         with:
           node-version: ${{ matrix.version }}
           cache: 'yarn'
+      - run: cp ./playground/.env.test ./playground/.env
       - run: yarn
       - run: yarn test
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./plugin/coverage/clover.xml,./providers/deepl/coverage/clover.xml
+          files: ./plugin/coverage/clover.xml,./providers/deepl/coverage/clover.xml,./providers/libretranslate/coverage/clover.xml
           flags: unittests
           name: codecov-umbrella
 
