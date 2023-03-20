@@ -57,6 +57,12 @@ jobs:
       - run: yarn
       - run: yarn workspace playground build
       - run: yarn workspace playground e2e
+      - uses: actions/upload-artifact@v3
+        with:
+          name: cypress results
+          path: |
+            playground/cypress/videos/*
+            playground/cypress/screenshots/*
 
   release:
     needs:
