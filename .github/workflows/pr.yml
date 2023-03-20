@@ -55,7 +55,7 @@ jobs:
       - run: yarn workspace playground e2e
       - uses: actions/upload-artifact@v3
         with:
-          name: cypress results
+          name: cypress results (node ${{ matrix.version }})
           path: |
             playground/cypress/videos/*
             playground/cypress/screenshots/*
