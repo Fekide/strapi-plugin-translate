@@ -5,7 +5,6 @@ describe('direct translation', () => {
 
   it('single article', () => {
     cy.intercept('/translate/translate').as('translateExecution')
-    cy.intercept('/content-manager/uid/generate').as('regenerateUID')
 
     // Login and Navigate to article
     cy.login('admin@example.com', 'admin')
@@ -20,16 +19,20 @@ describe('direct translation', () => {
       })
       .click()
     cy.contains('German (de)').click()
-    cy.wait('@regenerateUID')
 
     // Translate from English
     cy.contains('Translate from another locale').click()
     cy.contains('button', 'Yes, fill in').click()
     cy.wait('@translateExecution')
 
-    // Regenerate UID
-    cy.get('button[aria-label=regenerate]').click()
-    cy.wait('@regenerateUID')
+    // Update UID
+    cy.contains('label', 'slug')
+      .invoke('attr', 'for')
+      .then((id) => {
+        cy.get('#' + id)
+      })
+      .clear()
+      .type('a-bug-is-becoming-a-meme-on-the-internet-1')
 
     // Save and Publish
     cy.contains('button', 'Save').click()
@@ -43,7 +46,6 @@ describe('direct translation', () => {
 
   it('category and article', () => {
     cy.intercept('/translate/translate').as('translateExecution')
-    cy.intercept('/content-manager/uid/generate').as('regenerateUID')
 
     // Login and Navigate to article
     cy.login('admin@example.com', 'admin')
@@ -61,16 +63,20 @@ describe('direct translation', () => {
       })
       .click()
     cy.contains('German (de)').click()
-    cy.wait('@regenerateUID')
 
     // Translate from English
     cy.contains('Translate from another locale').click()
     cy.contains('button', 'Yes, fill in').click()
     cy.wait('@translateExecution')
 
-    // Regenerate UID
-    cy.get('button[aria-label=regenerate]').click()
-    cy.wait('@regenerateUID')
+    // Update UID
+    cy.contains('label', 'slug')
+      .invoke('attr', 'for')
+      .then((id) => {
+        cy.get('#' + id)
+      })
+      .clear()
+      .type('tech-1')
 
     // Save
     cy.contains('button', 'Save').click()
@@ -87,7 +93,6 @@ describe('direct translation', () => {
       })
       .click()
     cy.contains('German (de)').click()
-    cy.wait('@regenerateUID')
 
     // Translate from English
     cy.contains('Translate from another locale').click()
@@ -95,8 +100,13 @@ describe('direct translation', () => {
     cy.wait('@translateExecution')
 
     // Regenerate UID
-    cy.get('button[aria-label=regenerate]').click()
-    cy.wait('@regenerateUID')
+    cy.contains('label', 'slug')
+      .invoke('attr', 'for')
+      .then((id) => {
+        cy.get('#' + id)
+      })
+      .clear()
+      .type('a-bug-is-becoming-a-meme-on-the-internet-1')
 
     // Save and Publish
     cy.contains('button', 'Save').click()
