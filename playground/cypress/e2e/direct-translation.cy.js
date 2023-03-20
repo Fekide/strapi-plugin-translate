@@ -20,6 +20,7 @@ describe('direct translation', () => {
       })
       .click()
     cy.contains('German (de)').click()
+    cy.wait('@regenerateUID')
 
     // Translate from English
     cy.contains('Translate from another locale').click()
@@ -60,6 +61,7 @@ describe('direct translation', () => {
       })
       .click()
     cy.contains('German (de)').click()
+    cy.wait('@regenerateUID')
 
     // Translate from English
     cy.contains('Translate from another locale').click()
@@ -85,6 +87,7 @@ describe('direct translation', () => {
       })
       .click()
     cy.contains('German (de)').click()
+    cy.wait('@regenerateUID')
 
     // Translate from English
     cy.contains('Translate from another locale').click()
