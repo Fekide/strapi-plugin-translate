@@ -5,7 +5,7 @@
     "mime-types": "^2.1.27",
     "@strapi/strapi": "4.7.1",
     "@strapi/plugin-i18n": "4.7.1",
-    "@strapi/plugin-users-permissions": "4.7.1",
+    "@strapi/plugin-users-permissions": "4.8.2",
     "better-sqlite3": "8.2.0"
   },
   "name": "playground",
