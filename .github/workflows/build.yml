@@ -45,21 +45,23 @@ jobs:
   e2e:
     strategy:
       matrix:
-        version: [14, 16, 18]
+        node: [14, 16, 18]
+        strapi: [4.6.2, 4.7.1, 4.8.2]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.version }}
+          node-version: ${{ matrix.node }}
           cache: 'yarn'
-      - run: cp ./playground/.env.test ./playground/.env
+      - run: cp playground/.env.test playground/.env
+      - run: VERSION=${{ matrix.strapi }} envsubst < playground/templates/template.package.json > playground/package.json
       - run: yarn
       - run: yarn workspace playground build
       - run: yarn workspace playground e2e
       - uses: actions/upload-artifact@v3
         with:
-          name: cypress results (node ${{ matrix.version }})
+          name: cypress results (node=${{ matrix.node }},strapi=${{ matrix.strapi }})
           path: |
             playground/cypress/videos/*
             playground/cypress/screenshots/*
