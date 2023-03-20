@@ -5,7 +5,7 @@ describe('direct translation', () => {
 
   it('single article', () => {
     cy.intercept('/translate/translate').as('translateExecution')
-    cy.intercept('/content-manager/uid/check-availability').as('regenerateUID')
+    cy.intercept('/content-manager/uid/generate').as('regenerateUID')
 
     // Login and Navigate to article
     cy.login('admin@example.com', 'admin')
@@ -29,7 +29,6 @@ describe('direct translation', () => {
     // Regenerate UID
     cy.get('button[aria-label=regenerate]').click()
     cy.wait('@regenerateUID')
-    cy.wait(100)
 
     // Save and Publish
     cy.contains('button', 'Save').click()
@@ -43,7 +42,7 @@ describe('direct translation', () => {
 
   it('category and article', () => {
     cy.intercept('/translate/translate').as('translateExecution')
-    cy.intercept('/content-manager/uid/check-availability').as('regenerateUID')
+    cy.intercept('/content-manager/uid/generate').as('regenerateUID')
 
     // Login and Navigate to article
     cy.login('admin@example.com', 'admin')
@@ -70,7 +69,6 @@ describe('direct translation', () => {
     // Regenerate UID
     cy.get('button[aria-label=regenerate]').click()
     cy.wait('@regenerateUID')
-    cy.wait(50)
 
     // Save
     cy.contains('button', 'Save').click()
@@ -96,7 +94,6 @@ describe('direct translation', () => {
     // Regenerate UID
     cy.get('button[aria-label=regenerate]').click()
     cy.wait('@regenerateUID')
-    cy.wait(100)
 
     // Save and Publish
     cy.contains('button', 'Save').click()
