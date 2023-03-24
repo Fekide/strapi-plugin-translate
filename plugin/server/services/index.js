@@ -6,6 +6,7 @@ const provider = require('./provider')
 const translate = require('./translate')
 const untranslated = require('./untranslated')
 const format = require('./format')
+const updatedEntry = require('./updated-entry')
 
 module.exports = {
   'batch-translate-job': batchTranslateJob,
@@ -14,4 +15,5 @@ module.exports = {
   untranslated,
   chunks,
   format,
+  'updated-entry': updatedEntry,
 }

@@ -58,7 +58,7 @@ const UsageOverview = () => {
   )
 
   return (
-    <Box background="neutral100" marginTop={4}>
+    <Box background="neutral100">
       <Table colCount={3} rowCount={1}>
         <Tbody>
           <Tr>

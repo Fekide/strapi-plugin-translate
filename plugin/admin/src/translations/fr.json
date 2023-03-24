@@ -48,5 +48,9 @@
   "usage.failed-to-load": "échec de la récupération des données",
   "usage.characters-used": "caractères consommés",
   "usage.estimatedUsage": "Cette action devrait augmenter l'utilisation de votre API de: ",
-  "usage.estimatedUsageExceedsQuota": "Cette action devrait dépasser votre quota d'API."
+  "usage.estimatedUsageExceedsQuota": "Cette action devrait dépasser votre quota d'API.",
+  "batch-update.dialog.title": "mise à jour par lots",
+  "batch-update.dialog.content": "Toutes les localisations des éléments sélectionnés seront remplacées par des traductions de la langue source sélectionnée.",
+  "batch-update.sourceLocale": "source locale",
+  "batch-update.dialog.submit-text": "commencer"
 }

@@ -1,7 +1,7 @@
 module.exports = ({ env }) => ({
   // ...
   translate: {
-    resolve: "../plugin",
+    resolve: '../plugin',
     enabled: true,
     config: {
       provider: 'deepl',

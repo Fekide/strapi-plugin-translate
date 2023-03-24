@@ -48,5 +48,9 @@
   "usage.failed-to-load": "Daten konnten nicht geladen werden",
   "usage.characters-used": "Zeichen verbraucht",
   "usage.estimatedUsage": "Diese Aktion wird Ihre API-Nutzung ungefähr um diesen Betrag erhöht: ",
-  "usage.estimatedUsageExceedsQuota": "Diese Aktion wird voraussichtlich Ihr API-Kontingent überschreiten."
+  "usage.estimatedUsageExceedsQuota": "Diese Aktion wird voraussichtlich Ihr API-Kontingent überschreiten.",
+  "batch-update.dialog.title": "Massenanpassung starten",
+  "batch-update.dialog.content": "Für alle ausgewählten Elemente werden alle Lokalisierungen mit Übersetzungen der ausgewählten Ausgangssprache ersetzt.",
+  "batch-update.sourceLocale": "Ausgangssprache",
+  "batch-update.dialog.submit-text": "starten"
 }

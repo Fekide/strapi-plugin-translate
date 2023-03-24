@@ -223,6 +223,24 @@ module.exports = ({ strapi }) => ({
       },
     }
   },
+  async batchUpdate(ctx) {
+    const { sourceLocale, updatedEntryIDs } = ctx.request.body
+
+    if (!sourceLocale) {
+      return ctx.badRequest('source locale is required')
+    }
+
+    if (!Array.isArray(updatedEntryIDs)) {
+      return ctx.badRequest('updatedEntryIDs must be an array')
+    }
+
+    ctx.body = {
+      data: await getService('translate').batchUpdate({
+        updatedEntryIDs,
+        sourceLocale,
+      }),
+    }
+  },
   async batchTranslateContentTypes(ctx) {
     ctx.body = {
       data: await getService('translate').contentTypes(),
