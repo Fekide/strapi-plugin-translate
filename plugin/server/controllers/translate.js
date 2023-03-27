@@ -7,6 +7,7 @@ const { TRANSLATE_PRIORITY_DIRECT_TRANSLATION } = require('../utils/constants')
 const { filterAllDeletedFields } = require('../utils/delete-fields')
 const { populateAll } = require('../utils/populate-all')
 const { cleanData } = require('../utils/clean-data')
+const { updateUids } = require('../utils/update-uids')
 
 module.exports = ({ strapi }) => ({
   async translate(ctx) {
@@ -46,8 +47,11 @@ module.exports = ({ strapi }) => ({
         fieldsToTranslate,
         priority: TRANSLATE_PRIORITY_DIRECT_TRANSLATION,
       })
+
       const translatedRelations = await translateRelations(
-        translatedData,
+        strapi.config.get('plugin.translate').regenerateUids
+          ? await updateUids(translatedData, contentTypeUid)
+          : translatedData,
         contentSchema,
         targetLocale
       )

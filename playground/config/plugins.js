@@ -6,6 +6,7 @@ module.exports = ({ env }) => ({
     config: {
       provider: 'deepl',
       providerOptions: {},
+      regenerateUids: true,
     },
   },
   // ...
