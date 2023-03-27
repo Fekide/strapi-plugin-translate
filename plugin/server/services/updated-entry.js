@@ -14,19 +14,20 @@ module.exports = createCoreService('plugin::translate.updated-entry', () => ({
           groupID: params.data.groupID,
         },
       })
-      super.update(firstResult.id, {
-        localesWithUpdates: Array.from(
-          new Set([
-            ...(firstResult.localesWithUpdates ?? []),
-            ...(params.data.localesWithUpdates ?? []),
-          ])
-        ),
-      })
-      if (firstResult) return firstResult
+      if (firstResult) {
+        return super.update(firstResult.id, {
+          localesWithUpdates: Array.from(
+            new Set([
+              ...(firstResult.localesWithUpdates ?? []),
+              ...(params.data.localesWithUpdates ?? []),
+            ])
+          ),
+        })
+      } else {
+        return super.create(params)
+      }
     } catch (e) {
       console.error(e)
     }
-
-    return super.create(params)
   },
 }))

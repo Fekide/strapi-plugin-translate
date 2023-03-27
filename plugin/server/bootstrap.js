@@ -44,12 +44,17 @@ module.exports = async ({ strapi }) => {
   strapi.db.lifecycles.subscribe({
     afterUpdate(event) {
       if (
-        event?.result?.locale &&
+        event?.model?.uid &&
+        !translateConfig.ignoreUpdatedContentTypes.includes(event.model.uid) &&
+        // content type must not be on ignore list
+        event.result?.locale &&
         Array.isArray(event.result.localizations) &&
         event.result.localizations.length > 0 &&
+        // entity must have localizations
         Object.keys(event.params.data).some(
           (key) => !['localizations', 'updatedAt', 'updatedBy'].includes(key)
         )
+        // update must include relevant fields
       ) {
         const groupID = [
           event.result.id,

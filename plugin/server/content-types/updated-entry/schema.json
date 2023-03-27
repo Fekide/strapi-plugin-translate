@@ -12,8 +12,7 @@
   },
   "pluginOptions": {
     "content-manager": {
-      "visible": true,
-      "comment": "// FIXME: debug only"
+      "visible": false
     },
     "content-type-builder": {
       "visible": false

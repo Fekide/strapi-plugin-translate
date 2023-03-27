@@ -10,6 +10,7 @@ const { filterAllDeletedFields } = require('../utils/delete-fields')
 const { cleanData } = require('../utils/clean-data')
 const { TRANSLATE_PRIORITY_BATCH_TRANSLATION } = require('../utils/constants')
 const { updateUids } = require('../utils/update-uids')
+const { removeUids } = require('../utils/remove-uids')
 const { BatchTranslateManager } = require('./batch-translate')
 
 module.exports = ({ strapi }) => ({
@@ -121,7 +122,9 @@ module.exports = ({ strapi }) => ({
           data: sourceEntity,
         })
 
-        const uidsUpdated = await updateUids(translated, update.contentType)
+        const uidsUpdated = strapi.config.get('plugin.translate').regenerateUids
+          ? await updateUids(translated, update.contentType)
+          : removeUids(translated, update.contentType)
 
         const withFieldsDeleted = filterAllDeletedFields(
           uidsUpdated,
@@ -132,6 +135,14 @@ module.exports = ({ strapi }) => ({
           withFieldsDeleted,
           contentTypeSchema
         )
+
+        console.log({
+          translated,
+          uidsUpdated,
+          withFieldsDeleted,
+          fullyTranslatedData,
+          val: strapi.config.get('plugin.translate').regenerateUids,
+        })
 
         delete fullyTranslatedData.locale
 
