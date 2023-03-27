@@ -63,7 +63,7 @@ module.exports = {
       throw new Error('regenerateUids has to be a boolean')
     }
     if (!Array.isArray(ignoreUpdatedContentTypes)) {
-      throw new Error('regenerateUids has to be an Array')
+      throw new Error('ignoreUpdatedContentTypes has to be an Array')
     }
   },
 }
