@@ -132,3 +132,7 @@ dist
 .vscode
 
 build/
+
+
+**/cypress/videos
+**/cypress/screenshots

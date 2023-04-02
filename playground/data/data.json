@@ -1,22 +1,27 @@
 {
   "categories": [
     {
+      "id": 1,
       "name": "news",
       "slug": "news"
     },
     {
+      "id": 2,
       "name": "tech",
       "slug": "tech"
     },
     {
+      "id": 3,
       "name": "food",
       "slug": "food"
     },
     {
+      "id": 4,
       "name": "nature",
       "slug": "nature"
     },
     {
+      "id": 5,
       "name": "story",
       "slug": "story"
     }
@@ -33,11 +38,13 @@
   },
   "writers": [
     {
+      "id": 1,
       "name": "David Doe",
       "email": "daviddoe@strapi.io",
       "picture": null
     },
     {
+      "id": 2,
       "name": "Sarah Baker",
       "email": "sarahbaker@strapi.io",
       "picture": null

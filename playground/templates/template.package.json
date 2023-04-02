@@ -1,11 +1,10 @@
 {
   "dependencies": {
-    "@strapi/plugin-graphql": "^4.7.1",
-    "@strapi/plugin-i18n": "4.7.1",
-    "@strapi/plugin-users-permissions": "4.7.1",
-    "@strapi/strapi": "4.7.1",
+    "@strapi/plugin-graphql": "${VERSION}",
+    "@strapi/plugin-i18n": "${VERSION}",
+    "@strapi/plugin-users-permissions": "${VERSION}",
+    "@strapi/strapi": "${VERSION}",
     "better-sqlite3": "8.2.0",
-    "dotenv": "^16.0.3",
     "lodash.set": "^4.3.2",
     "mime-types": "^2.1.27",
     "strapi-plugin-init-admin-user": "^0.2.1"
