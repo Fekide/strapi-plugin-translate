@@ -14,9 +14,9 @@ jobs:
 
   release:
     needs:
-      - eslint
-      - commitlint
+      - lint
       - unittest
+      - e2e
     name: Release
     runs-on: ubuntu-latest
     steps:
