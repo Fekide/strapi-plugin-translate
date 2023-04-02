@@ -10,7 +10,7 @@ describe('batch translation', () => {
     )
 
     // Login and Navigate to Translate Page
-    cy.login('admin@example.com', 'admin')
+    cy.login()
     cy.get('nav').contains('Translate').click()
 
     cy.wait('@batchTranslateContentTypes')
@@ -58,7 +58,7 @@ describe('batch translation', () => {
     )
 
     // Login and Navigate to Translate Page
-    cy.login('admin@example.com', 'admin')
+    cy.login()
     cy.get('nav').contains('Translate').click()
 
     cy.wait('@batchTranslateContentTypes')

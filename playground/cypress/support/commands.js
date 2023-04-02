@@ -10,10 +10,10 @@
 //
 //
 // -- This is a parent command --
-Cypress.Commands.add('login', (email, password) => {
+Cypress.Commands.add('login', () => {
   cy.visit('/admin/auth/login')
-  cy.get('input[name=email]').type(email)
-  cy.get('input[name=password]').type(`${password}{enter}`)
+  cy.get('input[name=email]').type(Cypress.env('ADMIN_MAIL'))
+  cy.get('input[name=password]').type(`${Cypress.env('ADMIN_PASSWORD')}{enter}`)
 })
 //
 //

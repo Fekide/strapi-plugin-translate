@@ -7,7 +7,7 @@ describe('direct translation', () => {
     cy.intercept('/translate/translate').as('translateExecution')
 
     // Login and Navigate to article
-    cy.login('admin@example.com', 'admin')
+    cy.login()
     cy.get('nav').contains('Content Manager').click()
     cy.contains('A bug is becoming a meme on the internet').click()
 
@@ -48,7 +48,7 @@ describe('direct translation', () => {
     cy.intercept('/translate/translate').as('translateExecution')
 
     // Login and Navigate to article
-    cy.login('admin@example.com', 'admin')
+    cy.login()
     cy.get('nav').contains('Content Manager').click()
 
     cy.get('nav[aria-label=Content]').contains('Category').click()
@@ -123,7 +123,7 @@ describe('direct translation', () => {
     cy.intercept('/content-manager/uid/check-availability').as('regenerateUID')
 
     // Login and Navigate to article
-    cy.login('admin@example.com', 'admin')
+    cy.login()
     cy.get('nav').contains('Content Manager').click()
 
     cy.get('nav[aria-label=Content]').contains('Homepage').click()
