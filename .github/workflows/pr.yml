@@ -1,63 +1,9 @@
 name: Pull Request
 on: pull_request
 jobs:
-  eslint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install modules
-        run: yarn
-      - name: Run ESLint
-        run: yarn lint
-
-  commitlint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@v5
-
+  lint:
+    uses: ./.github/workflows/lint.yml
   unittest:
-    strategy:
-      matrix:
-        version: [14, 16, 18]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.version }}
-          cache: 'yarn'
-      - run: yarn
-      - run: yarn test
-      - uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./plugin/coverage/clover.xml,./providers/deepl/coverage/clover.xml,./providers/libretranslate/coverage/clover.xml
-          flags: unittests
-          name: codecov-umbrella
-
+    uses: ./.github/workflows/unittest.yml
   e2e:
-    strategy:
-      matrix:
-        node: [14, 16, 18]
-        strapi: [4.6.2, 4.7.1, 4.8.2]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-          cache: 'yarn'
-      - run: cp playground/.env.test playground/.env
-      - run: VERSION=${{ matrix.strapi }} envsubst < playground/templates/template.package.json > playground/package.json
-      - run: yarn
-      - run: yarn workspace playground build
-      - run: yarn workspace playground e2e
-      - uses: actions/upload-artifact@v3
-        with:
-          name: cypress results (node=${{ matrix.node }},strapi=${{ matrix.strapi }})
-          path: |
-            playground/cypress/videos/*
-            playground/cypress/screenshots/*
+    uses: ./.github/workflows/e2e.yml

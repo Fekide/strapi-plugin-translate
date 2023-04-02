@@ -1,0 +1,25 @@
+on:
+  workflow_call:
+jobs:
+  e2e:
+    strategy:
+      matrix:
+        node: [14, 16, 18]
+        strapi: [4.6, 4.7, 4.8, 4.9]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'yarn'
+      - run: VERSION=${{ matrix.strapi }} envsubst < playground/templates/template.package.json > playground/package.json
+      - run: yarn
+      - run: yarn workspace playground build
+      - run: yarn workspace playground e2e
+      - uses: actions/upload-artifact@v3
+        with:
+          name: cypress results (node=${{ matrix.node }},strapi=${{ matrix.strapi }})
+          path: |
+            playground/cypress/videos/*
+            playground/cypress/screenshots/*
