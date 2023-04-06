@@ -36,6 +36,30 @@
       "title": "My blog"
     }
   },
+  "categories-page": {
+    "categories": [
+      {
+        "category": 1,
+        "display": "News"
+      },
+      {
+        "category": 2,
+        "display": "Tech"
+      },
+      {
+        "category": 3,
+        "display": "Nature"
+      },
+      {
+        "category": 4,
+        "display": "News"
+      },
+      {
+        "category": 5,
+        "display": "Story"
+      }
+    ]
+  },
   "writers": [
     {
       "id": 1,

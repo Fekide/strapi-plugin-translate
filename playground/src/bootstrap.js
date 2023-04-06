@@ -9,6 +9,7 @@ const {
   homepage,
   writers,
   articles,
+  'categories-page': categoriesPage,
   global,
 } = require('../data/data.json')
 
@@ -126,6 +127,10 @@ async function importHomepage() {
   await createEntry({ model: 'homepage', entry: homepage, files })
 }
 
+async function importCategoriesPage() {
+  await createEntry({ model: 'categories-page', entry: categoriesPage })
+}
+
 async function importWriters() {
   return Promise.all(
     writers.map(async (writer) => {
@@ -198,6 +203,7 @@ async function importSeedData() {
   // Create all entries
   await importCategories()
   await importHomepage()
+  await importCategoriesPage()
   await importWriters()
   await importArticles()
   await importGlobal()
@@ -213,6 +219,7 @@ async function cleanData() {
   await cleanCollectionType('api::article.article')
   await cleanCollectionType('api::category.category')
   await cleanCollectionType('api::homepage.homepage')
+  await cleanCollectionType('api::categories-page.categories-page')
   await cleanCollectionType('api::writer.writer')
 }
 

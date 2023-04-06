@@ -64,7 +64,12 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::category.category",
-      "inversedBy": "articles"
+      "inversedBy": "articles",
+      "pluginOptions": {
+        "translate": {
+          "translate": "translate"
+        }
+      }
     },
     "image": {
       "type": "media",
