@@ -11,9 +11,23 @@
 //
 // -- This is a parent command --
 Cypress.Commands.add('login', () => {
-  cy.visit('/admin/auth/login')
-  cy.get('input[name=email]').type(Cypress.env('ADMIN_MAIL'))
-  cy.get('input[name=password]').type(`${Cypress.env('ADMIN_PASSWORD')}{enter}`)
+  cy.request('POST', '/admin/login', {
+    email: Cypress.env('ADMIN_MAIL'),
+    password: Cypress.env('ADMIN_PASSWORD'),
+  }).then((result) => {
+    cy.visit('/admin', {
+      onBeforeLoad: (contentWindow) => {
+        contentWindow.sessionStorage.setItem(
+          'jwtToken',
+          JSON.stringify(result.body.data.token)
+        )
+        contentWindow.sessionStorage.setItem(
+          'userInfo',
+          JSON.stringify(result.body.data.user)
+        )
+      },
+    })
+  })
 })
 //
 //
