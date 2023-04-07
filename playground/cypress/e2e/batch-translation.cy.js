@@ -17,12 +17,8 @@ describe('batch translation', () => {
 
     // Start batch translation
 
-    cy.get('tbody tr ')
-      .first()
-      .find('td[aria-colindex=3]')
-      .find('button')
-      .first()
-      .click()
+    cy.get('button[data-cy="api::article.article.de.translate"]').focus()
+    cy.get('button[data-cy="api::article.article.de.translate"]').click()
 
     // Complete dialog
     cy.get('div[role=dialog]')
@@ -39,14 +35,10 @@ describe('batch translation', () => {
 
     cy.wait('@batchTranslateContentTypes')
 
-    cy.get('tbody tr ')
-      .first()
-      .find('td[aria-colindex=3]')
+    cy.get('[data-cy="api::article.article.de"]')
       .contains('Job finished')
       .should('exist')
-    cy.get('tbody tr ')
-      .first()
-      .find('td[aria-colindex=3]')
+    cy.get('[data-cy="api::article.article.de"]')
       .contains('complete')
       .should('exist')
   })
@@ -65,12 +57,8 @@ describe('batch translation', () => {
 
     // Start batch translation
 
-    cy.get('tbody tr ')
-      .first()
-      .find('td[aria-colindex=3]')
-      .find('button')
-      .first()
-      .click()
+    cy.get('button[data-cy="api::article.article.de.translate"]').focus()
+    cy.get('button[data-cy="api::article.article.de.translate"]').click()
 
     // Complete dialog
     cy.get('div[role=dialog]')
@@ -95,14 +83,10 @@ describe('batch translation', () => {
 
     cy.wait('@batchTranslateContentTypes')
 
-    cy.get('tbody tr ')
-      .first()
-      .find('td[aria-colindex=3]')
+    cy.get('[data-cy="api::article.article.de"]')
       .contains('Job finished')
       .should('exist')
-    cy.get('tbody tr ')
-      .first()
-      .find('td[aria-colindex=3]')
+    cy.get('[data-cy="api::article.article.de"]')
       .contains('complete')
       .should('exist')
   })
