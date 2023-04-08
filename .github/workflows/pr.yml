@@ -3,6 +3,8 @@ on: pull_request
 jobs:
   lint:
     uses: ./.github/workflows/lint.yml
+  diff:
+    uses: ./.github/workflows/diff.yml
   unittest:
     uses: ./.github/workflows/unittest.yml
   e2e:
