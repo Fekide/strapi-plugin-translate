@@ -28,7 +28,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
         const { count, complete, job } = entry.localeReports[locale.code]
 
         return (
-          <Td key={locale.code}>
+          <Td key={locale.code} data-cy={`${entry.contentType}.${locale.code}`}>
             <Stack spacing={3}>
               <Typography textColor="neutral800">
                 {count}{' '}
@@ -94,6 +94,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
               </Flex>
               <IconButtonGroup>
                 <IconButton
+                  data-cy={`${entry.contentType}.${locale.code}.translate`}
                   onClick={() => onAction('translate', locale.code)}
                   label={formatMessage({
                     id: getTrad(
@@ -111,6 +112,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   }
                 />
                 <IconButton
+                  data-cy={`${entry.contentType}.${locale.code}.cancel`}
                   onClick={() => onAction('cancel', locale.code)}
                   label={formatMessage({
                     id: getTrad('batch-translate.table.actions.labels.cancel'),
@@ -123,6 +125,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   }
                 />
                 <IconButton
+                  data-cy={`${entry.contentType}.${locale.code}.pause`}
                   onClick={() => onAction('pause', locale.code)}
                   label={formatMessage({
                     id: getTrad('batch-translate.table.actions.labels.pause'),
@@ -135,6 +138,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   }
                 />
                 <IconButton
+                  data-cy={`${entry.contentType}.${locale.code}.resume`}
                   onClick={() => onAction('resume', locale.code)}
                   label={formatMessage({
                     id: getTrad('batch-translate.table.actions.labels.resume'),

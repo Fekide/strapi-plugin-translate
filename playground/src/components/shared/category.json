@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_shared_categories",
+  "info": {
+    "displayName": "Category",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "category": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::category.category"
+    },
+    "display": {
+      "type": "string"
+    }
+  }
+}

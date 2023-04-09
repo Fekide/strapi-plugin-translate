@@ -1,0 +1,33 @@
+{
+  "kind": "singleType",
+  "collectionName": "categories_pages",
+  "info": {
+    "singularName": "categories-page",
+    "pluralName": "categories-pages",
+    "displayName": "Categories Page",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "categories": {
+      "type": "component",
+      "repeatable": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        },
+        "translate": {
+          "translate": "translate"
+        }
+      },
+      "component": "shared.category"
+    }
+  }
+}

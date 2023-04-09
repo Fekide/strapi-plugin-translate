@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@strapi/plugin-graphql": "${VERSION}",
     "@strapi/plugin-i18n": "${VERSION}",
     "@strapi/plugin-users-permissions": "${VERSION}",
     "@strapi/strapi": "${VERSION}",

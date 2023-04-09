@@ -161,4 +161,55 @@ describe('direct translation', () => {
       .should('be.visible')
     cy.contains('button', 'Save').should('be.disabled')
   })
+
+  it('single type with relation in component', () => {
+    cy.intercept('/translate/translate').as('translateExecution')
+
+    // Login
+    cy.login()
+
+    // Translate all categories
+    cy.getAllSessionStorage().then((result) => {
+      cy.request({
+        method: 'POST',
+        url: '/translate/batch-translate',
+        body: {
+          contentType: 'api::category.category',
+          sourceLocale: 'en',
+          targetLocale: 'de',
+          autoPublish: true,
+        },
+        auth: {
+          bearer: JSON.parse(result[Cypress.config().baseUrl].jwtToken),
+        },
+      })
+    })
+
+    //Navigate to Categories page
+    cy.get('nav').contains('Content Manager').click()
+
+    cy.get('nav[aria-label=Content]').contains('Categories Page').click()
+
+    // Go to page for creating German locale
+    cy.contains('label', 'Locales')
+      .invoke('attr', 'for')
+      .then((id) => {
+        cy.get('#' + id)
+      })
+      .click()
+    cy.contains('German (de)').click()
+
+    // Translate from English
+    cy.contains('Translate from another locale').click()
+    cy.contains('button', 'Yes, fill in').click()
+    cy.wait('@translateExecution')
+
+    // Save
+    cy.contains('button', 'Save').click()
+
+    // Verify
+    cy.contains('button', 'News').click()
+    cy.contains('span', 'news')
+    cy.contains('button', 'Save').should('be.disabled')
+  })
 })
