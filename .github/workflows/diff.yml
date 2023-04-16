@@ -1,0 +1,9 @@
+on:
+  workflow_call:
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run diff script
+        run: sh ./scripts/diff.sh

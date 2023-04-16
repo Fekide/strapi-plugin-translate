@@ -4,7 +4,7 @@ module.exports = ({ env }) => ({
     resolve: '../plugin',
     enabled: true,
     config: {
-      provider: 'deepl',
+      provider: env('TRANSLATE_PROVIDER', 'deepl'),
       providerOptions: {},
       regenerateUids: true,
     },

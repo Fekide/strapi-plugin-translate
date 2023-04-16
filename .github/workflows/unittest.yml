@@ -1,0 +1,22 @@
+on:
+  workflow_call:
+jobs:
+  unittest:
+    strategy:
+      matrix:
+        version: [14, 16, 18]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.version }}
+          cache: 'yarn'
+      - run: yarn
+      - run: yarn test
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./plugin/coverage/clover.xml,./providers/deepl/coverage/clover.xml,./providers/libretranslate/coverage/clover.xml
+          flags: unittests
+          name: codecov-umbrella

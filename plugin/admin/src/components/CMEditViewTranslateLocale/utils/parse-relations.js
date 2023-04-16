@@ -91,26 +91,44 @@ export default function parseRelations(data, allLayoutData, component = null) {
           _.set(
             result,
             attribute,
-            value.map((r) => parseRelation(r, metadata, relationEditLayout))
+            value.map((r, index) => ({
+              __temp_key__: `a${index}`,
+              ...parseRelation(r, metadata, relationEditLayout),
+            }))
           )
         } else {
           _.set(
             result,
             attribute,
-            value ? [parseRelation(value, metadata, relationEditLayout)] : []
+            value
+              ? [
+                  {
+                    __temp_key__: 'a0',
+                    ...parseRelation(value, metadata, relationEditLayout),
+                  },
+                ]
+              : []
           )
         }
       } else if (attributeData.type === 'component') {
         _.set(
           result,
           attribute,
-          parseRelations(value, allLayoutData, attributeData.component)
+          attributeData.repeatable
+            ? value.map((c, index) => ({
+                __temp_key__: index,
+                ...parseRelations(c, allLayoutData, attributeData.component),
+              }))
+            : parseRelations(value, allLayoutData, attributeData.component)
         )
       } else if (attributeData.type === 'dynamiczone' && Array.isArray(value)) {
         _.set(
           result,
           attribute,
-          value.map((c) => parseRelations(c, allLayoutData, c.__component))
+          value.map((c, index) => ({
+            __temp_key__: index,
+            ...parseRelations(c, allLayoutData, c.__component),
+          }))
         )
       }
     }
