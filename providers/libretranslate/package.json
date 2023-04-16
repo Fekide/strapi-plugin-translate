@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-translate-libretranslate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Libretranslate provider for translate plugin in Strapi 4",
   "keywords": [
     "strapi",
@@ -55,6 +55,6 @@
   },
   "peerDependencies": {
     "lodash": "*",
-    "strapi-plugin-translate": "1.1.1"
+    "strapi-plugin-translate": "1.1.2"
   }
 }
