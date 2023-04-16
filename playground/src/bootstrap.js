@@ -221,6 +221,7 @@ async function cleanData() {
   await cleanCollectionType('api::homepage.homepage')
   await cleanCollectionType('api::categories-page.categories-page')
   await cleanCollectionType('api::writer.writer')
+  await cleanCollectionType('plugin::translate.updated-entry')
 }
 
 module.exports = async () => {

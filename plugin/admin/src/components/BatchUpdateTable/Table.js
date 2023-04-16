@@ -89,7 +89,7 @@ const CollectionTable = () => {
           Dismiss selected
         </Button>
       </Flex>
-      <Table>
+      <Table data-cy="updated-entries">
         <Thead>
           <Tr>
             <Th>

@@ -136,14 +136,6 @@ module.exports = ({ strapi }) => ({
           contentTypeSchema
         )
 
-        console.log({
-          translated,
-          uidsUpdated,
-          withFieldsDeleted,
-          fullyTranslatedData,
-          val: strapi.config.get('plugin.translate').regenerateUids,
-        })
-
         delete fullyTranslatedData.locale
 
         strapi.db.query(update.contentType).update({
