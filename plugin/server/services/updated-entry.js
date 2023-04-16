@@ -8,7 +8,7 @@ module.exports = createCoreService('plugin::translate.updated-entry', () => ({
       const {
         results: [firstResult],
       } = await super.find({
-        fields: ['id'],
+        fields: ['id', 'localesWithUpdates'],
         filters: {
           contentType: params.data.contentType,
           groupID: params.data.groupID,
@@ -16,12 +16,14 @@ module.exports = createCoreService('plugin::translate.updated-entry', () => ({
       })
       if (firstResult) {
         return super.update(firstResult.id, {
-          localesWithUpdates: Array.from(
-            new Set([
-              ...(firstResult.localesWithUpdates ?? []),
-              ...(params.data.localesWithUpdates ?? []),
-            ])
-          ),
+          data: {
+            localesWithUpdates: Array.from(
+              new Set([
+                ...(firstResult.localesWithUpdates ?? []),
+                ...(params.data.localesWithUpdates ?? []),
+              ])
+            ),
+          },
         })
       } else {
         return super.create(params)
