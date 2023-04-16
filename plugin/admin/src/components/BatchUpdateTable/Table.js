@@ -1,5 +1,5 @@
 import React, { memo, useState, useEffect } from 'react'
-import { Table, Tbody, Thead, Th, Tr, Td } from '@strapi/design-system/Table'
+import { Table, Tbody, Thead, Th, Tr } from '@strapi/design-system/Table'
 import { ExclamationMarkCircle } from '@strapi/icons'
 import {
   Box,
@@ -15,11 +15,13 @@ import {
   Typography,
 } from '@strapi/design-system'
 import { useIntl } from 'react-intl'
+import _ from 'lodash'
 import useCollection from '../../Hooks/useCollection'
 import useUpdateCollection from '../../Hooks/useUpdateCollection'
 import { getTrad } from '../../utils'
+import BatchUpdateRows from './Rows'
 
-const CollectionTable = () => {
+const BatchUpdateTable = () => {
   const { formatMessage } = useIntl()
 
   const [selectedIDs, setSelectedIDs] = useState([])
@@ -72,6 +74,8 @@ const CollectionTable = () => {
     })
   }
 
+  const groupedUpdates = _.groupBy(updates, 'attributes.contentType')
+
   return (
     <Box background="neutral100">
       <Flex>
@@ -106,11 +110,11 @@ const CollectionTable = () => {
                     setSelectedIDs(updates.map(({ id }) => id))
                   }
                 }}
-              />
+              >
+                Type
+              </Checkbox>
             </Th>
-            <Th>
-              <Typography variant="sigma">Type</Typography>
-            </Th>
+            <Th></Th>
             <Th>
               <Typography variant="sigma">IDs</Typography>
             </Th>
@@ -119,43 +123,20 @@ const CollectionTable = () => {
                 <Typography variant="sigma">{locale.name}</Typography>
               </Th>
             ))}
+            <Th>
+              <Typography variant="sigma">show all</Typography>
+            </Th>
           </Tr>
         </Thead>
         <Tbody>
-          {updates.map(({ id, attributes }, index) => (
-            <Tr key={id} aria-rowindex={index}>
-              <Td>
-                <Checkbox
-                  value={selectedIDs.includes(id)}
-                  onClick={() => {
-                    if (selectedIDs.includes(id)) {
-                      setSelectedIDs((selectedIDs) =>
-                        selectedIDs.filter((param) => param !== id)
-                      )
-                    } else {
-                      setSelectedIDs((selectedIDs) => [id, ...selectedIDs])
-                    }
-                  }}
-                />
-              </Td>
-              <Td>
-                <Typography>{attributes.contentType}</Typography>
-              </Td>
-              <Td>
-                <Typography>
-                  {attributes.groupID.split('-').join(',')}
-                </Typography>
-              </Td>
-              {locales.map(({ code }) => (
-                <Td key={code}>
-                  <Typography>
-                    {attributes.localesWithUpdates.includes(code)
-                      ? 'was updated'
-                      : ''}
-                  </Typography>
-                </Td>
-              ))}
-            </Tr>
+          {Object.keys(groupedUpdates).map((key) => (
+            <BatchUpdateRows
+              key={key}
+              entries={groupedUpdates[key]}
+              selectedIDs={selectedIDs}
+              setSelectedIDs={setSelectedIDs}
+              locales={locales}
+            />
           ))}
         </Tbody>
       </Table>
@@ -227,4 +208,4 @@ const CollectionTable = () => {
   )
 }
 
-export default memo(CollectionTable)
+export default memo(BatchUpdateTable)
