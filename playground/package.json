@@ -3,7 +3,7 @@
     "@strapi/plugin-i18n": "4.9.2",
     "@strapi/plugin-users-permissions": "4.7.1",
     "@strapi/strapi": "4.9.2",
-    "better-sqlite3": "8.2.0",
+    "better-sqlite3": "8.3.0",
     "dotenv": "^16.0.3",
     "lodash.set": "^4.3.2",
     "mime-types": "^2.1.27",
