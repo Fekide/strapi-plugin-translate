@@ -3287,7 +3287,7 @@
     plop "2.7.6"
     pluralize "8.0.0"
 
-"@strapi/helper-plugin@4.7.1", "@strapi/helper-plugin@^4.1.4":
+"@strapi/helper-plugin@4.7.1":
   version "4.7.1"
   resolved "https://registry.yarnpkg.com/@strapi/helper-plugin/-/helper-plugin-4.7.1.tgz#3bbcdc0cc2917ae4450a0682f4065cadfbfe06df"
   integrity sha512-6C/r09s0AonH9spUB17qqDZHvzeQdRvmWiY6U8j0roanYblEltVIIe4uAkceexlrfruiAWKMB7pDm1A64NDX3Q==
@@ -3302,7 +3302,7 @@
     react-intl "6.2.8"
     react-select "5.6.0"
 
-"@strapi/helper-plugin@4.9.2":
+"@strapi/helper-plugin@4.9.2", "@strapi/helper-plugin@^4.1.4":
   version "4.9.2"
   resolved "https://registry.yarnpkg.com/@strapi/helper-plugin/-/helper-plugin-4.9.2.tgz#15ab8db08821cdbfab6768d3b60660590b54f3d3"
   integrity sha512-m2gwp9X6gcaDvgLjlRe7NeNw2l8KG1i7OjNpvY6LrZbvF71xvF57MqsuMBj2o2Ww6OdMgIn6D6Mj++Z0g3tCGQ==
@@ -3389,21 +3389,25 @@
     react-intl "6.3.2"
     yup "^0.32.9"
 
-"@strapi/plugin-i18n@4.7.1":
-  version "4.7.1"
-  resolved "https://registry.yarnpkg.com/@strapi/plugin-i18n/-/plugin-i18n-4.7.1.tgz#5b3cdfd400609c62e0b06a586b954819b18d36f4"
-  integrity sha512-HPS4za1Qm68CSYywDpz673rHoUeTxPSUDWmRH9L8cpPsxCSk1eJ+Rh/+0cQAagYYmUudrEq+ShF7AlfHmnl0yg==
+"@strapi/plugin-i18n@4.9.2", "@strapi/plugin-i18n@^4.9.2":
+  version "4.9.2"
+  resolved "https://registry.yarnpkg.com/@strapi/plugin-i18n/-/plugin-i18n-4.9.2.tgz#65d709c5581ee26a8fb23ad76707fe22cb11026f"
+  integrity sha512-Mgn+u2a3LIAbdh1uDmRas9O7krnQ4DBUpp6Hp7H1HAAy8ry4ZCzKal3cCzw0MGx7LhcUo+qozPxYc1kZm3A/dQ==
   dependencies:
-    "@strapi/utils" "4.7.1"
+    "@strapi/design-system" "1.6.6"
+    "@strapi/helper-plugin" "4.9.2"
+    "@strapi/icons" "1.6.6"
+    "@strapi/utils" "4.9.2"
+    formik "2.2.9"
+    immer "9.0.19"
     lodash "4.17.21"
-
-"@strapi/plugin-i18n@^4.6.0":
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/@strapi/plugin-i18n/-/plugin-i18n-4.6.0.tgz#4b548670161f0f0ec2045517cf3e76c7a49097b3"
-  integrity sha512-+o9PJCWxQOCs7dBAaBqKTtUMYwSk87noWkD1EMzP76zwEzcOVnV4aE855kHhTW3bxNsMrFm4uaAocGHGzhIQOw==
-  dependencies:
-    "@strapi/utils" "4.6.0"
-    lodash "4.17.21"
+    prop-types "^15.7.2"
+    qs "6.11.1"
+    react-intl "6.3.2"
+    react-query "3.24.3"
+    react-redux "8.0.5"
+    redux "^4.2.1"
+    yup "^0.32.9"
 
 "@strapi/plugin-upload@4.9.2":
   version "4.9.2"
@@ -3553,17 +3557,6 @@
     lodash "4.17.21"
     prettier "2.8.4"
     typescript "4.6.2"
-
-"@strapi/utils@4.6.0":
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/@strapi/utils/-/utils-4.6.0.tgz#d2deec97fd21f9b802c858aa7a19c5d05850a467"
-  integrity sha512-zJfcGVlGLVGTs4Lc5OH+g4vO/+MD5UA6DzMzlSvJ1gsObYpA/a+IMRIMG90nfEKZ9R52LLdaYyGU8ALzxulEmQ==
-  dependencies:
-    "@sindresorhus/slugify" "1.1.0"
-    date-fns "2.29.3"
-    http-errors "1.8.1"
-    lodash "4.17.21"
-    yup "0.32.9"
 
 "@strapi/utils@4.7.1":
   version "4.7.1"

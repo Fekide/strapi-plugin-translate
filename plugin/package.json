@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
-    "@strapi/plugin-i18n": "^4.6.0",
+    "@strapi/plugin-i18n": "^4.9.2",
     "axios-mock-adapter": "^1.21.2",
     "lodash": "^4.17.21"
   }
