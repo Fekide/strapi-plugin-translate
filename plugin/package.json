@@ -47,7 +47,7 @@
     "url": "https://github.com/Fekide/strapi-plugin-translate/issues"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.0.0",
     "@strapi/plugin-i18n": "^4.6.0",
     "axios-mock-adapter": "^1.21.2",
     "lodash": "^4.17.21"
