@@ -97,6 +97,16 @@ class BatchTranslateJob {
           localizations: { locale: { $eq: this.targetLocale } },
         },
       })
+    } else {
+      // entity Ids were provided to the job, so the job is restricted to handling just those
+      this.totalEntities = this.entityIds.length
+      this.translatedEntities = await strapi.db.query(this.contentType).count({
+        where: {
+          locale: this.sourceLocale,
+          localizations: { locale: { $eq: this.targetLocale } },
+          id: { $in: this.entityIds },
+        },
+      })
     }
 
     // TODO: Initialize variables (which ids have to be translated, how many etc)
@@ -220,6 +230,7 @@ class BatchTranslateJob {
         })
 
         this.translatedEntities++
+        entity = null
       } catch (error) {
         strapi.log.error(error)
         if (error.details) {
