@@ -14,5 +14,6 @@ module.exports = defineConfig({
   env: {
     ADMIN_MAIL: process.env.INIT_ADMIN_EMAIL,
     ADMIN_PASSWORD: process.env.INIT_ADMIN_PASSWORD,
+    VERSION: process.env.VERSION,
   },
 })

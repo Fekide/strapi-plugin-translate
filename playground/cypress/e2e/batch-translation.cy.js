@@ -28,7 +28,11 @@ describe('batch translation', () => {
         cy.get('#' + id)
       })
       .click()
-    cy.get('li[data-strapi-value=en]').click()
+    if (Cypress.env('VERSION') >= '4.10') {
+      cy.focused().type('{enter}')
+    } else {
+      cy.get('li[data-strapi-value=en]').click()
+    }
     cy.get('div[role=dialog] button').filter(':contains("Translate")').click()
 
     // Verify translation finished
@@ -68,7 +72,11 @@ describe('batch translation', () => {
         cy.get('#' + id)
       })
       .click()
-    cy.get('li[data-strapi-value=en]').click()
+    if (Cypress.env('VERSION') >= '4.10') {
+      cy.focused().type('{enter}')
+    } else {
+      cy.get('li[data-strapi-value=en]').click()
+    }
     cy.get('div[role=dialog]')
       .contains('label', 'Auto-Publish')
       .invoke('attr', 'for')

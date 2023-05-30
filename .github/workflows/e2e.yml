@@ -5,7 +5,7 @@ jobs:
     strategy:
       matrix:
         node: [14, 16, 18]
-        strapi: [4.6, 4.7, 4.8, 4.9]
+        strapi: [4.6, 4.7, 4.8, 4.9, 4.10]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,7 +16,7 @@ jobs:
       - run: VERSION=${{ matrix.strapi }} envsubst < playground/templates/template.package.json > playground/package.json
       - run: yarn
       - run: yarn workspace playground build
-      - run: yarn workspace playground e2e
+      - run: VERSION=${{ matrix.strapi }} yarn workspace playground e2e
       - uses: actions/upload-artifact@v3
         if: always()
         with:
