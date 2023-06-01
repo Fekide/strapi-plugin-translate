@@ -1,3 +1,12 @@
+function versionGte(versionA, versionB) {
+  return (
+    versionA.localeCompare(versionB, undefined, {
+      numeric: true,
+      sensitivity: 'base',
+    }) >= 0
+  )
+}
+
 describe('batch translation', () => {
   beforeEach(() => {
     cy.exec('yarn reset')
@@ -28,7 +37,7 @@ describe('batch translation', () => {
         cy.get('#' + id)
       })
       .click()
-    if (Cypress.env('VERSION') >= '4.10') {
+    if (versionGte(Cypress.env('VERSION'), '4.10')) {
       cy.focused().type('{enter}')
     } else {
       cy.get('li[data-strapi-value=en]').click()
@@ -72,7 +81,7 @@ describe('batch translation', () => {
         cy.get('#' + id)
       })
       .click()
-    if (Cypress.env('VERSION') >= '4.10') {
+    if (versionGte(Cypress.env('VERSION'), '4.10')) {
       cy.focused().type('{enter}')
     } else {
       cy.get('li[data-strapi-value=en]').click()
