@@ -17,6 +17,7 @@ describe('direct translation', () => {
       .then((id) => {
         cy.get('#' + id)
       })
+      .focus()
       .click()
     cy.contains('German (de)').click()
 
@@ -61,6 +62,7 @@ describe('direct translation', () => {
       .then((id) => {
         cy.get('#' + id)
       })
+      .focus()
       .click()
     cy.contains('German (de)').click()
 
@@ -91,6 +93,7 @@ describe('direct translation', () => {
       .then((id) => {
         cy.get('#' + id)
       })
+      .focus()
       .click()
     cy.contains('German (de)').click()
 
@@ -134,6 +137,7 @@ describe('direct translation', () => {
       .then((id) => {
         cy.get('#' + id)
       })
+      .focus()
       .click()
     cy.contains('German (de)').click()
 
@@ -196,6 +200,7 @@ describe('direct translation', () => {
       .then((id) => {
         cy.get('#' + id)
       })
+      .focus()
       .click()
     cy.contains('German (de)').click()
 
