@@ -26,11 +26,7 @@ const BatchUpdateTable = ({
 
   return (
     <>
-      <Table
-        data-cy="updated-entries"
-        rowCount={updates.length + 1}
-        colCount={locales.length + 2}
-      >
+      <Table rowCount={updates.length + 1} colCount={locales.length + 2}>
         <Thead>
           <Tr>
             <Th>

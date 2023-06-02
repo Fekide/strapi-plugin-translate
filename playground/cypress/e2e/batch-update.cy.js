@@ -26,8 +26,6 @@ describe('batch update', () => {
     // Verify
     cy.visit('/admin/plugins/translate')
 
-    cy.get('[data-cy="updated-entries"]')
-      .contains('api::category.category')
-      .should('exist')
+    cy.get('button[data-cy="api::category.category.update"]').should('exist')
   })
 })

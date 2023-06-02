@@ -156,7 +156,11 @@ const CollectionRow = ({ entry, locales, onAction, updateCount, index }) => {
       <Td>
         <Typography textColor="neutral800">
           {updateCount > 0 && (
-            <Button variant="tertiary" onClick={() => onAction('update')}>
+            <Button
+              variant="tertiary"
+              onClick={() => onAction('update')}
+              data-cy={`${entry.contentType}.update`}
+            >
               {updateCount} translations may be out of date
             </Button>
           )}
