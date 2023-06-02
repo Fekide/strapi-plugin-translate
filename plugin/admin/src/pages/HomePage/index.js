@@ -10,10 +10,10 @@ import PluginPage from '../../components/PluginPage'
 
 const HomePage = () => {
   return (
-    <div>
+    <>
       <PluginHeader />
       <PluginPage />
-    </div>
+    </>
   )
 }
 
