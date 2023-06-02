@@ -14,6 +14,8 @@ import { ToggleInput } from '@strapi/design-system/ToggleInput'
 import useCollection from '../../Hooks/useCollection'
 import { getTrad } from '../../utils'
 import useUsage from '../../Hooks/useUsage'
+import useUpdateCollection from '../../Hooks/useUpdateCollection'
+import { BatchUpdateTable } from '../BatchUpdateTable'
 import CollectionTableHeader from './CollectionHeader'
 import CollectionRow from './CollectionRow'
 
@@ -38,6 +40,10 @@ const CollectionTable = () => {
   const [action, setAction] = useState(null)
   const [loading, setLoading] = useState(false)
   const [expectedCost, setExpectedCost] = useState(undefined)
+  const [selectedUpdateIDs, setSelectedUpdateIDs] = useState([])
+
+  const { updates, refetch, dismissUpdates, startUpdate } =
+    useUpdateCollection()
 
   useEffect(() => {
     if (
@@ -122,6 +128,35 @@ const CollectionTable = () => {
             jobID: collection.localeReports[targetLocale]?.job?.id,
           })
           break
+        case 'update':
+          if (selectedUpdateIDs.length === 0) {
+            toggleNotification({
+              type: 'warning',
+              message: {
+                id: 'batch-translate.dialog.translate.nothing-selected',
+                defaultMessage: 'No updates selected',
+              },
+            })
+            setLoading(false)
+
+            return
+          }
+
+          if (!sourceLocale) {
+            toggleNotification({
+              type: 'warning',
+              message: {
+                id: 'batch-translate.dialog.translate.source-locale-missing',
+                defaultMessage: 'Source locale is missing',
+              },
+            })
+            setLoading(false)
+
+            return
+          }
+
+          await startUpdate(selectedUpdateIDs, sourceLocale)
+          break
         default:
           console.log('Action not implemented')
           break
@@ -151,17 +186,24 @@ const CollectionTable = () => {
 
   return (
     <Box background="neutral100">
-      <Table colCount={COL_COUNT} rowCount={ROW_COUNT}>
+      <Table colCount={COL_COUNT + 1} rowCount={ROW_COUNT}>
         <CollectionTableHeader locales={locales} />
         <Tbody>
-          {collections.map((collection) => (
+          {collections.map((collection, index) => (
             <CollectionRow
               key={collection.contentType}
               entry={collection}
+              updateCount={
+                updates.filter(
+                  (update) =>
+                    update?.attributes?.contentType === collection.contentType
+                ).length
+              }
               locales={locales}
               onAction={(action, targetLocale) =>
                 handleAction({ action, targetLocale, collection })
               }
+              index={index}
             />
           ))}
         </Tbody>
@@ -176,7 +218,7 @@ const CollectionTable = () => {
           isOpen={dialogOpen}
         >
           <DialogBody icon={<ExclamationMarkCircle />}>
-            <Stack size={2}>
+            <Stack spacing={2}>
               <Flex justifyContent="center">
                 <Typography id="confirm-description">
                   {formatMessage({
@@ -247,6 +289,36 @@ const CollectionTable = () => {
                         </Typography>
                       )}
                   </Stack>
+                )}
+                {action === 'update' && (
+                  <>
+                    <Select
+                      label={formatMessage({
+                        id: getTrad('batch-update.sourceLocale'),
+                      })}
+                      onChange={setSourceLocale}
+                      value={sourceLocale}
+                    >
+                      {locales.map(({ name, code }) => {
+                        return (
+                          <Option key={code} value={code}>
+                            {name}
+                          </Option>
+                        )
+                      })}
+                    </Select>
+                    <BatchUpdateTable
+                      updates={updates.filter(
+                        (update) =>
+                          update?.attributes?.contentType ===
+                          collection.contentType
+                      )}
+                      dismissUpdates={dismissUpdates}
+                      refetch={refetch}
+                      selectedUpdateIDs={selectedUpdateIDs}
+                      setSelectedUpdateIDs={setSelectedUpdateIDs}
+                    />
+                  </>
                 )}
               </Box>
             </Stack>

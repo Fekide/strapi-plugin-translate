@@ -1,14 +1,12 @@
 import React, { memo } from 'react'
 import { Stack } from '@strapi/design-system/Stack'
 import { CollectionTable } from '../Collection'
-import { BatchUpdateTable } from '../BatchUpdateTable'
 import UsageOverview from '../Usage'
 
 const PluginPage = () => {
   return (
     <Stack padding={8} margin={10} spacing={4} background="neutral">
       <CollectionTable />
-      <BatchUpdateTable />
       <UsageOverview />
     </Stack>
   )

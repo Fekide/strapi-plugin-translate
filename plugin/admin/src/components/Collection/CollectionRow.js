@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import { Tr, Td } from '@strapi/design-system/Table'
+import { Button } from '@strapi/design-system/Button'
 import { Typography } from '@strapi/design-system/Typography'
 import { Flex } from '@strapi/design-system/Flex'
 import { Badge } from '@strapi/design-system/Badge'
@@ -14,11 +15,11 @@ import Play from '@strapi/icons/Play'
 import PropTypes from 'prop-types'
 import { getTrad } from '../../utils'
 
-const CollectionRow = ({ entry, locales, onAction }) => {
+const CollectionRow = ({ entry, locales, onAction, updateCount, index }) => {
   const { formatMessage } = useIntl()
 
   return (
-    <Tr key={entry.contentType}>
+    <Tr key={entry.contentType} aria-rowindex={index}>
       {/* Name */}
       <Td>
         <Typography textColor="neutral800">{entry.collection}</Typography>
@@ -152,6 +153,15 @@ const CollectionRow = ({ entry, locales, onAction }) => {
           </Td>
         )
       })}
+      <Td>
+        <Typography textColor="neutral800">
+          {updateCount > 0 && (
+            <Button variant="tertiary" onClick={() => onAction('update')}>
+              {updateCount} translations may be out of date
+            </Button>
+          )}
+        </Typography>
+      </Td>
     </Tr>
   )
 }
@@ -177,6 +187,8 @@ CollectionRow.propTypes = {
     ),
     collection: PropTypes.string,
   }),
+  updateCount: PropTypes.number,
+  index: PropTypes.number,
 }
 
 export default memo(CollectionRow)

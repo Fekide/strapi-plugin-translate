@@ -15,6 +15,9 @@ const CollectionTableHeader = ({ locales }) => {
             <Typography variant="sigma">{locale.name}</Typography>
           </Th>
         ))}
+        <Th>
+          <Typography variant="sigma">Updates</Typography>
+        </Th>
       </Tr>
     </Thead>
   )
