@@ -291,7 +291,7 @@ const CollectionTable = () => {
                   </Stack>
                 )}
                 {action === 'update' && (
-                  <>
+                  <Stack spacing={2}>
                     <Select
                       label={formatMessage({
                         id: getTrad('batch-update.sourceLocale'),
@@ -313,12 +313,40 @@ const CollectionTable = () => {
                           update?.attributes?.contentType ===
                           collection.contentType
                       )}
-                      dismissUpdates={dismissUpdates}
-                      refetch={refetch}
                       selectedUpdateIDs={selectedUpdateIDs}
                       setSelectedUpdateIDs={setSelectedUpdateIDs}
                     />
-                  </>
+                    <Flex justifyContent="space-between">
+                      <Button
+                        onClick={() =>
+                          setSelectedUpdateIDs(
+                            updates.map((update) => update.id)
+                          )
+                        }
+                        variant="secondary"
+                      >
+                        {formatMessage({
+                          id: getTrad(`batch-update.select-all`),
+                          defaultMessage: 'select all',
+                        })}
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          dismissUpdates(selectedUpdateIDs).then(() => {
+                            setSelectedUpdateIDs([])
+                            refetch()
+                          })
+                        }
+                        variant="danger"
+                        disabled={selectedUpdateIDs.length === 0}
+                      >
+                        {formatMessage({
+                          id: getTrad(`batch-update.dismiss`),
+                          defaultMessage: 'dismiss selected',
+                        })}
+                      </Button>
+                    </Flex>
+                  </Stack>
                 )}
               </Box>
             </Stack>

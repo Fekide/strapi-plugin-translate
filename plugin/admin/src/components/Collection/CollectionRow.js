@@ -161,7 +161,11 @@ const CollectionRow = ({ entry, locales, onAction, updateCount, index }) => {
               onClick={() => onAction('update')}
               data-cy={`${entry.contentType}.update`}
             >
-              {updateCount} translations may be out of date
+              {updateCount}{' '}
+              {formatMessage({
+                id: getTrad('batch-update.out-of-date'),
+                defaultMessage: 'translations may be out of date',
+              })}
             </Button>
           )}
         </Typography>
