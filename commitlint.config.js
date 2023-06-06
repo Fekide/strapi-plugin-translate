@@ -3,6 +3,6 @@ module.exports = {
   ignores: [
     (message) =>
       /^Bumps \[.+]\(.+\) from .+ to .+\.$/m.test(message) ||
-      /^chore(release)/.test(message),
+      /^chore\(release\)/.test(message),
   ],
 }
