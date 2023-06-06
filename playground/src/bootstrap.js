@@ -9,6 +9,7 @@ const {
   homepage,
   writers,
   articles,
+  'categories-page': categoriesPage,
   global,
 } = require('../data/data.json')
 
@@ -126,6 +127,10 @@ async function importHomepage() {
   await createEntry({ model: 'homepage', entry: homepage, files })
 }
 
+async function importCategoriesPage() {
+  await createEntry({ model: 'categories-page', entry: categoriesPage })
+}
+
 async function importWriters() {
   return Promise.all(
     writers.map(async (writer) => {
@@ -169,6 +174,22 @@ async function importGlobal() {
   return createEntry({ model: 'global', entry: global, files })
 }
 
+async function addLocales(locales) {
+  return Promise.all(
+    locales.map(async (locale) => {
+      const existing = await strapi
+        .service('plugin::i18n.locales')
+        .findByCode(locale.code)
+      if (!existing) {
+        strapi
+          .service('plugin::i18n.locales')
+          .create(locale)
+          .catch(() => console.log(`Failed to create locale ${locale.code}.`))
+      }
+    })
+  )
+}
+
 async function importSeedData() {
   // Allow read of application content types
   await setPublicPermissions({
@@ -182,9 +203,25 @@ async function importSeedData() {
   // Create all entries
   await importCategories()
   await importHomepage()
+  await importCategoriesPage()
   await importWriters()
   await importArticles()
   await importGlobal()
+  await addLocales([{ name: 'German (de)', code: 'de' }])
+}
+
+async function cleanCollectionType(uid) {
+  return strapi.db.query(uid).deleteMany({ where: { id: { $notNull: true } } })
+}
+
+async function cleanData() {
+  await cleanCollectionType('api::global.global')
+  await cleanCollectionType('api::article.article')
+  await cleanCollectionType('api::category.category')
+  await cleanCollectionType('api::homepage.homepage')
+  await cleanCollectionType('api::categories-page.categories-page')
+  await cleanCollectionType('api::writer.writer')
+  await cleanCollectionType('plugin::translate.updated-entry')
 }
 
 module.exports = async () => {
@@ -192,6 +229,8 @@ module.exports = async () => {
 
   if (shouldImportSeedData) {
     try {
+      console.log('Cleaning database')
+      await cleanData()
       console.log('Setting up the template...')
       await importSeedData()
       console.log('Ready to go')

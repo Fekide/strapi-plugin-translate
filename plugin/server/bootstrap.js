@@ -39,6 +39,40 @@ const createProvider = (translateConfig) => {
 module.exports = async ({ strapi }) => {
   const translateConfig = strapi.config.get('plugin.translate')
   strapi.plugin('translate').provider = createProvider(translateConfig)
+
+  // Listen for updates to entries, mark them as updated
+  strapi.db.lifecycles.subscribe({
+    afterUpdate(event) {
+      if (
+        // content type must not be on ignore list
+        event?.model?.uid &&
+        !translateConfig.ignoreUpdatedContentTypes.includes(event.model.uid) &&
+        // entity must have localizations
+        event.result?.locale &&
+        Array.isArray(event.result.localizations) &&
+        event.result.localizations.length > 0 &&
+        // update must include relevant fields
+        Object.keys(event.params.data).some(
+          (key) => !['localizations', 'updatedAt', 'updatedBy'].includes(key)
+        )
+      ) {
+        const groupID = [
+          event.result.id,
+          ...event.result.localizations.map(({ id }) => id),
+        ]
+          .sort()
+          .join('-')
+        getService('updated-entry').create({
+          data: {
+            contentType: event.model.uid,
+            groupID,
+            localesWithUpdates: [event.result.locale],
+          },
+        })
+      }
+    },
+  })
+
   await strapi.admin.services.permission.actionProvider.registerMany(actions)
   await getService('translate').batchTranslateManager.bootstrap()
 }

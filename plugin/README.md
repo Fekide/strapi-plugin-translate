@@ -29,6 +29,7 @@
 This plugin requires the following, in order to work correctly:
 
 - Strapi v4 (this plugin is not compatible with v3)
+  - Plugin tested for `v4.6` to `v4.9`
 - The plugin **i18n** installed and enabled (`@strapi/plugin-i18n` [[npm](https://www.npmjs.com/package/@strapi/plugin-i18n)])
 - The content type to have internationalization enabled (advanced settings in the content type builder)
 - In the internationalization settings at least **two** locales
@@ -83,6 +84,10 @@ module.exports = {
       ],
       // If relations should be translated (default true)
       translateRelations: true,
+      // ignore updates for certain content types (default [], i.e. no content types are ignored)
+      ignoreUpdatedContentTypes: ['api::category.category'],
+      // wether to regenerate uids when batch updating (default false)
+      regenerateUids: true
     },
   },
   // ...
@@ -92,6 +97,7 @@ module.exports = {
 #### Available providers
 
 - [strapi-provider-translate-deepl](https://www.npmjs.com/package/strapi-provider-translate-deepl)
+- [strapi-provider-translate-libretranslate](https://www.npmjs.com/package/strapi-provider-translate-libretranslate)
 
 ### Configure translation of individual fields/attributes
 
@@ -175,6 +181,14 @@ Additional remarks:
 - UIDs are automatically translated in batch translation mode, since otherwise the entities could not be created/published
 - If an error occurs, this will be shown in the logs or the message can be accessed by hovering over the `Job failed` badge
 
+### Retranslating updated entities
+
+If a localized entity is updated, an entry is added to the batch update section of the admin page. This allows easy retranslation of updated entities.
+By default, uids will be ignored. You can opt to regenerate them by setting the `translate.config.regenerateUids` key of the plugin options to `true`.
+The `translate.config.ignoreUpdatedContentTypes` key of the plugin options can be used to define an array of content types for which such updates should not be recorded.
+
+Note that updates are only considered if they trigger the `afterUpdate` lifecycle hook provided by strapi.
+
 ### Schema for translating relations
 
 _The related objects are not translated directly, only the relation itself is translated_
@@ -188,6 +202,12 @@ _The related objects are not translated directly, only the relation itself is tr
 
 - the relation goes both ways and would be removed from another object or localization if it was used (the case with oneToOne or oneToMany) -> it is removed
 - otherwise the relation is kept
+
+## 🔐 Permissions
+
+Since RBAC was moved to the community edition in Strapi v4.8.0, permissions for endpoints of direct translation, batch translation and api usage can now be granted to other roles than super admins:
+
+![Permissions for Translate plugin](https://github.com/Fekide/strapi-plugin-deepl/blob/main/assets/permissions.png)
 
 ## 🧑‍💻 Creating your own translation provider
 
@@ -270,5 +290,4 @@ return providerClient.translateTexts(texts)
 ## ⚠ Limitations:
 
 - The translation of Markdown and HTML may vary between different providers
-- **Only super admins can translate**. This is currently the case, since permissions were added to the `translate` endpoint. Probably you can change the permissions with an enterprise subscription but I am not sure. If you know how to do that also in the community edition please tell me or open a merge request!
 - Relations that do not have a translation of the desired locale will not be translated. To keep the relation you will need to translate both in succession (Behaviour for multi-relations has not yet been analyzed)

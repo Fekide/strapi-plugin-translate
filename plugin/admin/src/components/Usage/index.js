@@ -23,42 +23,42 @@ const UsageOverview = () => {
     return null
   }
 
-  const content = error ? (
-    <Td>
-      <Typography textColor="neutral800">
-        {formatMessage({
-          id: getTrad('usage.failed-to-load'),
-          defaultMessage: 'Failed to load Usage data',
-        })}
-      </Typography>
-    </Td>
-  ) : (
-    <>
-      <Td>
-        <Typography textColor="neutral800">
-          {usage.count}/{usage.limit}{' '}
-          {formatMessage({
-            id: getTrad('usage.characters-used'),
-            defaultMessage: 'characters used',
-          })}
-        </Typography>
-      </Td>
-      <Td>
-        <CardBadge>
-          <ProgressBar value={usage ? (usage.count / usage.limit) * 100 : 0}>
+  const content = error
+    ? [
+        <Td key="error">
+          <Typography textColor="neutral800">
+            {formatMessage({
+              id: getTrad('usage.failed-to-load'),
+              defaultMessage: 'Failed to load Usage data',
+            })}
+          </Typography>
+        </Td>,
+      ]
+    : [
+        <Td key="usage">
+          <Typography textColor="neutral800">
             {usage.count}/{usage.limit}{' '}
             {formatMessage({
               id: getTrad('usage.characters-used'),
               defaultMessage: 'characters used',
             })}
-          </ProgressBar>
-        </CardBadge>
-      </Td>
-    </>
-  )
+          </Typography>
+        </Td>,
+        <Td key="progress-bar">
+          <CardBadge>
+            <ProgressBar value={usage ? (usage.count / usage.limit) * 100 : 0}>
+              {usage.count}/{usage.limit}{' '}
+              {formatMessage({
+                id: getTrad('usage.characters-used'),
+                defaultMessage: 'characters used',
+              })}
+            </ProgressBar>
+          </CardBadge>
+        </Td>,
+      ]
 
   return (
-    <Box background="neutral100" marginTop={4}>
+    <Box background="neutral100">
       <Table colCount={3} rowCount={1}>
         <Tbody>
           <Tr>

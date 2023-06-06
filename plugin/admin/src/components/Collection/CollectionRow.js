@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import { Tr, Td } from '@strapi/design-system/Table'
+import { Button } from '@strapi/design-system/Button'
 import { Typography } from '@strapi/design-system/Typography'
 import { Flex } from '@strapi/design-system/Flex'
 import { Badge } from '@strapi/design-system/Badge'
@@ -14,11 +15,11 @@ import Play from '@strapi/icons/Play'
 import PropTypes from 'prop-types'
 import { getTrad } from '../../utils'
 
-const CollectionRow = ({ entry, locales, onAction }) => {
+const CollectionRow = ({ entry, locales, onAction, updateCount, index }) => {
   const { formatMessage } = useIntl()
 
   return (
-    <Tr key={entry.contentType}>
+    <Tr key={entry.contentType} aria-rowindex={index}>
       {/* Name */}
       <Td>
         <Typography textColor="neutral800">{entry.collection}</Typography>
@@ -28,7 +29,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
         const { count, complete, job } = entry.localeReports[locale.code]
 
         return (
-          <Td key={locale.code}>
+          <Td key={locale.code} data-cy={`${entry.contentType}.${locale.code}`}>
             <Stack spacing={3}>
               <Typography textColor="neutral800">
                 {count}{' '}
@@ -94,6 +95,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
               </Flex>
               <IconButtonGroup>
                 <IconButton
+                  data-cy={`${entry.contentType}.${locale.code}.translate`}
                   onClick={() => onAction('translate', locale.code)}
                   label={formatMessage({
                     id: getTrad(
@@ -111,6 +113,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   }
                 />
                 <IconButton
+                  data-cy={`${entry.contentType}.${locale.code}.cancel`}
                   onClick={() => onAction('cancel', locale.code)}
                   label={formatMessage({
                     id: getTrad('batch-translate.table.actions.labels.cancel'),
@@ -123,6 +126,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   }
                 />
                 <IconButton
+                  data-cy={`${entry.contentType}.${locale.code}.pause`}
                   onClick={() => onAction('pause', locale.code)}
                   label={formatMessage({
                     id: getTrad('batch-translate.table.actions.labels.pause'),
@@ -135,6 +139,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   }
                 />
                 <IconButton
+                  data-cy={`${entry.contentType}.${locale.code}.resume`}
                   onClick={() => onAction('resume', locale.code)}
                   label={formatMessage({
                     id: getTrad('batch-translate.table.actions.labels.resume'),
@@ -148,6 +153,23 @@ const CollectionRow = ({ entry, locales, onAction }) => {
           </Td>
         )
       })}
+      <Td>
+        <Typography textColor="neutral800">
+          {updateCount > 0 && (
+            <Button
+              variant="tertiary"
+              onClick={() => onAction('update')}
+              data-cy={`${entry.contentType}.update`}
+            >
+              {updateCount}{' '}
+              {formatMessage({
+                id: getTrad('batch-update.out-of-date'),
+                defaultMessage: 'translations may be out of date',
+              })}
+            </Button>
+          )}
+        </Typography>
+      </Td>
     </Tr>
   )
 }
@@ -173,6 +195,8 @@ CollectionRow.propTypes = {
     ),
     collection: PropTypes.string,
   }),
+  updateCount: PropTypes.number,
+  index: PropTypes.number,
 }
 
 export default memo(CollectionRow)

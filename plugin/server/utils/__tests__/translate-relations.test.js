@@ -1492,6 +1492,64 @@ describe('relation', () => {
         })
       }
     )
+
+    describe('default behavior is translate', () => {
+      beforeEach(() => {
+        const firstEnglish = { id: 1, title: 'test', locale: 'en' }
+        const firstGerman = { id: 2, title: 'test', locale: 'de' }
+        setup({
+          contentTypes: {
+            'api::first.first': createRelationContentType(
+              'oneToOne',
+              { inversedBy: 'related' },
+              true,
+              'api::second.second',
+              'api::first.first',
+              // forcing an empty value
+              ''
+            ),
+            'api::second.second': createRelationContentType(
+              'oneToOne',
+              { mappedBy: 'related' },
+              true,
+              'api::first.first',
+              'api::second.second'
+            ),
+          },
+          database: {
+            'api::second.second': [
+              {
+                ...firstEnglish,
+                localizations: [firstGerman],
+              },
+              {
+                ...firstGerman,
+                localizations: [firstEnglish],
+              },
+            ],
+          },
+        })
+      })
+      it('is translated', async () => {
+        // given
+        const data = {
+          related: { id: 1, title: 'test', locale: 'en' },
+        }
+        const schema = strapi.contentTypes['api::first.first']
+        const targetLocale = 'de'
+        // when
+        const relationsTranslated = await translateRelations(
+          data,
+          schema,
+          targetLocale
+        )
+        const result = {
+          related: { id: 2, title: 'test', locale: 'de' },
+        }
+        // then
+        expect(relationsTranslated).toEqual(result)
+      })
+    })
   })
 
   describe('localizations', () => {

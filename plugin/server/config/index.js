@@ -13,6 +13,8 @@ module.exports = {
         'dynamiczone',
       ],
       translateRelations: true,
+      regenerateUids: false,
+      ignoreUpdatedContentTypes: [],
     }
   },
   validator({
@@ -20,6 +22,8 @@ module.exports = {
     providerOptions,
     translatedFieldTypes,
     translateRelations,
+    regenerateUids,
+    ignoreUpdatedContentTypes,
   }) {
     if (provider === 'dummy' && process.env.NODE_ENV !== 'test') {
       console.warn(
@@ -54,6 +58,12 @@ module.exports = {
     }
     if (providerOptions && typeof providerOptions !== 'object') {
       throw new Error('providerOptions has to be an object if it is defined')
+    }
+    if (typeof regenerateUids !== 'boolean') {
+      throw new Error('regenerateUids has to be a boolean')
+    }
+    if (!Array.isArray(ignoreUpdatedContentTypes)) {
+      throw new Error('ignoreUpdatedContentTypes has to be an Array')
     }
   },
 }

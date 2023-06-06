@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-translate",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "description": "Strapi plugin for managing and automating translation of content",
   "strapi": {
     "name": "translate",

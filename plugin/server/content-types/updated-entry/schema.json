@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "translate_updated_entries",
+  "info": {
+    "singularName": "updated-entry",
+    "pluralName": "updated-entries",
+    "displayName": "Translate updated Entry"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": false
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "contentType": {
+      "type": "string"
+    },
+    "groupID": {
+      "type": "string"
+    },
+    "localesWithUpdates": {
+      "type": "json"
+    }
+  }
+}
