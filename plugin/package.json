@@ -12,7 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@strapi/helper-plugin": "^4.1.4",
+    "@strapi/helper-plugin": "^4.11.4",
     "axios": "^1.2.2",
     "bottleneck": "^2.19.5",
     "jsdom": "^21.1.1",
