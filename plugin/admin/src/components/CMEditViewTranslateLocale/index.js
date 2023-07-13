@@ -181,10 +181,13 @@ const Content = ({
 
       for (const key in parsedData) {
         if (Object.hasOwnProperty.call(parsedData, key)) {
-          const value = parsedData[key]
+          let value = parsedData[key]
           const attribute = allLayoutData.contentType.attributes[key]
 
           if (attribute) {
+            if (attribute.type === 'json') {
+              value = JSON.stringify(value, undefined, 2)
+            }
             onChange({ target: { name: key, value, type: attribute.type } })
           }
         }
