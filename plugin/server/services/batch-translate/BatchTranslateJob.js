@@ -223,7 +223,7 @@ class BatchTranslateJob {
         fullyTranslatedData.publishedAt =
           entity.publishedAt && this.autoPublish ? new Date() : null
         // Create localized entry
-        await strapi.service(this.contentType).create({
+        await strapi.entityService.create(this.contentType, {
           data: fullyTranslatedData,
           // Needed for syncing localizations
           populate: ['localizations'],
