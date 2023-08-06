@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-translate-deepl",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "DeepL provider for translate plugin in Strapi 4",
   "keywords": [
     "strapi",
@@ -55,6 +55,6 @@
   },
   "peerDependencies": {
     "lodash": "*",
-    "strapi-plugin-translate": "1.1.7"
+    "strapi-plugin-translate": "1.2.0"
   }
 }
