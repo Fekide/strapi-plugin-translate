@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { getRequestUrl } from '@strapi/admin/admin/src/content-manager/utils'
 
 export const PUBLICATION_STATES = {
   DRAFT: 'draft',
@@ -14,7 +13,7 @@ export const PUBLICATION_STATES = {
  * @returns
  */
 export function getRelationLink(targetModel, id) {
-  return `${getRequestUrl(`collectionType/${targetModel}/${id ?? ''}`)}`
+  return `/content-manager/collectionType/${targetModel}/${id ?? ''}`
 }
 
 /**
