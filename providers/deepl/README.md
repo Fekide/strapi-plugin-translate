@@ -23,11 +23,11 @@ module.exports = {
         },
         apiOptions: {
           // see <https://github.com/DeepLcom/deepl-node#text-translation-options> for supported options.
-          // note that tagHandling Mode cannot be set this way. 
-          // use with caution, as non-default values may break translation of markdown 
+          // note that tagHandling Mode cannot be set this way.
+          // use with caution, as non-default values may break translation of markdown
           formality: 'default',
           // ...
-        }
+        },
       },
       // other options ...
     },
