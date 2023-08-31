@@ -5,19 +5,19 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm"
-    directory: "/plugin/"
+      interval: 'weekly'
+  - package-ecosystem: 'npm'
+    directory: '/plugin/'
     schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm"
-    directory: "/providers/deepl/"
+      interval: 'weekly'
+  - package-ecosystem: 'npm'
+    directory: '/providers/deepl/'
     schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm"
-    directory: "/playground/"
+      interval: 'weekly'
+  - package-ecosystem: 'npm'
+    directory: '/playground/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'

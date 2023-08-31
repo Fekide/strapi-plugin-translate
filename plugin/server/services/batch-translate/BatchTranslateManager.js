@@ -35,11 +35,14 @@ class BatchTranslateManager {
       .create({ data: params })
     const job = new BatchTranslateJob(entity)
 
-    const promise = job.start()
+    job
+      .start()
+      .catch((err) => strapi.log.error(err))
+      .finally(() => {
+        this.runningJobs.delete(entity.id)
+      })
     this.runningJobs.set(entity.id, job)
-    promise.finally(() => {
-      this.runningJobs.delete(entity.id)
-    })
+
     return entity
   }
 

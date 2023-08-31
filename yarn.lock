@@ -3389,13 +3389,25 @@
     react-intl "6.3.2"
     yup "^0.32.9"
 
-"@strapi/plugin-i18n@4.7.1":
-  version "4.7.1"
-  resolved "https://registry.yarnpkg.com/@strapi/plugin-i18n/-/plugin-i18n-4.7.1.tgz#5b3cdfd400609c62e0b06a586b954819b18d36f4"
-  integrity sha512-HPS4za1Qm68CSYywDpz673rHoUeTxPSUDWmRH9L8cpPsxCSk1eJ+Rh/+0cQAagYYmUudrEq+ShF7AlfHmnl0yg==
+"@strapi/plugin-i18n@4.9.2":
+  version "4.9.2"
+  resolved "https://registry.yarnpkg.com/@strapi/plugin-i18n/-/plugin-i18n-4.9.2.tgz#65d709c5581ee26a8fb23ad76707fe22cb11026f"
+  integrity sha512-Mgn+u2a3LIAbdh1uDmRas9O7krnQ4DBUpp6Hp7H1HAAy8ry4ZCzKal3cCzw0MGx7LhcUo+qozPxYc1kZm3A/dQ==
   dependencies:
-    "@strapi/utils" "4.7.1"
+    "@strapi/design-system" "1.6.6"
+    "@strapi/helper-plugin" "4.9.2"
+    "@strapi/icons" "1.6.6"
+    "@strapi/utils" "4.9.2"
+    formik "2.2.9"
+    immer "9.0.19"
     lodash "4.17.21"
+    prop-types "^15.7.2"
+    qs "6.11.1"
+    react-intl "6.3.2"
+    react-query "3.24.3"
+    react-redux "8.0.5"
+    redux "^4.2.1"
+    yup "^0.32.9"
 
 "@strapi/plugin-i18n@^4.6.0":
   version "4.6.0"
