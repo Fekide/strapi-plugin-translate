@@ -24,7 +24,7 @@
     "e2e": "ENV_PATH='./.env.test' start-server-and-test 'yarn start' http://0.0.0.0:1337 'yarn cy:run'"
   },
   "devDependencies": {
-    "cypress": "^12.7.0",
+    "cypress": "^13.3.0",
     "start-server-and-test": "^2.0.0"
   },
   "author": {
