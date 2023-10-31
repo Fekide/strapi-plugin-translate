@@ -15,7 +15,7 @@ describe('direct translation', () => {
     cy.contains('label', 'Locales')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .click()
     cy.contains('German (de)').click()
@@ -29,7 +29,7 @@ describe('direct translation', () => {
     cy.contains('label', 'slug')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .clear()
       .type('a-bug-is-becoming-a-meme-on-the-internet-1')
@@ -59,7 +59,7 @@ describe('direct translation', () => {
     cy.contains('label', 'Locales')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .click()
     cy.contains('German (de)').click()
@@ -73,7 +73,7 @@ describe('direct translation', () => {
     cy.contains('label', 'slug')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .clear()
       .type('tech-1')
@@ -89,7 +89,7 @@ describe('direct translation', () => {
     cy.contains('label', 'Locales')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .click()
     cy.contains('German (de)').click()
@@ -103,7 +103,7 @@ describe('direct translation', () => {
     cy.contains('label', 'slug')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .clear()
       .type('a-bug-is-becoming-a-meme-on-the-internet-1')
@@ -132,7 +132,7 @@ describe('direct translation', () => {
     cy.contains('label', 'Locales')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .click()
     cy.contains('German (de)').click()
@@ -149,13 +149,13 @@ describe('direct translation', () => {
     cy.contains('label', 'metaTitle')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id.replace('.', '\\.'))
+        cy.get(`[id='${id.replace('.', '\\.')}']`)
       })
       .should('have.value', 'My personal Strapi blog')
     cy.contains('label', 'shareImage')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .get('img')
       .should('be.visible')
@@ -194,7 +194,7 @@ describe('direct translation', () => {
     cy.contains('label', 'Locales')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .click()
     cy.contains('German (de)').click()
