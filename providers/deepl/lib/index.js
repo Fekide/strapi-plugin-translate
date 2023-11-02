@@ -7,6 +7,7 @@ const {
   DEEPL_PRIORITY_DEFAULT,
   DEEPL_API_MAX_TEXTS,
   DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
+  DEEPL_APP_INFO
 } = require('./constants')
 const { parseLocale } = require('./parse-locale')
 const { getService } = require('./get-service')
@@ -33,6 +34,7 @@ module.exports = {
 
     const client = new deepl.Translator(apiKey, {
       serverUrl: apiUrl,
+      appInfo: DEEPL_APP_INFO
     })
 
     const limiter = new Bottleneck({
