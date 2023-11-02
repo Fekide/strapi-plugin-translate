@@ -34,7 +34,7 @@
     "showdown": "^2.1.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.2.0",
     "@strapi/plugin-i18n": "^4.15.0",
     "axios-mock-adapter": "^1.21.2",
     "lodash": "^4.17.21"
