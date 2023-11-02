@@ -12,6 +12,7 @@ const {
   'categories-page': categoriesPage,
   global,
 } = require('../data/data.json')
+const { initAdminData, getSuperAdminRole } = require('./helpers/init-admin')
 
 async function isFirstRun() {
   const pluginStore = strapi.store({
@@ -223,16 +224,70 @@ async function cleanData() {
   await cleanCollectionType('api::writer.writer')
 }
 
+async function initAdmin() {
+  // MIT License
+
+  // Copyright (c) 2022 minzig
+
+  // Permission is hereby granted, free of charge, to any person obtaining a copy
+  // of this software and associated documentation files (the "Software"), to deal
+  // in the Software without restriction, including without limitation the rights
+  // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  // copies of the Software, and to permit persons to whom the Software is
+  // furnished to do so, subject to the following conditions:
+
+  // The above copyright notice and this permission notice shall be included in all
+  // copies or substantial portions of the Software.
+
+  // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  // SOFTWARE.
+  if (
+    process.env.NODE_ENV === 'development' ||
+    process.env.INIT_ADMIN === 'true' ||
+    (typeof process.env.INIT_ADMIN === 'string' &&
+      process.env.INIT_ADMIN.includes('{"'))
+  ) {
+    const users = await strapi.db.query('admin::user').findMany()
+    if (users.length === 0) {
+      const defaultAdmin = initAdminData(process.env)
+      const superAdminRole = await getSuperAdminRole()
+      defaultAdmin.roles = [superAdminRole.id]
+      defaultAdmin.password = await strapi
+        .service('admin::auth')
+        .hashPassword(defaultAdmin.password)
+      try {
+        await strapi.db
+          .query('admin::user')
+          .create({ data: { ...defaultAdmin } })
+        strapi.log.info(
+          `Created admin (E-Mail: ${defaultAdmin.email}, Password: ${
+            process.env.INIT_ADMIN_PASSWORD ? '[INIT_ADMIN_PASSWORD]' : 'admin'
+          }).`
+        )
+      } catch (e) {
+        strapi.log.error(`Couldn't create admin (${defaultAdmin.email}):`, e)
+      }
+    }
+  }
+}
+
 module.exports = async () => {
   const shouldImportSeedData = await isFirstRun()
 
   if (shouldImportSeedData) {
     try {
-      console.log('Cleaning database')
+      console.log('Cleaning database...')
       await cleanData()
+      console.log('Initializing admin user...')
+      await initAdmin()
       console.log('Setting up the template...')
       await importSeedData()
-      console.log('Ready to go')
+      console.log('Ready to go!')
     } catch (error) {
       console.log('Could not import seed data')
       console.error(error)
