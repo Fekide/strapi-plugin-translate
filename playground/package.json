@@ -27,7 +27,7 @@
     "mime-types": "^2.1.27"
   },
   "devDependencies": {
-    "cypress": "^12.7.0",
+    "cypress": "^13.5.0",
     "start-server-and-test": "^2.0.0"
   },
   "engines": {
