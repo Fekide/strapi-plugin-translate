@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@strapi/plugin-i18n": "4.15.0",
-    "@strapi/plugin-users-permissions": "4.15.0",
+    "@strapi/plugin-users-permissions": "4.15.4",
     "@strapi/strapi": "4.15.0",
     "better-sqlite3": "8.2.0",
     "dotenv": "^16.0.3",
