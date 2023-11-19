@@ -21,7 +21,7 @@
     "@strapi/plugin-i18n": "4.15.0",
     "@strapi/plugin-users-permissions": "4.15.0",
     "@strapi/strapi": "4.15.0",
-    "better-sqlite3": "8.2.0",
+    "better-sqlite3": "9.1.1",
     "dotenv": "^16.0.3",
     "lodash.set": "^4.3.2",
     "mime-types": "^2.1.27",
