@@ -24,7 +24,11 @@
     "better-sqlite3": "8.2.0",
     "dotenv": "^16.0.3",
     "lodash.set": "^4.3.2",
-    "mime-types": "^2.1.27"
+    "mime-types": "^2.1.27",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^5.2.0",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
     "cypress": "^12.7.0",
