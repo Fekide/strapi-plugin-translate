@@ -3,7 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const mime = require('mime-types')
-const set = require('lodash.set')
+const set = require('lodash/set')
 const {
   categories,
   homepage,
