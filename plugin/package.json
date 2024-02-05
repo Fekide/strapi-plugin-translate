@@ -28,15 +28,15 @@
   },
   "dependencies": {
     "@strapi/helper-plugin": "^4.15.0",
-    "axios": "^1.2.2",
+    "axios": "^1.6.7",
     "bottleneck": "^2.19.5",
-    "jsdom": "^21.1.1",
+    "jsdom": "^24.0.0",
     "showdown": "^2.1.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.4.0",
     "@strapi/plugin-i18n": "^4.15.0",
-    "axios-mock-adapter": "^1.21.2",
+    "axios-mock-adapter": "^1.22.0",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {

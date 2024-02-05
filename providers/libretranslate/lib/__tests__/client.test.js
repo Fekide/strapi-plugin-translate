@@ -1,6 +1,6 @@
 'use strict'
 const { URLSearchParams } = require('url')
-const { rest } = require('msw')
+const { http, HttpResponse } = require('msw')
 
 const { getServer } = require('../../__mocks__/server')
 const { Client } = require('../client/index')
@@ -39,14 +39,14 @@ const enabledLocales = [
 describe('libretranslate client', () => {
   let server
 
-  const translateHandler = async (req, res, ctx) => {
-    const body = await req.text()
+  const translateHandler = async ({ request }) => {
+    const body = await request.text()
     const params = new URLSearchParams(body)
     let text = params.getAll('text')
-    return res(ctx.json({ translatedText: text }))
+    return HttpResponse.json({ translatedText: text })
   }
-  const languagesHandler = async (req, res, ctx) => {
-    return res(ctx.json(enabledLocales))
+  const languagesHandler = async () => {
+    return HttpResponse.json(enabledLocales)
   }
   beforeAll(() => {
     server = getServer()
@@ -67,9 +67,9 @@ describe('libretranslate client', () => {
 
   describe('init', () => {
     beforeEach(() => {
-      server.use(rest.post(`${VALID_URL}/translate`, translateHandler))
-      server.use(rest.get(`${VALID_URL}/languages`, languagesHandler))
-      server.use(rest.get(`${INVALID_URL}/languages`, (_req, res) => res()))
+      server.use(http.post(`${VALID_URL}/translate`, translateHandler))
+      server.use(http.get(`${VALID_URL}/languages`, languagesHandler))
+      server.use(http.get(`${INVALID_URL}/languages`, () => new HttpResponse()))
     })
 
     it('sets LocaleInformation default values', () => {
@@ -91,7 +91,7 @@ describe('libretranslate client', () => {
   describe('getLocaleInformation', () => {
     let client
     beforeEach(() => {
-      server.use(rest.get(`${VALID_URL}/languages`, languagesHandler))
+      server.use(http.get(`${VALID_URL}/languages`, languagesHandler))
 
       client = new Client(VALID_URL)
     })
@@ -104,8 +104,9 @@ describe('libretranslate client', () => {
       'throws Error for non ok response code %d',
       async (status) => {
         server.use(
-          rest.get(`${VALID_URL}/languages`, (req, res, ctx) =>
-            res(ctx.status(status))
+          http.get(
+            `${VALID_URL}/languages`,
+            () => new HttpResponse(null, { status })
           )
         )
 
@@ -117,9 +118,7 @@ describe('libretranslate client', () => {
 
     it('throws Error for network error', async () => {
       server.use(
-        rest.get(`${VALID_URL}/languages`, (req, res) =>
-          res.networkError('network error')
-        )
+        http.get(`${VALID_URL}/languages`, () => HttpResponse.networkError())
       )
 
       expect(async () => client.getLocaleInformation()).rejects.toThrow(
@@ -131,8 +130,8 @@ describe('libretranslate client', () => {
   describe('translateText', () => {
     let client
     beforeEach(() => {
-      server.use(rest.post(`${VALID_URL}/translate`, translateHandler))
-      server.use(rest.get(`${VALID_URL}/languages`, languagesHandler))
+      server.use(http.post(`${VALID_URL}/translate`, translateHandler))
+      server.use(http.get(`${VALID_URL}/languages`, languagesHandler))
 
       client = new Client(VALID_URL)
     })
@@ -147,12 +146,12 @@ describe('libretranslate client', () => {
       client = new Client(VALID_URL, 'my-api-key')
 
       server.use(
-        rest.post(`${VALID_URL}/translate`, async (req, res, ctx) => {
-          expect(await req.json()).toEqual(
+        http.post(`${VALID_URL}/translate`, async ({ request }) => {
+          expect(await request.json()).toEqual(
             expect.objectContaining({ api_key: 'my-api-key' })
           )
 
-          return res(ctx.json({ translatedText: 'text' }))
+          return HttpResponse.json({ translatedText: 'text' })
         })
       )
 
@@ -168,12 +167,12 @@ describe('libretranslate client', () => {
       'passes parameters correctly',
       async ([text, source, target, format]) => {
         server.use(
-          rest.post(`${VALID_URL}/translate`, async (req, res, ctx) => {
-            expect(await req.json()).toEqual(
+          http.post(`${VALID_URL}/translate`, async ({ request }) => {
+            expect(await request.json()).toEqual(
               expect.objectContaining({ q: text, source, target, format })
             )
 
-            return res(ctx.json({ translatedText: 'text' }))
+            return HttpResponse.json({ translatedText: 'text' })
           })
         )
 
@@ -187,8 +186,9 @@ describe('libretranslate client', () => {
       'throws Error for non ok response code %d',
       async (status) => {
         server.use(
-          rest.post(`${VALID_URL}/translate`, (req, res, ctx) =>
-            res(ctx.status(status))
+          http.post(
+            `${VALID_URL}/translate`,
+            () => new HttpResponse(null, { status })
           )
         )
 
@@ -198,9 +198,7 @@ describe('libretranslate client', () => {
 
     it('throws Error for network error', async () => {
       server.use(
-        rest.post(`${VALID_URL}/translate`, (req, res) =>
-          res.networkError('network error')
-        )
+        http.post(`${VALID_URL}/translate`, () => HttpResponse.networkError())
       )
 
       expect(async () =>
@@ -212,15 +210,16 @@ describe('libretranslate client', () => {
   describe('parseLocales', () => {
     let client
     beforeEach(() => {
-      server.use(rest.get(`${VALID_URL}/languages`, languagesHandler))
+      server.use(http.get(`${VALID_URL}/languages`, languagesHandler))
 
       client = new Client(VALID_URL)
     })
 
     it('works as expected without localeInformation', () => {
       server.use(
-        rest.get(`${VALID_URL}/languages`, (req, res, ctx) =>
-          res(ctx.status(500))
+        http.get(
+          `${VALID_URL}/languages`,
+          () => new HttpResponse(null, { status: 500 })
         )
       )
 

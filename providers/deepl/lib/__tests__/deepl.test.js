@@ -4,7 +4,7 @@ const { faker } = require('@faker-js/faker')
 const {
   stringByteLength,
 } = require('strapi-plugin-translate/server/utils/byte-length')
-const { rest } = require('msw')
+const { http, HttpResponse } = require('msw')
 
 const {
   DEEPL_FREE_API,
@@ -40,41 +40,39 @@ describe('deepl provider', () => {
     return matchAuthKey === passedAuthKey
   }
 
-  const usageHandler = async (req, res, ctx) => {
-    if (isAuthenticated(req)) {
-      return res(ctx.json(usage_result))
+  const usageHandler = async ({ request }) => {
+    if (isAuthenticated(request)) {
+      return HttpResponse.json(usage_result, { status: 200 })
     }
-    return res(ctx.status(403))
+    return new HttpResponse(null, { status: 403 })
   }
-  const translateHandler = async (req, res, ctx) => {
-    const body = await req.text()
+  const translateHandler = async ({ request }) => {
+    const body = await request.text()
     if (stringByteLength(body || '') > DEEPL_API_MAX_REQUEST_SIZE) {
       console.log({ length: stringByteLength(body || '') })
-      return res(ctx.status(413))
+      return new HttpResponse(null, { status: 413 })
     }
     const params = new URLSearchParams(body)
-    if (isAuthenticated(req)) {
+    if (isAuthenticated(request)) {
       let text = params.getAll('text')
       if (text.length == 0) {
-        return res(ctx.status(400))
+        return new HttpResponse(null, { status: 400 })
       }
       if (text.length > 50) {
-        return res(ctx.status(413))
+        return new HttpResponse(null, { status: 413 })
       }
       let targetLang = params.get('target_lang')
       if (!targetLang) {
-        return res(ctx.status(400))
+        return new HttpResponse(null, { status: 400 })
       }
-      return res(
-        ctx.json({
-          translations: text.map((t) => ({
-            detected_source_language: 'EN',
-            text: t,
-          })),
-        })
-      )
+      return HttpResponse.json({
+        translations: text.map((t) => ({
+          detected_source_language: 'EN',
+          text: t,
+        })),
+      })
     }
-    return res(ctx.status(403))
+    return new HttpResponse(null, { status: 403 })
   }
   beforeAll(() => {
     server = getServer()
@@ -109,8 +107,8 @@ describe('deepl provider', () => {
       })
       beforeEach(() => {
         server.use(
-          rest.post(`${DEEPL_FREE_API}/usage`, usageHandler),
-          rest.post(`${DEEPL_PAID_API}/usage`, usageHandler)
+          http.get(`${DEEPL_FREE_API}/usage`, usageHandler),
+          http.get(`${DEEPL_PAID_API}/usage`, usageHandler)
         )
       })
       if (validKey) {
@@ -141,8 +139,8 @@ describe('deepl provider', () => {
   describe('translate', () => {
     beforeEach(() => {
       server.use(
-        rest.post(`${DEEPL_FREE_API}/translate`, translateHandler),
-        rest.post(`${DEEPL_PAID_API}/translate`, translateHandler)
+        http.post(`${DEEPL_FREE_API}/translate`, translateHandler),
+        http.post(`${DEEPL_PAID_API}/translate`, translateHandler)
       )
     })
     describe.each([
@@ -317,7 +315,7 @@ describe('deepl provider', () => {
               text: faker.helpers.uniqueArray(
                 () =>
                   faker.lorem.paragraphs(
-                    faker.datatype.number({
+                    faker.number.int({
                       min: DEEPL_API_MAX_REQUEST_SIZE / 2000,
                       max: DEEPL_API_MAX_REQUEST_SIZE / 200,
                     })
@@ -374,9 +372,9 @@ describe('deepl provider', () => {
   describe('setup', () => {
     beforeEach(() => {
       server.use(
-        rest.post(`${DEEPL_FREE_API}/usage`, usageHandler),
-        rest.post(`${DEEPL_PAID_API}/usage`, usageHandler),
-        rest.post(`${deeplTestApi}/v2/usage`, usageHandler)
+        http.get(`${DEEPL_FREE_API}/usage`, usageHandler),
+        http.get(`${DEEPL_PAID_API}/usage`, usageHandler),
+        http.get(`${deeplTestApi}/v2/usage`, usageHandler)
       )
     })
     describe('provider options', () => {
@@ -384,7 +382,7 @@ describe('deepl provider', () => {
         const deeplProvider = provider.init({
           apiKey: authKey,
         })
-
+        deeplProvider.usage().catch((e) => console.error(e))
         await expect(deeplProvider.usage()).resolves.toBeTruthy()
       })
 
@@ -402,39 +400,44 @@ describe('deepl provider', () => {
           requiredParams,
           forbiddenParams = []
         ) => {
-          const handler = async (req, res, ctx) => {
-            const body = await req.text()
+          const handler = async ({ request }) => {
+            const body = await request.text()
             const params = new URLSearchParams(body)
 
             for (const key of forbiddenParams) {
               if (params.has(key)) {
-                res.networkError(`Server should not have received param ${key}`)
+                return new HttpResponse.text(
+                  `Server should not have received param ${key}`,
+                  { status: 400 }
+                )
               }
             }
             for (const key of Object.keys(requiredParams)) {
               if (!params.has(key)) {
-                res.networkError(`Server did not receive required param ${key}`)
+                return new HttpResponse.text(
+                  `Server did not receive required param ${key}`,
+                  { status: 400 }
+                )
               } else if (params.get(key) !== requiredParams[key]) {
-                res.networkError(
+                return new HttpResponse.text(
                   `Required param ${key}=${
                     requiredParams[key]
-                  } did not match received ${key}=${params.get(key)}`
+                  } did not match received ${key}=${params.get(key)}`,
+                  { status: 400 }
                 )
               }
             }
 
             // skip authentication and validation
             let text = params.getAll('text')
-            return res(
-              ctx.json({
-                translations: text.map((t) => ({
-                  detected_source_language: 'EN',
-                  text: t,
-                })),
-              })
-            )
+            return HttpResponse.json({
+              translations: text.map((t) => ({
+                detected_source_language: 'EN',
+                text: t,
+              })),
+            })
           }
-          server.use(rest.post(`${DEEPL_PAID_API}/translate`, handler))
+          server.use(http.post(`${DEEPL_PAID_API}/translate`, handler))
         }
 
         it('uses formality when provided', async () => {
