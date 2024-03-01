@@ -45,7 +45,7 @@ module.exports = {
         }
         if (
           field.format &&
-          !['plain', 'markdown', 'html'].includes(field.format)
+          !['plain', 'markdown', 'html', 'jsonb'].includes(field.format)
         ) {
           throw new Error(
             `unhandled format ${field.format} for translated field ${field.type}`

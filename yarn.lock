@@ -5369,6 +5369,11 @@ blob-util@^2.0.2:
   resolved "https://registry.yarnpkg.com/blob-util/-/blob-util-2.0.2.tgz#3b4e3c281111bb7f11128518006cdc60b403a1eb"
   integrity sha512-T7JQa+zsXXEa6/8ZhHcQEW1UFfVM49Ts65uBkFL6fz2QmrElqmbajIDJvuA0tEhRe5eIjpV9ZF+0RfZR9voJFQ==
 
+blocks-html-renderer@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/blocks-html-renderer/-/blocks-html-renderer-1.0.5.tgz#c4882b9a4cd6f8a80f31d7960f9ff11dacb4f6cc"
+  integrity sha512-KT3GqV+xsYIgKZX2vJ7/1zEu1eiidGvzZH+Sk4eGBZ4Be/x+pXo/LJRc5a21IzbCsz68wfQd9+GqUCTM3s0NRg==
+
 blork@^9.3.0:
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/blork/-/blork-9.3.0.tgz#6c0b4fbb6b754998ae5460c26463d95c635e4a35"

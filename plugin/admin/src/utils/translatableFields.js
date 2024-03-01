@@ -6,6 +6,7 @@ const TRANSLATABLE_FIELDS = [
   'string',
   'text',
   'relation',
+  'blocks',
 ]
 
 export default TRANSLATABLE_FIELDS
