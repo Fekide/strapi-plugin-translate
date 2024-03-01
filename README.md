@@ -77,6 +77,7 @@ module.exports = {
       // Possible formats: plain, markdown, html (default plain)
       translatedFieldTypes: [
         'string',
+        { type: 'block', format: 'jsonb' },
         { type: 'text', format: 'plain' },
         { type: 'richtext', format: 'markdown' },
         'component',
