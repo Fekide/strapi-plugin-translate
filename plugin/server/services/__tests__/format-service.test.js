@@ -1,5 +1,7 @@
 'use strict'
 
+const block = require('./block.json')
+
 const markdown = `# Turndown Demo
 
 This demonstrates [turndown](<https://github.com/mixmark-io/turndown>) \\- an HTML to Markdown converter in JavaScript.
@@ -105,5 +107,13 @@ describe('format', () => {
     expect(
       formatService.htmlToMarkdown(formatService.markdownToHtml(markdown))
     ).toEqual(markdown)
+  })
+  test('block to html and back', () => {
+    const formatService = strapi.service('plugin::translate.format')
+    const html = formatService.blockToHtml(block)
+    console.log('html', html)
+    expect(
+      formatService.htmlToBlock(html)
+    ).toEqual(block)
   })
 })
