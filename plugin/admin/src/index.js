@@ -22,7 +22,7 @@ export default {
       },
       Component: async () => {
         const component = await import(
-          /* webpackChunkName: "[translate-app]" */ './pages/App'
+          /* webpackChunkName: "translate-app" */ './pages/App'
         )
 
         return component
