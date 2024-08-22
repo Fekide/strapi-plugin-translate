@@ -107,6 +107,9 @@ module.exports = {
           )
         )
 
+        if (format === 'jsonb') {
+          return formatService.htmlToBlock(result)
+        }
         if (format === 'markdown') {
           return formatService.htmlToMarkdown(result)
         }
