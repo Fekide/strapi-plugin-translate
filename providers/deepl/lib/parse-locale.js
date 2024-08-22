@@ -28,6 +28,7 @@ function parseLocale(strapiLocale, localeMap = {}, direction = 'target') {
 
   let possiblyUnstrippedResult = stripped
   switch (stripped) {
+    case "AR":
     case 'BG':
     case 'CS':
     case 'DA':
