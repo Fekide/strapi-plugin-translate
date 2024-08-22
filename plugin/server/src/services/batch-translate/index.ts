@@ -1,9 +1,3 @@
-'use strict'
+export { BatchTranslateJob } from './BatchTranslateJob'
+export { BatchTranslateManager } from './BatchTranslateManager'
 
-import { BatchTranslateJob } from './BatchTranslateJob'
-import { BatchTranslateManager } from './BatchTranslateManager'
-
-export default {
-  BatchTranslateJob,
-  BatchTranslateManager,
-}

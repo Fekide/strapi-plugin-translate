@@ -1,7 +1,9 @@
-import _ from 'lodash'
+import _, { get } from 'lodash'
 
 import { flatten_and_compact } from './lodash-helpers'
 import { isTranslatedFieldType, getFieldTypeFormat } from './translated-field-types'
+import { ContentTypeSchema } from '@strapi/types/dist/struct'
+import { Attribute } from '@strapi/types/dist/schema'
 
 /**
  * Get the field or fields to translate of a content type
@@ -10,7 +12,7 @@ import { isTranslatedFieldType, getFieldTypeFormat } from './translated-field-ty
  * @param {object} schema The schema of the content type
  * @returns all attributes that can be translated
  */
-export async function getAllTranslatableFields(data, schema) {
+export async function getAllTranslatableFields(data: unknown, schema: ContentTypeSchema) {
   const attributesSchema = _.get(schema, 'attributes', [])
   return flatten_and_compact(
     await Promise.all(
@@ -34,18 +36,17 @@ export async function getAllTranslatableFields(data, schema) {
  * @param {string} attr The name of the attribute
  * @returns The attribute or a list of child attributes if this attribute is a component or a dynamic zone
  */
-export async function getTranslateFields(data, schema, attr) {
+export async function getTranslateFields(data: unknown, schema: Attribute.AnyAttribute, attr: string) {
   if (
     isTranslatedFieldType(schema.type) &&
     _.get(data, attr, undefined) &&
-    !['copy', 'delete'].includes(schema.pluginOptions?.translate?.translate)
+    !['copy', 'delete'].includes(get(schema.pluginOptions, "translate.translate"))
   ) {
     if (schema.type == 'component') {
       return (
         await recursiveComponentFieldsToTranslate(
-          schema,
-          _.get(data, attr, undefined),
-          attr
+          schema as Attribute.Component,
+          _.get(data, attr, undefined)
         )
       ).map(({ field, format }) => ({
         field: `${attr}.${field}`,
@@ -56,7 +57,7 @@ export async function getTranslateFields(data, schema, attr) {
         await Promise.all(
           data[attr].map(async (object, index) => {
             return (
-              await recursiveComponentFieldsToTranslate(schema, object, attr)
+              await recursiveComponentFieldsToTranslate(schema, object)
             ).map(({ field, format }) => ({
               field: `${attr}.${index}.${field}`,
               format,
@@ -80,10 +81,10 @@ export async function getTranslateFields(data, schema, attr) {
  * @param {object} data The data of the component
  * @returns A list of attributes to translate for this component
  */
-export async function recursiveComponentFieldsToTranslate(componentReference, data) {
+export async function recursiveComponentFieldsToTranslate(componentReference: Attribute.Component | Attribute.DynamicZone, data: unknown | Array<unknown>) {
   const componentSchema =
     componentReference.type == 'dynamiczone'
-      ? strapi.components[data.__component]
+      ? strapi.components[data["__component"]]
       : strapi.components[componentReference.component]
 
   const attributesSchema = _.get(componentSchema, 'attributes', [])
@@ -91,7 +92,7 @@ export async function recursiveComponentFieldsToTranslate(componentReference, da
     Object.keys(attributesSchema).map(async (attr) => {
       const schema = attributesSchema[attr]
 
-      if (componentReference.repeatable) {
+      if (componentReference["repeatable"] && Array.isArray(data)) {
         return flatten_and_compact(
           await Promise.all(
             data.map(async (_value, index) =>

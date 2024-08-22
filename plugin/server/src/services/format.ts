@@ -1,5 +1,3 @@
-'use strict'
-
 import { Converter } from 'showdown'
 import { JSDOM } from 'jsdom'
 
@@ -9,18 +7,23 @@ const showdownConverter = new Converter({
   strikethrough: true,
 })
 
-function markdownToHtml(singleText) {
+function markdownToHtml(singleText: string): string {
   return showdownConverter.makeHtml(singleText)
 }
 
-function htmlToMarkdown(singleText) {
+function htmlToMarkdown(singleText: string): string {
   return showdownConverter
     .makeMarkdown(singleText, dom.window.document)
     .replace(/<!-- -->\n/g, '')
     .trim()
 }
 
-export default () => ({
+export interface FormatService {
+  markdownToHtml(text: string | string[]): string | string[]
+  htmlToMarkdown(text: string | string[]): string | string[]
+}
+
+export default (): FormatService => ({
   markdownToHtml(text) {
     if (Array.isArray(text)) {
       return text.map(markdownToHtml)

@@ -13,8 +13,43 @@ import { updateUids } from '../utils/update-uids'
 import { removeUids } from '../utils/remove-uids'
 import { BatchTranslateManager } from './batch-translate'
 import { Core } from '@strapi/strapi'
+import { TranslateConfig } from 'src/config'
 
-export default ({ strapi }: { strapi: Core.Strapi }) => ({
+export interface TranslateService {
+  batchTranslateManager: BatchTranslateManager
+  estimateUsage: (params: {
+    data: Record<string, any>
+    fieldsToTranslate: { field: string }[]
+  }) => Promise<number>
+  translate: (params: {
+    data: Record<string, any>
+    sourceLocale: string
+    targetLocale: string
+    fieldsToTranslate: { field: string; format: string }[]
+    priority: number
+  }) => Promise<Record<string, any>>
+  batchTranslate: (params: {
+    contentType: string
+    sourceLocale: string
+    targetLocale: string
+    fieldsToTranslate: { field: string; format: string }[]
+    priority: number
+  }) => Promise<{ id: string }>
+  batchTranslatePauseJob: (id: string) => Promise<void>
+  batchTranslateResumeJob: (id: string) => Promise<void>
+  batchTranslateCancelJob: (id: string) => Promise<void>
+  batchUpdate: (params: { updatedEntryIDs: string[]; sourceLocale: string }) => Promise<void>
+  contentTypes: () => Promise<{
+    contentTypes: {
+      contentType: string
+      collection: string
+      localeReports: Record<string, { count: number; complete: boolean; job: any }>
+    }[]
+    locales: { code: string; name: string }[]
+  }>
+}
+
+export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
   batchTranslateManager: new BatchTranslateManager(),
 
   async estimateUsage({ data, fieldsToTranslate }) {
@@ -123,7 +158,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
           data: sourceEntity,
         })
 
-        const uidsUpdated = strapi.config.get('plugin.translate').regenerateUids
+        const uidsUpdated = strapi.config.get<TranslateConfig>('plugin.translate').regenerateUids
           ? await updateUids(translated, update.contentType)
           : removeUids(translated, update.contentType)
 

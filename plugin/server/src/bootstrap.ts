@@ -4,15 +4,17 @@ import {toLower} from 'lodash';
 
 import { actions } from './services/permissions/actions';
 import { getService } from './utils/get-service';
+import { TranslateConfig } from './config';
+import { TranslateProvider } from './types/provider';
 
-const createProvider = (translateConfig) => {
+const createProvider = (translateConfig: TranslateConfig) => {
   const providerName = toLower(translateConfig.provider)
-  let provider
+  let provider: TranslateProvider
 
   if (providerName === 'dummy') {
     provider = require('./utils/dummy-provider')
   } else {
-    let modulePath
+    let modulePath : string
     try {
       modulePath = require.resolve(`strapi-provider-translate-${providerName}`)
     } catch (error) {
@@ -31,14 +33,13 @@ const createProvider = (translateConfig) => {
   }
 
   return provider.init(
-    translateConfig.providerOptions,
-    translateConfig.settings
+    translateConfig.providerOptions
   )
 }
 
 
 const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
-  const translateConfig = strapi.config.get('plugin.translate')
+  const translateConfig = strapi.config.get<TranslateConfig>('plugin.translate')
   strapi.plugin('translate').provider = createProvider(translateConfig)
 
   // Listen for updates to entries, mark them as updated

@@ -7,7 +7,8 @@
     "plugin",
     "translate",
     "translation",
-    "i18n"],
+    "i18n"
+  ],
   "type": "commonjs",
   "exports": {
     "./package.json": "./package.json",
@@ -47,16 +48,19 @@
     "bottleneck": "^2.19.5",
     "jsdom": "^25.0.0",
     "react-intl": "^6.6.8",
-    "showdown": "^2.1.0"
+    "showdown": "^2.1.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.0",
+    "@strapi/i18n": "^5.0.0-rc.11",
+    "@strapi/sdk-plugin": "^5.1.0",
+    "@strapi/strapi": "^5.0.0-rc.11",
+    "@strapi/typescript-utils": "^5.0.0-rc.11",
+    "@types/jsdom": "^21.1.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@strapi/i18n": "^5.0.0-rc.11",
-    "@strapi/strapi": "^5.0.0-rc.11",
-    "@strapi/sdk-plugin": "^5.1.0",
-    "@strapi/typescript-utils": "^5.0.0-rc.11",
+    "@types/showdown": "^2.0.6",
     "lodash": "^4.17.21",
     "prettier": "^3.3.2",
     "react": "^18.3.1",
@@ -67,8 +71,8 @@
   },
   "peerDependencies": {
     "@strapi/i18n": "^5.0.0-rc.11",
-    "@strapi/strapi": "^5.0.0-rc.11",
     "@strapi/sdk-plugin": "^5.0.0",
+    "@strapi/strapi": "^5.0.0-rc.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.1",

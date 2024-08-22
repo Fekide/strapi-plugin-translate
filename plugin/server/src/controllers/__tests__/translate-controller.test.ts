@@ -1,4 +1,5 @@
 import { describe, expect, it, afterEach, jest, beforeEach } from '@jest/globals'
+import { TranslateController } from '../translate'
 
 
 const { simpleContentType } = require('../../../__mocks__/contentTypes')
@@ -48,7 +49,7 @@ describe('translate controller', () => {
     })
 
     // when
-    await strapi.plugin('translate').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller<TranslateController>('translate').translate(ctx, jest.fn(() => Promise.resolve()))
 
     // then
     expect(ctx.badRequest).not.toHaveBeenCalled()
@@ -67,7 +68,7 @@ describe('translate controller', () => {
     })
 
     // when
-    await strapi.plugin('translate').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller<TranslateController>('translate').translate(ctx, jest.fn(() => Promise.resolve()))
 
     // then
     expect(ctx.badRequest).toHaveBeenCalled()
@@ -86,7 +87,7 @@ describe('translate controller', () => {
     })
 
     // when
-    await strapi.plugin('translate').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller<TranslateController>('translate').translate(ctx, jest.fn(() => Promise.resolve()))
 
     // then
     expect(ctx.badRequest).toHaveBeenCalled()
@@ -107,7 +108,7 @@ describe('translate controller', () => {
     })
 
     // when
-    await strapi.plugin('translate').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller<TranslateController>('translate').translate(ctx, jest.fn(() => Promise.resolve()))
 
     // then
     expect(ctx.notFound).toHaveBeenCalled()
@@ -128,7 +129,7 @@ describe('translate controller', () => {
     })
 
     // when
-    await strapi.plugin('translate').controller('translate').translate(ctx)
+    await strapi.plugin('translate').controller<TranslateController>('translate').translate(ctx, jest.fn(() => Promise.resolve()))
 
     // then
     expect(ctx.badRequest).toHaveBeenCalled()

@@ -1,6 +1,7 @@
 'use strict'
 
-import { get, merge } from 'lodash'
+import { ContentTypeSchema } from '@strapi/types/dist/struct'
+import { defaults, get, merge } from 'lodash'
 
 /**
  * Create a populate object to populate all direct data:
@@ -16,13 +17,14 @@ import { get, merge } from 'lodash'
  *  dynamic zones and relations
  */
 export function populateAll(
-  schema,
-  { maxDepth, populateMedia, populateRelations } = {
+  schema: ContentTypeSchema,
+  options: {readonly maxDepth?: number; readonly populateMedia?: boolean; readonly populateRelations?: boolean} 
+) {
+  const { maxDepth, populateMedia, populateRelations } = defaults(options, {
     maxDepth: 10,
     populateMedia: false,
     populateRelations: false,
-  }
-) {
+  })
   const attributesSchema = get(schema, 'attributes', [])
   const populateResult = {}
 

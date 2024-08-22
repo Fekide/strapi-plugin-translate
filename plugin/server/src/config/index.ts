@@ -1,3 +1,17 @@
+import { FieldFormat } from 'src/types/formats';
+import { TranslateProviderOptions } from 'src/types/provider';
+
+
+
+export type TranslateConfig = {
+  provider: string;
+  providerOptions: TranslateProviderOptions;
+  translatedFieldTypes: Array<string | { type: string; format?: FieldFormat }>;
+  translateRelations: boolean;
+  ignoreUpdatedContentTypes: string[];
+  regenerateUids: boolean;
+};
+
 export default {
   default() {
     return {
@@ -11,6 +25,8 @@ export default {
         'dynamiczone',
       ],
       translateRelations: true,
+      ignoreUpdatedContentTypes: [],
+      regenerateUids: false,
     }
   },
   validator({
@@ -18,6 +34,7 @@ export default {
     providerOptions,
     translatedFieldTypes,
     translateRelations,
+    ignoreUpdatedContentTypes,
   }) {
     if (provider === 'dummy' && process.env.NODE_ENV !== 'test') {
       console.warn(
@@ -26,6 +43,9 @@ export default {
     }
     if (!Array.isArray(translatedFieldTypes)) {
       throw new Error('translatedFieldTypes has to be an array')
+    }
+    if (!Array.isArray(ignoreUpdatedContentTypes)) {
+      throw new Error('ignoreUpdatedContentTypes has to be an array')
     }
     for (const field of translatedFieldTypes) {
       if (typeof field === 'string') {

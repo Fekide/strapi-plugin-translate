@@ -3,13 +3,10 @@ import { stringByteLengthEncoded } from '../utils/byte-length'
 
 /**
  * Splits the given array of strings into chunks a maximum length
- * and each chunk beaing at most a specific byte size.
+ * and each chunk being at most a specific byte size.
  *
- * @param {string[]} textArray
- * @param {{maxLength?: number, maxByteSize?: number} | undefined}  options Configuration options
- * @returns {string[][]}
  */
-function splitTextArray(textArray, { maxLength, maxByteSize } = {}) {
+function splitTextArray(textArray: string[], { maxLength, maxByteSize }: { maxLength?: number; maxByteSize?: number } | undefined = {}): {chunks: string[][], reduceFunction: (translationResults: string[][]) => string[]} {
   // Information about how to join chunks back together
   const reduceInformation = []
 
@@ -115,6 +112,10 @@ function splitTextArray(textArray, { maxLength, maxByteSize } = {}) {
   }
 
   return { chunks: chunkedText, reduceFunction }
+}
+
+export interface ChunksService {
+  split: typeof splitTextArray
 }
 
 export default () => ({
