@@ -214,20 +214,5 @@ module.exports = () => ({
       return html.map(convertHtmlToBlock)
     }
     return convertHtmlToBlock(html)
-    // return html.map(h => [
-    //   {
-    //     type: 'paragraph',
-    //     children: [
-    //       {
-    //         type: 'text',
-    //         text: "The following HTML has been translated. It's not yet possible to convert it back to the original block structure.",
-    //       }
-    //     ]
-    //   },
-    //   {
-    //     type: 'code',
-    //     children: h.split('\n').map(text => ({ type: 'text', text })),
-    //   }
-    // ])
   },
 })
