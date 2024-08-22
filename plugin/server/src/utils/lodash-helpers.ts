@@ -1,4 +1,5 @@
 import _ from 'lodash'
 
-export const flatten_and_compact = (arr) => _.compact(_.flattenDeep(arr))
-
+export const flatten_and_compact = <T>(
+  arr: _.ListOfRecursiveArraysOrValues<T>
+) => _.compact(_.flattenDeep(arr))

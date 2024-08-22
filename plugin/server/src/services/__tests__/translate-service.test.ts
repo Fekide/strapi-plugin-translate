@@ -1,4 +1,4 @@
-'use strict'
+import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
 
 import { getService } from '../../utils'
 
@@ -35,7 +35,7 @@ describe('provider service', () => {
                 if (!text) {
                   return []
                 }
-                if (!sourceLocale | !targetLocale) {
+                if (!sourceLocale || !targetLocale) {
                   throw new Error('source and target locale must be defined')
                 }
 

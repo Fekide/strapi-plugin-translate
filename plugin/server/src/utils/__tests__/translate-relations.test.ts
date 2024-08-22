@@ -1,18 +1,17 @@
-'use strict'
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals'
+import { translateRelations } from '../translate-relations'
 
-const { translateRelations } = require('../translate-relations')
-
-const { createComponentWithRelation } = require('../../../__mocks__/components')
-const {
+import { createComponentWithRelation } from '../../../../__mocks__/components'
+import {
   createRelationContentType,
   createContentTypeWithComponent,
   createSimpleContentType,
   createContentTypeWithDynamicZone,
-} = require('../../../__mocks__/contentTypes')
+} from '../../../../__mocks__/contentTypes'
 
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
+    value: require('../../../../__mocks__/initSetup')(params),
     writable: true,
   })
 }
@@ -82,8 +81,8 @@ describe('relation', () => {
               related: { id: 2, related: undefined, locale: targetLocale },
             }
           : bothWays
-          ? { related: undefined }
-          : data
+            ? { related: undefined }
+            : data
         // if the relation is translated, the corresponding locale should be used,
         // otherwise it should stay the same if the relation is not both ways but be removed otherwise
         expect(relationsTranslated).toEqual(result)
@@ -211,8 +210,8 @@ describe('relation', () => {
               related: [{ id: 2, related: undefined, locale: targetLocale }],
             }
           : bothWays
-          ? { related: [] }
-          : data
+            ? { related: [] }
+            : data
         // if the relation is translated, the corresponding locale should be used,
         // otherwise it should stay the same if the relation is not both ways but be removed otherwise
         expect(relationsTranslated).toEqual(result)
@@ -240,10 +239,10 @@ describe('relation', () => {
               related: [{ id: 2, related: undefined, locale: targetLocale }],
             }
           : bothWays
-          ? {
-              related: [],
-            }
-          : data
+            ? {
+                related: [],
+              }
+            : data
         expect(relationsTranslated).toEqual(result)
       })
 

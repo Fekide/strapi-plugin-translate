@@ -1,6 +1,27 @@
-import { Core } from "@strapi/strapi"
+import { Core } from '@strapi/strapi'
 
-export default ({ strapi }: { strapi: Core.Strapi }) => {
+export interface UntranslatedService {
+  getUntranslatedEntity(
+    {
+      uid,
+      targetLocale,
+      sourceLocale,
+    }: { uid: string; targetLocale: string; sourceLocale: string },
+    { populate }: { populate: string[] }
+  ): Promise<any>
+  getUntranslatedEntityIDs({
+    uid,
+    targetLocale,
+    sourceLocale,
+  }: {
+    uid: string
+    targetLocale: string
+    sourceLocale: string
+  }): Promise<number[]>
+  isFullyTranslated(uid: string, targetLocale: string): Promise<boolean>
+}
+
+export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
   return {
     /**
      * Get an untranslated source entity based not the parameters

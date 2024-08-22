@@ -1,5 +1,6 @@
 'use strict'
 
+import { UID } from '@strapi/strapi'
 import { get, cloneDeep } from 'lodash'
 
 /**
@@ -8,7 +9,7 @@ import { get, cloneDeep } from 'lodash'
  * @param {object} contentTypeUid The uid of the content type
  * @returns The input data without uids
  */
-export function removeUids(data, contentTypeUid) {
+export function removeUids(data: unknown, contentTypeUid: UID.ContentType) {
   const schema = strapi.contentTypes[contentTypeUid]
   const attributesSchema = get(schema, 'attributes', [])
   const resultData = cloneDeep(data)

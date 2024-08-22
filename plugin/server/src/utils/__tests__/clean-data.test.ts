@@ -1,19 +1,25 @@
-'use strict'
+import {
+  describe,
+  expect,
+  it,
+  afterEach,
+  jest,
+  beforeEach,
+} from '@jest/globals'
+import { cleanData } from '../clean-data'
 
-const { cleanData } = require('../clean-data')
-
-const {
+import {
   simpleComponent,
   nestedComponent,
   twoFieldComponent,
   createComponentWithRelation,
-} = require('../../../__mocks__/components')
-const {
+} from '../../../../__mocks__/components'
+import {
   simpleContentType,
   createRelationContentType,
   createContentTypeWithComponent,
   createContentTypeWithDynamicZone,
-} = require('../../../__mocks__/contentTypes')
+} from '../../../../__mocks__/contentTypes'
 
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {

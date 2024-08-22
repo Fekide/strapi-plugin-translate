@@ -1,20 +1,19 @@
-'use strict'
-
-const {
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals'
+import {
   getAllTranslatableFields,
   getTranslateFields,
-} = require('../translatable-fields')
+} from '../translatable-fields'
 
-const {
+import {
   simpleComponent,
   nestedComponent,
   twoFieldComponent,
   createSimpleComponent,
-} = require('../../../__mocks__/components')
-const {
+} from '../../../../__mocks__/components'
+import {
   complexContentType,
   simpleContentType,
-} = require('../../../__mocks__/contentTypes')
+} from '../../../../__mocks__/contentTypes'
 
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {

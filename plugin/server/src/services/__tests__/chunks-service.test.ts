@@ -1,5 +1,4 @@
-'use strict'
-
+import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
 import { faker } from '@faker-js/faker'
 import shuffle from 'lodash/shuffle'
 import { stringByteLengthEncoded } from '../../utils/byte-length'
@@ -20,7 +19,7 @@ afterEach(() => {
 })
 
 describe('chunks', () => {
-  test('no properties leaves text array unchanged', () => {
+  it('no properties leaves text array unchanged', () => {
     // given
     const textArray = faker.helpers.uniqueArray(faker.lorem.word, 100)
     // when
@@ -30,7 +29,7 @@ describe('chunks', () => {
     // then
     expect(chunks[0]).toEqual(textArray)
   })
-  test('chunks are not longer than maxLength', () => {
+  it('chunks are not longer than maxLength', () => {
     // given
     const textArray = faker.helpers.uniqueArray(faker.lorem.sentence, 10)
     const maxLength = 3
@@ -43,7 +42,7 @@ describe('chunks', () => {
       expect(chunk.length).toBeLessThanOrEqual(maxLength)
     })
   })
-  test('chunks are not bigger than byte size', () => {
+  it('chunks are not bigger than byte size', () => {
     // given
     const textArray = faker.helpers.uniqueArray(faker.lorem.paragraph, 1000)
     const maxByteSize = 1000
@@ -60,7 +59,7 @@ describe('chunks', () => {
       expect(byteSize).toBeLessThanOrEqual(maxByteSize)
     })
   })
-  test('reduce function creates original array', () => {
+  it('reduce function creates original array', () => {
     // given
     const textArray = faker.helpers.uniqueArray(faker.lorem.sentence, 10)
     const maxLength = 3
@@ -72,7 +71,7 @@ describe('chunks', () => {
     // then
     expect(mergedBack).toEqual(textArray)
   })
-  test('reduce function creates original array when fields are bigger than byteSize', () => {
+  it('reduce function creates original array when fields are bigger than byteSize', () => {
     // given
     const textArray = faker.helpers.uniqueArray(
       () => faker.lorem.paragraphs(20),
@@ -88,7 +87,7 @@ describe('chunks', () => {
     expect(mergedBack).toEqual(textArray)
   })
 
-  test('chunks are neither longer than maxLength nor bigger than maxByteSize', () => {
+  it('chunks are neither longer than maxLength nor bigger than maxByteSize', () => {
     // given
     const longTexts = faker.helpers.uniqueArray(
       () => faker.lorem.paragraphs(20),

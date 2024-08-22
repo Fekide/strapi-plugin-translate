@@ -1,6 +1,7 @@
-export function createMock(translatedText) {
+import { jest } from '@jest/globals'
+export function createMock(translatedText: string) {
   return {
-    translate(props) {
+    translate(props: { text: string | string[] }) {
       if (Array.isArray(props.text)) {
         return {
           translations: props.text.map((t) => ({
@@ -21,5 +22,3 @@ export function createMock(translatedText) {
     parseLocale: jest.fn(),
   }
 }
-
-

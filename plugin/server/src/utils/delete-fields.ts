@@ -1,14 +1,19 @@
 import { get, cloneDeep, unset } from 'lodash'
 import { isTranslatedFieldType } from './translated-field-types'
+import { ContentTypeSchema, ComponentSchema } from '@strapi/types/dist/struct'
+import { Attribute } from '@strapi/types/dist/schema'
 
 /**
  * Return new data without all attributes that have the config option pluginOptions.translate.translate=delete
  *
- * @param {object} data The data of the object to translate (required for arrays to skip empty props)
+ * @param data The data of the object to translate (required for arrays to skip empty props)
  * @param {object} schema The schema of the content type
  * @returns all attributes that can be translated
  */
-export function filterAllDeletedFields(data, schema) {
+export function filterAllDeletedFields(
+  data: unknown,
+  schema: ContentTypeSchema | ComponentSchema
+) {
   const attributesSchema = get(schema, 'attributes', [])
   const newData = cloneDeep(data)
 
@@ -27,32 +32,42 @@ export function filterAllDeletedFields(data, schema) {
  * Unsets all attributes of data that have the config option pluginOptions.translate.translate=delete
  *
  * @param {object} data The data at the current level
- * @param {object} schema The schema of the attribute
- * @param {string} attr The name of the attribute
+ * @param {object} attribute The schema of the attribute
+ * @param {string} attributeName The name of the attribute
  * @returns The attribute or a list of child attributes if this attribute is a component or a dynamic zone
  */
-export function filterDeletedFields(data, schema, attr) {
+export function filterDeletedFields(
+  data: unknown,
+  attribute: Attribute.AnyAttribute,
+  attributeName: string
+) {
   const onTranslate = get(
-    schema,
+    attribute,
     'pluginOptions.translate.translate',
     'translate'
   )
-  if (isTranslatedFieldType(schema.type) && get(data, attr, undefined)) {
+  if (
+    isTranslatedFieldType(attribute.type) &&
+    get(data, attributeName, undefined)
+  ) {
     if (onTranslate === 'translate') {
-      if (schema.type == 'component') {
-        const componenData = get(data, attr, undefined)
-        recursiveComponentDeleteFields(schema, componenData)
+      if (attribute.type == 'component') {
+        const componenData = get(data, attributeName, undefined)
+        recursiveComponentDeleteFields(
+          attribute as Attribute.Component,
+          componenData
+        )
         if (componenData !== undefined) {
-          data[attr] = componenData
+          data[attributeName] = componenData
         }
-      } else if (schema.type == 'dynamiczone') {
-        data[attr] = data[attr].map((object) => {
-          recursiveComponentDeleteFields(schema, object)
+      } else if (attribute.type == 'dynamiczone') {
+        data[attributeName] = data[attributeName].map((object: unknown) => {
+          recursiveComponentDeleteFields(attribute, object)
           return object
         })
       }
     } else if (onTranslate === 'delete') {
-      unset(data, attr)
+      unset(data, attributeName)
     }
   }
 }
@@ -62,10 +77,13 @@ export function filterDeletedFields(data, schema, attr) {
  * @param {object} componentReference The schema of the component in the content-type or component (to know if it is repeated or not)
  * @param {object} data The data of the component
  */
-export function recursiveComponentDeleteFields(componentReference, data) {
+export function recursiveComponentDeleteFields(
+  componentReference: Attribute.Component | Attribute.DynamicZone,
+  data: unknown
+) {
   const componentSchema =
     componentReference.type == 'dynamiczone'
-      ? strapi.components[data.__component]
+      ? strapi.components[data['__component']]
       : strapi.components[componentReference.component]
 
   const attributesSchema = get(componentSchema, 'attributes', [])
@@ -73,7 +91,7 @@ export function recursiveComponentDeleteFields(componentReference, data) {
   Object.keys(attributesSchema).map((attr) => {
     const schema = attributesSchema[attr]
 
-    if (componentReference.repeatable) {
+    if (componentReference['repeatable'] && Array.isArray(data)) {
       data.map((_value, index) =>
         filterDeletedFields(data, schema, `${index}.${attr}`)
       )
@@ -81,5 +99,3 @@ export function recursiveComponentDeleteFields(componentReference, data) {
     return filterDeletedFields(data, schema, attr)
   })
 }
-
-

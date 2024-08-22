@@ -1,6 +1,5 @@
-'use strict'
-
-import _ from 'lodash'
+import { UID } from '@strapi/strapi'
+import { get, cloneDeep } from 'lodash'
 
 /**
  * Update all uids of a content type using the built in generateUIDField functionality
@@ -8,15 +7,18 @@ import _ from 'lodash'
  * @param {object} contentTypeUid The uid of the content type
  * @returns The input data with unique uids
  */
-export async function updateUids(data, contentTypeUid) {
+export async function updateUids(
+  data: unknown,
+  contentTypeUid: UID.ContentType
+) {
   const schema = strapi.contentTypes[contentTypeUid]
-  const attributesSchema = _.get(schema, 'attributes', [])
-  const resultData = _.cloneDeep(data)
+  const attributesSchema = get(schema, 'attributes', [])
+  const resultData = cloneDeep(data)
   await Promise.all(
     Object.keys(attributesSchema).map(async (attr) => {
       const attributeSchema = attributesSchema[attr]
       if (attributeSchema.type === 'uid') {
-        const onTranslate = _.get(
+        const onTranslate = get(
           attributeSchema,
           ['pluginOptions', 'translate', 'translate'],
           'translate'

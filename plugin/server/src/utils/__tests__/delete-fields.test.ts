@@ -1,22 +1,18 @@
-'use strict'
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals'
+import _ from 'lodash'
 
-const _ = require('lodash')
-
-const {
+import {
   simpleComponent,
   createNestedComponent,
   twoFieldComponent,
   createSimpleComponent,
-} = require('../../../__mocks__/components')
-const {
+} from '../../../../__mocks__/components'
+import {
   complexContentType,
   simpleContentType,
   complexContentTypeDelete,
-} = require('../../../__mocks__/contentTypes')
-const {
-  filterDeletedFields,
-  filterAllDeletedFields,
-} = require('../delete-fields')
+} from '../../../../__mocks__/contentTypes'
+import { filterDeletedFields, filterAllDeletedFields } from '../delete-fields'
 
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {

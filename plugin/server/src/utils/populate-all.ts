@@ -1,8 +1,18 @@
-'use strict'
-
-import { ContentTypeSchema } from '@strapi/types/dist/struct'
+import { Struct } from '@strapi/strapi'
 import { defaults, get, merge } from 'lodash'
 
+export interface PopulateOptions {
+  readonly maxDepth?: number
+  readonly populateMedia?: boolean
+  readonly populateRelations?: boolean
+}
+
+export interface PopulateRule {
+  [attr: string]:
+    | { populate: PopulateRule | boolean | { select: Array<string> } }
+    | boolean
+    | { select: Array<string> }
+}
 /**
  * Create a populate object to populate all direct data:
  * - all components, dynamic zones and nested components
@@ -17,8 +27,8 @@ import { defaults, get, merge } from 'lodash'
  *  dynamic zones and relations
  */
 export function populateAll(
-  schema: ContentTypeSchema,
-  options: {readonly maxDepth?: number; readonly populateMedia?: boolean; readonly populateRelations?: boolean} 
+  schema: Struct.ContentTypeSchema,
+  options?: PopulateOptions
 ) {
   const { maxDepth, populateMedia, populateRelations } = defaults(options, {
     maxDepth: 10,
@@ -26,7 +36,7 @@ export function populateAll(
     populateRelations: false,
   })
   const attributesSchema = get(schema, 'attributes', [])
-  const populateResult = {}
+  const populateResult: PopulateRule = {}
 
   Object.keys(attributesSchema).forEach((attr) => {
     const fieldSchema = attributesSchema[attr]
@@ -39,7 +49,7 @@ export function populateAll(
       }
     } else if (fieldSchema.type === 'dynamiczone') {
       const dynamicZonePopulate = fieldSchema.components.reduce(
-        (combined, component) => {
+        (combined: any, component: string) => {
           return merge(
             combined,
             recursiveComponentPopulate(component, {
@@ -86,11 +96,13 @@ export function populateAll(
  * @param {boolean} options.populateMedia - see {@link populateAll}
  * @returns A list of attributes to translate for this component
  */
-function recursiveComponentPopulate(component, options) {
+function recursiveComponentPopulate(
+  component: string,
+  options: PopulateOptions
+) {
   const componentSchema = strapi.components[component]
   if (options.maxDepth == 0) {
     return true
   }
   return populateAll(componentSchema, options)
 }
-

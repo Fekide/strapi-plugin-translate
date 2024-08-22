@@ -5,7 +5,10 @@ import set from 'lodash/set'
 import groupBy from 'lodash/groupBy'
 
 import { getService } from '../utils/get-service'
-import { getAllTranslatableFields } from '../utils/translatable-fields'
+import {
+  getAllTranslatableFields,
+  TranslatableField,
+} from '../utils/translatable-fields'
 import { filterAllDeletedFields } from '../utils/delete-fields'
 import { cleanData } from '../utils/clean-data'
 import { TRANSLATE_PRIORITY_BATCH_TRANSLATION } from '../utils/constants'
@@ -19,31 +22,37 @@ export interface TranslateService {
   batchTranslateManager: BatchTranslateManager
   estimateUsage: (params: {
     data: Record<string, any>
-    fieldsToTranslate: { field: string }[]
+    fieldsToTranslate: Array<TranslatableField>
   }) => Promise<number>
   translate: (params: {
     data: Record<string, any>
     sourceLocale: string
     targetLocale: string
-    fieldsToTranslate: { field: string; format: string }[]
-    priority: number
+    fieldsToTranslate: Array<TranslatableField>
+    priority?: number
   }) => Promise<Record<string, any>>
   batchTranslate: (params: {
     contentType: string
     sourceLocale: string
     targetLocale: string
-    fieldsToTranslate: { field: string; format: string }[]
-    priority: number
+    entityIds?: string[]
+    autoPublish?: boolean
   }) => Promise<{ id: string }>
   batchTranslatePauseJob: (id: string) => Promise<void>
   batchTranslateResumeJob: (id: string) => Promise<void>
   batchTranslateCancelJob: (id: string) => Promise<void>
-  batchUpdate: (params: { updatedEntryIDs: string[]; sourceLocale: string }) => Promise<void>
+  batchUpdate: (params: {
+    updatedEntryIDs: string[]
+    sourceLocale: string
+  }) => Promise<void>
   contentTypes: () => Promise<{
     contentTypes: {
       contentType: string
       collection: string
-      localeReports: Record<string, { count: number; complete: boolean; job: any }>
+      localeReports: Record<
+        string,
+        { count: number; complete: boolean; job: any }
+      >
     }[]
     locales: { code: string; name: string }[]
   }>
@@ -158,7 +167,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
           data: sourceEntity,
         })
 
-        const uidsUpdated = strapi.config.get<TranslateConfig>('plugin.translate').regenerateUids
+        const uidsUpdated = strapi.config.get<TranslateConfig>(
+          'plugin.translate'
+        ).regenerateUids
           ? await updateUids(translated, update.contentType)
           : removeUids(translated, update.contentType)
 

@@ -1,7 +1,11 @@
 'use strict'
 
+import { Struct, UID } from '@strapi/strapi'
 import { cleanData } from '../../utils/clean-data'
-import { batchContentTypeUid, TRANSLATE_PRIORITY_BATCH_TRANSLATION } from '../../utils/constants'
+import {
+  batchContentTypeUid,
+  TRANSLATE_PRIORITY_BATCH_TRANSLATION,
+} from '../../utils/constants'
 import { filterAllDeletedFields } from '../../utils/delete-fields'
 import { getService } from '../../utils/get-service'
 import { populateAll } from '../../utils/populate-all'
@@ -10,6 +14,26 @@ import { translateRelations } from '../../utils/translate-relations'
 import { updateUids } from '../../utils/update-uids'
 
 export class BatchTranslateJob {
+  totalEntities: number
+  translatedEntities: number
+  intervalId: null
+  id: string
+  autoPublish: boolean
+  contentType: UID.ContentType
+  contentTypeSchema: Struct.ContentTypeSchema
+  sourceLocale: string
+  targetLocale: string
+  entityIds: string[]
+  status:
+    | 'created'
+    | 'setup'
+    | 'running'
+    | 'paused'
+    | 'cancelled'
+    | 'finished'
+    | 'failed'
+  promise: Promise<any>
+
   constructor({
     id,
     contentType,
@@ -26,7 +50,7 @@ export class BatchTranslateJob {
     this.autoPublish = autoPublish
     this.contentType = contentType
     this.contentTypeSchema = strapi.contentTypes[contentType]
-    if (!this.contentTypeSchema.pluginOptions?.i18n?.localized) {
+    if (!this.contentTypeSchema.pluginOptions?.i18n['localized']) {
       throw new Error('translate.batch-translate.content-type-not-localized')
     }
     this.sourceLocale = sourceLocale
@@ -140,7 +164,7 @@ export class BatchTranslateJob {
         // Get an entity from the provided entity id list
         // Try until we get one or the list is empty
         while (!entity && this.entityIds.length > 0) {
-          const nextId = this.entityIds.pop(0)
+          const nextId = this.entityIds.pop()
           entity = await strapi.db.query(this.contentType).findOne({
             where: { id: nextId, locale: this.sourceLocale },
             populate,
@@ -203,7 +227,7 @@ export class BatchTranslateJob {
 
         const withFieldsDeleted = filterAllDeletedFields(
           uidsUpdated,
-          this.contentType
+          this.contentTypeSchema
         )
 
         const fullyTranslatedData = cleanData(

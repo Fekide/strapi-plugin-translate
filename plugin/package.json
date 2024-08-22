@@ -38,8 +38,8 @@
     "verify": "strapi-plugin verify",
     "lint": "eslint .",
     "test": "jest",
-    "test:ts:front": "run -T tsc -p admin/tsconfig.json",
-    "test:ts:back": "run -T tsc -p server/tsconfig.json"
+    "test:ts:front": "tsc -p admin/tsconfig.json",
+    "test:ts:back": "tsc -p server/tsconfig.json"
   },
   "dependencies": {
     "@strapi/design-system": "^2.0.0-rc.9",

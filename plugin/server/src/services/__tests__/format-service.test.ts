@@ -1,3 +1,5 @@
+import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
+
 const markdown = `# Turndown Demo
 
 This demonstrates [turndown](<https://github.com/mixmark-io/turndown>) \\- an HTML to Markdown converter in JavaScript.
@@ -74,17 +76,17 @@ afterEach(() => {
 })
 
 describe('format', () => {
-  test('markdown to html', () => {
+  it('markdown to html', () => {
     expect(
       strapi.service('plugin::translate.format').markdownToHtml(markdown)
     ).toEqual(html)
   })
-  test('markdown to html in list', () => {
+  it('markdown to html in list', () => {
     expect(
       strapi.service('plugin::translate.format').markdownToHtml([markdown])
     ).toEqual([html])
   })
-  test('html to markdown in list', () => {
+  it('html to markdown in list', () => {
     expect(
       strapi.service('plugin::translate.format').htmlToMarkdown(html)
     ).toEqual(markdown)
@@ -92,13 +94,13 @@ describe('format', () => {
       strapi.service('plugin::translate.format').htmlToMarkdown([html])
     ).toEqual([markdown])
   })
-  test('html to markdown and back', () => {
+  it('html to markdown and back', () => {
     const formatService = strapi.service('plugin::translate.format')
     expect(
       formatService.markdownToHtml(formatService.htmlToMarkdown(html))
     ).toEqual(html)
   })
-  test('markdown to html and back', () => {
+  it('markdown to html and back', () => {
     const formatService = strapi.service('plugin::translate.format')
     expect(
       formatService.htmlToMarkdown(formatService.markdownToHtml(markdown))

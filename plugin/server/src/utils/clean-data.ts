@@ -1,13 +1,16 @@
-'use strict'
+import { get, difference, cloneDeep, has } from 'lodash'
+import { ContentTypeSchema, ComponentSchema } from '@strapi/types/dist/struct'
+import { Attribute } from '@strapi/types/dist/schema'
 
-import _ from 'lodash'
-
-export function deleteInvalidFields(data, schema) {
+export function deleteInvalidFields(
+  data: unknown,
+  schema: ContentTypeSchema | ComponentSchema
+) {
   if (!data) {
     return data
   }
-  const attributesSchema = _.get(schema, 'attributes', [])
-  const invalidFields = _.difference(
+  const attributesSchema = get(schema, 'attributes', [])
+  const invalidFields = difference(
     Object.keys(data),
     Object.keys(attributesSchema)
   )
@@ -24,32 +27,36 @@ export function deleteInvalidFields(data, schema) {
  * @param {object} schema The schema of the content-type
  * @returns The input data with invalid fields (like id or localizations) removed
  */
-export function cleanData(data, schema, forFrontend = false) {
-  const resultData = _.cloneDeep(data)
+export function cleanData(
+  data: unknown,
+  schema: ContentTypeSchema | ComponentSchema,
+  forFrontend = false
+) {
+  const resultData = cloneDeep(data)
 
-  deleteInvalidFields(resultData, schema, forFrontend)
+  deleteInvalidFields(resultData, schema)
 
-  const attributesSchema = _.get(schema, 'attributes', [])
+  const attributesSchema = get(schema, 'attributes', [])
 
   Object.keys(attributesSchema).forEach((attr) => {
     const attributeSchema = attributesSchema[attr]
 
-    if (!_.has(data, attr)) {
+    if (!has(data, attr)) {
       return
     }
 
     if (attributeSchema.type === 'component') {
       resultData[attr] = cleanComponent(
-        _.get(data, attr, undefined),
+        get(data, attr, undefined),
         attributeSchema,
         forFrontend
       )
     } else if (attributeSchema.type === 'dynamiczone') {
-      resultData[attr] = _.get(data, attr, []).map((object) =>
+      resultData[attr] = get(data, attr, []).map((object: unknown) =>
         cleanComponent(object, attributeSchema, forFrontend)
       )
     } else if (attributeSchema.type === 'relation' && !forFrontend) {
-      const relatedEntity = _.get(data, attr, [])
+      const relatedEntity = get(data, attr, [])
       if (Array.isArray(relatedEntity)) {
         resultData[attr] = relatedEntity.map((e) => e.id)
       } else if (relatedEntity) {
@@ -61,17 +68,20 @@ export function cleanData(data, schema, forFrontend = false) {
   return resultData
 }
 
-function cleanComponent(data, componentReference, forFrontend) {
+function cleanComponent(
+  data: unknown,
+  componentReference: Attribute.Component | Attribute.DynamicZone,
+  forFrontend: boolean
+) {
   if (!data) {
     return data
   }
   const componentSchema =
     componentReference.type === 'dynamiczone'
-      ? strapi.components[data.__component]
+      ? strapi.components[data['__component']]
       : strapi.components[componentReference.component]
-  if (componentReference.repeatable) {
+  if (componentReference['repeatable'] && Array.isArray(data)) {
     return data.map((value) => cleanData(value, componentSchema, forFrontend))
   }
   return cleanData(data, componentSchema, forFrontend)
 }
-

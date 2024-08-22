@@ -1,25 +1,24 @@
-'use strict'
-
-const {
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals'
+import {
   simpleComponent,
   nestedComponent,
   twoFieldComponent,
   createComponentWithRelation,
-} = require('../../../__mocks__/components')
-const {
+} from '../../../../__mocks__/components'
+import {
   simpleContentType,
   mediaContentType,
   createRelationContentType,
   createContentTypeWithComponent,
   createContentTypeWithDynamicZone,
   createSimpleContentType,
-} = require('../../../__mocks__/contentTypes')
+} from '../../../../__mocks__/contentTypes'
 
-const { populateAll } = require('../populate-all')
+import { populateAll } from '../populate-all'
 
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
+    value: require('../../../../__mocks__/initSetup')(params),
     writable: true,
   })
 }

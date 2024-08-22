@@ -1,8 +1,15 @@
 'use strict'
 
 import { get, cloneDeep, has, compact } from 'lodash'
+import { getConfig } from './get-config'
+import { UID } from '@strapi/strapi'
+import { Struct, Schema } from '@strapi/strapi'
 
-async function getRelevantLocalization(contentType, id, locale) {
+async function getRelevantLocalization(
+  contentType: UID.Service,
+  id: string,
+  locale: string
+) {
   const relationContent = await strapi
     .service(contentType)
     .findOne(id, { populate: 'localizations' })
@@ -19,9 +26,12 @@ async function getRelevantLocalization(contentType, id, locale) {
  *  - deleted if they cannot be reused
  *  - translated if the relation target is localized and the related instance has the targetLocale created
  */
-export async function translateRelations(data, schema, targetLocale) {
-  const { translateRelations: shouldTranslateRelations } =
-    strapi.config.get('plugin.translate')
+export async function translateRelations(
+  data: unknown,
+  schema: Struct.ContentTypeSchema | Struct.ComponentSchema,
+  targetLocale: string
+) {
+  const { translateRelations: shouldTranslateRelations } = getConfig()
 
   const attributesSchema = get(schema, 'attributes', [])
   const resultData = cloneDeep(data)
@@ -82,7 +92,7 @@ export async function translateRelations(data, schema, targetLocale) {
               )
             } else if (attributeSchema.type === 'dynamiczone') {
               resultData[attr] = await Promise.all(
-                attributeData.map((object) =>
+                attributeData.map((object: unknown) =>
                   translateComponent(object, attributeSchema, targetLocale)
                 )
               )
@@ -95,15 +105,19 @@ export async function translateRelations(data, schema, targetLocale) {
   return resultData
 }
 
-async function translateComponent(data, componentReference, targetLocale) {
+async function translateComponent(
+  data: unknown,
+  componentReference: Schema.Attribute.AnyAttribute,
+  targetLocale
+) {
   if (!data) {
     return undefined
   }
   const componentSchema =
     componentReference.type === 'dynamiczone'
-      ? strapi.components[data.__component]
-      : strapi.components[componentReference.component]
-  if (componentReference.repeatable) {
+      ? strapi.components[data['__component']]
+      : strapi.components[componentReference['component']]
+  if (componentReference['repeatable'] && Array.isArray(data)) {
     return Promise.all(
       data.map((value) =>
         translateRelations(value, componentSchema, targetLocale)
@@ -113,8 +127,12 @@ async function translateComponent(data, componentReference, targetLocale) {
   return translateRelations(data, componentSchema, targetLocale)
 }
 
-async function translateRelation(attributeData, attributeSchema, targetLocale) {
-  const relationSchema = strapi.contentTypes[attributeSchema.target]
+async function translateRelation(
+  attributeData: unknown,
+  attributeSchema: Schema.Attribute.Relation,
+  targetLocale: string
+) {
+  const relationSchema = strapi.contentTypes[attributeSchema['target']]
 
   const relationIsLocalized = get(
     relationSchema,
@@ -129,8 +147,7 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
   )
 
   const relationIsBothWays =
-    has(attributeSchema, 'inversedBy', false) ||
-    has(attributeSchema, 'mappedBy', false)
+    has(attributeSchema, 'inversedBy') || has(attributeSchema, 'mappedBy')
 
   if (onTranslate === 'delete') {
     return undefined
@@ -151,13 +168,14 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
     // for oneToMany and manyToMany relations there are multiple relations possible, so all of them need to be considered
     if (
       ['oneToMany', 'manyToMany'].includes(attributeSchema.relation) &&
-      attributeData?.length > 0
+      Array.isArray(attributeData) &&
+      attributeData.length > 0
     ) {
       return compact(
         await Promise.all(
           attributeData.map(async (prevRelation) =>
             getRelevantLocalization(
-              attributeSchema.target,
+              attributeSchema['target'],
               prevRelation.id,
               targetLocale
             )
@@ -169,8 +187,8 @@ async function translateRelation(attributeData, attributeSchema, targetLocale) {
       attributeData
     ) {
       return getRelevantLocalization(
-        attributeSchema.target,
-        attributeData.id,
+        attributeSchema['target'],
+        attributeData['id'],
         targetLocale
       )
     }

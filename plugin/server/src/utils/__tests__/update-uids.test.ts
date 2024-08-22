@@ -1,14 +1,13 @@
-'use strict'
-
-const {
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals'
+import {
   simpleContentType,
   createContentTypeWithUid,
-} = require('../../../__mocks__/contentTypes')
-const { updateUids } = require('../update-uids')
+} from '../../../../__mocks__/contentTypes'
+import { updateUids } from '../update-uids'
 
 const setup = function (params) {
   Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
+    value: require('../../../../__mocks__/initSetup')(params),
     writable: true,
   })
 }

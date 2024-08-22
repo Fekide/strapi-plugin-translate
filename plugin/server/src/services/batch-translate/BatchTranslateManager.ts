@@ -4,6 +4,7 @@ import { batchContentTypeUid } from '../../utils/constants'
 import { BatchTranslateJob } from './BatchTranslateJob'
 
 export class BatchTranslateManager {
+  runningJobs: Map<string, BatchTranslateJob>
   constructor() {
     this.runningJobs = new Map()
   }
@@ -18,7 +19,13 @@ export class BatchTranslateManager {
     }
   }
 
-  async submitJob(params) {
+  async submitJob(params: {
+    contentType: string
+    sourceLocale: string
+    targetLocale: string
+    entityIds?: string[]
+    autoPublish?: boolean
+  }) {
     const sameEntities = await strapi.service(batchContentTypeUid).find({
       filters: {
         status: { $in: ['running', 'created', 'setup'] },
@@ -46,7 +53,7 @@ export class BatchTranslateManager {
     return entity
   }
 
-  async pauseJob(id) {
+  async pauseJob(id: string) {
     if (this.runningJobs.has(id)) {
       await this.runningJobs.get(id).pause()
       return strapi.service(batchContentTypeUid).findOne(id)
@@ -55,7 +62,7 @@ export class BatchTranslateManager {
     }
   }
 
-  async resumeJob(id) {
+  async resumeJob(id: string) {
     if (!this.runningJobs.has(id)) {
       const entity = await strapi.service(batchContentTypeUid).findOne(id)
       if (!entity) {
@@ -113,5 +120,3 @@ export class BatchTranslateManager {
     }
   }
 }
-
-
