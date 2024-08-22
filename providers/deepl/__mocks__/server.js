@@ -1,39 +1,39 @@
 'use strict'
 
 const { setupServer } = require('msw/node')
-const { rest } = require('msw')
+const { http, HttpResponse } = require('msw')
 
 function createJsonEndpoint(path, response) {
-  return rest.get(path, (request, restResponse, context) =>
-    restResponse(context.status(200), context.json(response(request)))
+  return http.get(path, (info) =>
+    HttpResponse.json(response(info), {status: 200})
   )
 }
 
 function createQueryJsonEndpoint(path, queryResponseMap) {
-  return rest.get(path, (request, restResponse, context) => {
+  return http.get(path, ({request}) => {
     const response = queryResponseMap[request.url.search]
     if (!response) {
       console.warn(
         `API call ${request.url.toString()} doesn't have a query handler.`
       )
-      return restResponse(context.status(404))
+      return new HttpResponse(null, {status: 404})
     }
 
-    return restResponse(context.status(200), context.json(response))
+    return HttpResponse.json(response,{status: 200})
   })
 }
 
 function createTextEndpoint(path, response) {
-  return rest.get(path, (_request, restResponse, context) =>
-    restResponse(context.status(200), context.text(response))
+  return http.get(path, () =>
+    HttpResponse.text(response, {status: 200})
   )
 }
 
-const notFoundByDefault = rest.get(/.*/, (request, response, context) => {
+const notFoundByDefault = http.get(/.*/, ({request}) => {
   console.warn(
     `API call ${request.url.toString()} doesn't have a query handler.`
   )
-  response(context.status(404))
+  return new HttpResponse(null,  {status: 404})
 })
 
 function getServer(...handlers) {

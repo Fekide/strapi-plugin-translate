@@ -14,7 +14,7 @@ module.exports = {
       providerOptions: {
         // your API key - required and wil cause errors if not provided
         apiKey: 'key',
-        // api url - required 
+        // api url - required
         apiUrl: 'https://your.libretranslate.instance',
         // maximum number of requests per minute - optional, default is `undefined` => no limit
         apiMaxRPM: 60,
@@ -24,9 +24,9 @@ module.exports = {
         apiMaxTexts: 55,
         // manually overwrite the Strapi Locale to LibreTranslate Locale mapping.
         // default is the string before the `-` character for every locale
-        localeMap:{
-          'en-US' : 'de',
-        }
+        localeMap: {
+          'en-US': 'de',
+        },
       },
       // other options ...
     },

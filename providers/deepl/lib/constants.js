@@ -1,5 +1,7 @@
 'use strict'
 
+const packageJson = require("../package.json")
+
 module.exports = {
   DEEPL_FREE_API: 'https://api-free.deepl.com/v2',
   DEEPL_PAID_API: 'https://api.deepl.com/v2',
@@ -12,4 +14,8 @@ module.exports = {
   DEEPL_PRIORITY_DIRECT_TRANSLATION: 3,
   DEEPL_PRIORITY_USAGE: 1,
   DEEPL_PRIORITY_DEFAULT: 5,
+  DEEPL_APP_INFO: {
+    appName: packageJson.name,
+    appVersion: packageJson.version
+  }
 }

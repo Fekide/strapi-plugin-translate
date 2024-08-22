@@ -47,9 +47,6 @@ import {
   CheckPermissions,
   request,
 } from '@strapi/helper-plugin'
-import { generateOptions } from '@strapi/plugin-i18n/admin/src/components/CMEditViewInjectedComponents/CMEditViewCopyLocale/utils'
-import useContentTypePermissions from '@strapi/plugin-i18n/admin/src/hooks/useContentTypePermissions'
-import selectI18NLocales from '@strapi/plugin-i18n/admin/src/selectors/selectI18nLocales'
 import _ from 'lodash'
 import { getTrad } from '../../utils'
 import permissions from '../../permissions'
@@ -73,9 +70,12 @@ const CenteredTypography = styled(Typography)`
 
 const CMEditViewTranslateLocale = () => {
   const [{ query }] = useQueryParams()
-  const locales = useSelector(selectI18NLocales)
+  const locales = useSelector((state) => state.i18n_locales.locales)
   const { layout, modifiedData, slug } = useCMEditViewDataManager()
-  const { readPermissions } = useContentTypePermissions(slug)
+  const readPermissions =
+    (useSelector(
+      (state) => state.rbacProvider.collectionTypesRelatedPermissions
+    )[slug] || [])['plugin::content-manager.explorer.read'] || []
 
   const defaultLocale = locales.find((loc) => loc.isDefault)
   const currentLocale = get(query, 'plugins.i18n.locale', defaultLocale.code)
@@ -89,6 +89,8 @@ const CMEditViewTranslateLocale = () => {
   if (!hasI18nEnabled || !localizations.length) {
     return null
   }
+
+  console.log(readPermissions)
 
   return (
     <CheckPermissions permissions={permissions.translate}>
@@ -113,12 +115,22 @@ const Content = ({
   const { allLayoutData, initialData, slug, onChange } =
     useCMEditViewDataManager()
 
-  const options = generateOptions(
-    appLocales,
-    currentLocale,
-    localizations,
-    readPermissions
-  )
+  const options = appLocales
+    .filter(({ code }) => {
+      return (
+        code !== currentLocale &&
+        localizations.map(({ locale }) => locale).includes(code) &&
+        readPermissions.some(({ properties }) =>
+          get(properties, 'locales', []).includes(code)
+        )
+      )
+    })
+    .map(({ name, code }) => {
+      return {
+        label: name,
+        value: localizations.find(({ locale }) => code === locale).id,
+      }
+    })
 
   const toggleNotification = useNotification()
   const { formatMessage } = useIntl()
@@ -181,10 +193,13 @@ const Content = ({
 
       for (const key in parsedData) {
         if (Object.hasOwnProperty.call(parsedData, key)) {
-          const value = parsedData[key]
+          let value = parsedData[key]
           const attribute = allLayoutData.contentType.attributes[key]
 
           if (attribute) {
+            if (attribute.type === 'json') {
+              value = JSON.stringify(value, undefined, 2)
+            }
             onChange({ target: { name: key, value, type: attribute.type } })
           }
         }

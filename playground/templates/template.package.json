@@ -1,44 +1,47 @@
 {
+  "name": "playground",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Strapi application",
+  "license": "MIT",
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "scripts": {
+    "build": "strapi build",
+    "cy:run": "cypress run",
+    "develop": "strapi develop",
+    "e2e": "ENV_PATH='./.env.test' start-server-and-test 'yarn start' http://0.0.0.0:1337 'yarn cy:run'",
+    "reset": "node scripts/reset.js",
+    "start": "strapi start",
+    "strapi": "strapi",
+    "test": "echo no unittests"
+  },
   "dependencies": {
     "@strapi/plugin-i18n": "${VERSION}",
     "@strapi/plugin-users-permissions": "${VERSION}",
     "@strapi/strapi": "${VERSION}",
-    "better-sqlite3": "8.2.0",
-    "dotenv": "^16.0.3",
-    "lodash.set": "^4.3.2",
-    "mime-types": "^2.1.27",
-    "strapi-plugin-init-admin-user": "^0.2.1"
-  },
-  "name": "playground",
-  "private": true,
-  "version": "0.1.0",
-  "description": "A Strapi application",
-  "scripts": {
-    "develop": "strapi develop",
-    "start": "strapi start",
-    "build": "strapi build",
-    "strapi": "strapi",
-    "reset": "node scripts/reset.js",
-    "cy:run": "cypress run",
-    "test": "echo no unittests",
-    "e2e": "ENV_PATH='./.env.test' start-server-and-test 'yarn start' http://0.0.0.0:1337 'yarn cy:run'"
+    "better-sqlite3": "9.4.0",
+    "dotenv": "^16.4.1",
+    "lodash": "^4.17.21",
+    "mime-types": "^2.1.35",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^5.2.0",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
-    "cypress": "^12.7.0",
-    "start-server-and-test": "^2.0.0"
+    "cypress": "^13.6.4",
+    "start-server-and-test": "^2.0.3"
   },
-  "author": {
-    "name": "A Strapi developer"
+  "engines": {
+    "node": ">=14.19.1 <=20.x.x",
+    "npm": ">=6.0.0"
   },
   "strapi": {
     "uuid": "e52249f8-dcf2-4e7b-8612-7713abc46c04",
     "template": "@strapi/template-blog@^1.0.0",
     "starter": "@strapi/starter-next-blog",
     "telemetryDisabled": true
-  },
-  "engines": {
-    "node": ">=14.19.1 <=18.x.x",
-    "npm": ">=6.0.0"
-  },
-  "license": "MIT"
+  }
 }

@@ -25,10 +25,11 @@ describe('batch translation', () => {
       .contains('label', 'Locales')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .click()
-    cy.get('li[data-strapi-value=en]').click()
+
+    cy.get('div[role=option]').filter(':contains("English (en)")').click()
     cy.get('div[role=dialog] button').filter(':contains("Translate")').click()
 
     // Verify translation finished
@@ -65,15 +66,15 @@ describe('batch translation', () => {
       .contains('label', 'Locales')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .click()
-    cy.get('li[data-strapi-value=en]').click()
+    cy.get('div[role=option]').filter(':contains("English (en)")').click()
     cy.get('div[role=dialog]')
       .contains('label', 'Auto-Publish')
       .invoke('attr', 'for')
       .then((id) => {
-        cy.get('#' + id)
+        cy.get(`[id='${id}']`)
       })
       .parent()
       .click()

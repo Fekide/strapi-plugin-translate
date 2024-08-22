@@ -56,8 +56,8 @@ module.exports = {
     {
       files: ['plugin/admin/src/**/*.js', 'playground/src/admin/**/*.js'],
       parser: '@babel/eslint-parser',
-      extends: ['eslint:recommended', 'plugin:react/recommended', 'prettier'],
-      plugins: ['react', 'react-hooks', 'import', 'jsx-a11y'],
+      extends: ['eslint:recommended', 'plugin:react/recommended', 'prettier', 'plugin:jsx-a11y/recommended'],
+      plugins: ['react', 'react-hooks', 'import'],
       env: {
         browser: true,
         commonjs: true,
@@ -120,7 +120,6 @@ module.exports = {
         'import/no-named-as-default': 0,
         'import/order': 2,
         'import/prefer-default-export': 'off',
-        'jsx-a11y/click-events-have-key-events': 1,
         'max-len': [
           2,
           {

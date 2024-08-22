@@ -1,6 +1,6 @@
 'use strict'
 const { faker } = require('@faker-js/faker')
-const { rest } = require('msw')
+const { http, HttpResponse } = require('msw')
 
 const provider = require('..')
 const { getServer } = require('../../__mocks__/server')
@@ -35,21 +35,21 @@ const enabledLocales = [
   },
 ]
 
-describe('deepl provider', () => {
+describe('libretranslate provider', () => {
   let server
 
   function buildTranslateHandler({ maxChars, maxTexts }) {
     maxChars = maxChars || -1
     maxTexts = maxTexts || -1
-    return async (req, res, ctx) => {
-      const json = await req.json()
+    return async ({ request }) => {
+      const json = await request.json()
       if (
         maxTexts !== -1 &&
         Array.isArray(json.q) &&
         json.q.length > maxTexts
       ) {
         console.warn('Too many Texts', json.q.length)
-        return res(ctx.status(400))
+        return new HttpResponse(null, { status: 400 })
       }
 
       if (maxChars !== -1) {
@@ -58,28 +58,26 @@ describe('deepl provider', () => {
           json.q.reduce((prev, curr) => prev + curr.length, 0) > maxChars
         ) {
           console.warn('Batch translation, too many characters')
-          return res(ctx.status(400))
+          return new HttpResponse(null, { status: 400 })
         } else if (json.q.length > maxChars) {
           console.warn('Single translation, too many characters')
-          return res(ctx.status(400))
+          return new HttpResponse(null, { status: 400 })
         }
       }
 
       let targetLang = json.target
       if (!targetLang) {
-        return res(ctx.status(400))
+        return new HttpResponse(null, { status: 400 })
       }
 
       let sourceLang = json.source
       if (!sourceLang) {
-        return res(ctx.status(400))
+        return new HttpResponse(null, { status: 400 })
       }
 
-      return res(
-        ctx.json({
-          translatedText: json.q,
-        })
-      )
+      return HttpResponse.json({
+        translatedText: json.q,
+      })
     }
   }
   beforeAll(() => {
@@ -114,11 +112,11 @@ describe('deepl provider', () => {
     let ltProvider
     beforeEach(() => {
       server.use(
-        rest.post(
+        http.post(
           `${BASE_URL}/translate`,
           buildTranslateHandler({ maxTexts: 50, maxChars: 10000 })
         ),
-        rest.get(`${BASE_URL}/languages`, async (req, res, ctx) => {
+        http.get(`${BASE_URL}/languages`, async (req, res, ctx) => {
           return res(ctx.json(enabledLocales))
         })
       )
@@ -266,7 +264,7 @@ describe('deepl provider', () => {
           text: faker.helpers.uniqueArray(
             () =>
               faker.lorem.paragraphs(
-                faker.datatype.number({
+                faker.number.int({
                   min: 10000 / 2000,
                   max: 10000 / 200,
                 })
@@ -292,16 +290,14 @@ describe('deepl provider', () => {
         let lastRequest
 
         server.use(
-          rest.post(`${BASE_URL}/translate`, async (req, res, ctx) => {
-            const json = await req.json()
+          http.post(`${BASE_URL}/translate`, async ({ request }) => {
+            const json = await request.json()
             if (!firstRequest) firstRequest = new Date()
             lastRequest = new Date()
 
-            return res(
-              ctx.json({
-                translatedText: json.q,
-              })
-            )
+            return HttpResponse.json({
+              translatedText: json.q,
+            })
           })
         )
 

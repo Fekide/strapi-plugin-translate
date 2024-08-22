@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect } from 'react'
 import { Table, Tbody } from '@strapi/design-system/Table'
 import { Box } from '@strapi/design-system/Box'
+import { Layout } from '@strapi/design-system/Layout'
 import { Dialog, DialogBody, DialogFooter } from '@strapi/design-system/Dialog'
 import { useIntl } from 'react-intl'
 import { useNotification } from '@strapi/helper-plugin'
@@ -185,8 +186,8 @@ const CollectionTable = () => {
   const COL_COUNT = locales.length + 1
 
   return (
-    <Box background="neutral100">
-      <Table colCount={COL_COUNT + 1} rowCount={ROW_COUNT}>
+    <Layout>
+      <Table colCount={COL_COUNT} rowCount={ROW_COUNT}>
         <CollectionTableHeader locales={locales} />
         <Tbody>
           {collections.map((collection, index) => (
@@ -375,7 +376,7 @@ const CollectionTable = () => {
           />
         </Dialog>
       )}
-    </Box>
+    </Layout>
   )
 }
 
