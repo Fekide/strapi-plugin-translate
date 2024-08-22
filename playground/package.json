@@ -18,17 +18,16 @@
     "test": "echo no unittests"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "4.25.10",
-    "@strapi/plugin-users-permissions": "4.25.10",
-    "@strapi/strapi": "4.25.10",
+    "@strapi/plugin-users-permissions": "5.0.0-rc.11",
+    "@strapi/strapi": "5.0.0-rc.11",
     "better-sqlite3": "9.4.0",
     "dotenv": "^16.4.1",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^5.2.0",
-    "styled-components": "^5.2.1"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "styled-components": "^6.0.0"
   },
   "devDependencies": {
     "cypress": "^13.6.4",

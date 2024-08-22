@@ -102,12 +102,9 @@ async function createEntry({ model, entry, files }) {
     }
 
     // Actually create the entry in Strapi
-    const createdEntry = await strapi.entityService.create(
-      `api::${model}.${model}`,
-      {
-        data: entry,
-      }
-    )
+    const createdEntry = await strapi.documents(`api::${model}.${model}`).create({
+      data: entry,
+    })
   } catch (e) {
     console.log('model', entry, e)
   }
