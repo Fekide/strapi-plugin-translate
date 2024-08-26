@@ -30,7 +30,7 @@
     "@strapi/helper-plugin": "^4.15.0",
     "axios": "^1.7.4",
     "bottleneck": "^2.19.5",
-    "jsdom": "^24.0.0",
+    "jsdom": "^25.0.0",
     "showdown": "^2.1.0"
   },
   "devDependencies": {
