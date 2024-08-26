@@ -20,7 +20,7 @@
   "dependencies": {
     "@strapi/plugin-i18n": "4.19.1",
     "@strapi/plugin-users-permissions": "4.19.1",
-    "@strapi/strapi": "4.19.1",
+    "@strapi/strapi": "4.25.8",
     "better-sqlite3": "9.4.0",
     "dotenv": "^16.4.1",
     "lodash": "^4.17.21",
