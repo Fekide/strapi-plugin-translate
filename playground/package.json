@@ -18,7 +18,7 @@
     "test": "echo no unittests"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "4.19.1",
+    "@strapi/plugin-i18n": "4.25.8",
     "@strapi/plugin-users-permissions": "4.19.1",
     "@strapi/strapi": "4.19.1",
     "better-sqlite3": "9.4.0",
