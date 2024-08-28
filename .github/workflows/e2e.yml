@@ -6,7 +6,7 @@ jobs:
     strategy:
       matrix:
         node: [18, 20]
-        strapi: [4.14, 4.15, 4.19]
+        strapi: [4.19, 4.24, 4.25]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
