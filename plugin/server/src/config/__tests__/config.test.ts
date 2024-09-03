@@ -1,12 +1,6 @@
 import { describe, expect, it, afterEach } from '@jest/globals'
-import { TranslateConfig } from '..'
-
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
+import { TranslateConfig, TranslatedFieldType } from '..'
+import setup from 'src/__mocks__/initSetup'
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
@@ -28,7 +22,7 @@ describe('config', () => {
   })
 
   it('changing translated field types', () => {
-    const translatedFieldTypes = [
+    const translatedFieldTypes: Array<TranslatedFieldType> = [
       'string',
       { type: 'text', format: 'plain' },
       { type: 'richtext', format: 'markdown' },
@@ -42,7 +36,7 @@ describe('config', () => {
   })
 
   it('fails with translated field types not array', () => {
-    const translatedFieldTypes = 'string'
+    const translatedFieldTypes = 'string' as any
 
     expect(() => setup({ config: { translatedFieldTypes } })).toThrow(
       'translatedFieldTypes has to be an array'
@@ -50,7 +44,7 @@ describe('config', () => {
   })
 
   it('fails with translateRelations not a boolean', () => {
-    const translateRelations = 'false'
+    const translateRelations = 'false' as any
 
     expect(() => setup({ config: { translateRelations } })).toThrow(
       'translateRelations has to be a boolean'
@@ -58,7 +52,7 @@ describe('config', () => {
   })
 
   it('fails with providerOptions not object or undefined', () => {
-    const providerOptions = 'Test'
+    const providerOptions = 'Test' as any
 
     expect(() => setup({ config: { providerOptions } })).toThrow(
       'providerOptions has to be an object if it is defined'
@@ -66,7 +60,7 @@ describe('config', () => {
   })
 
   it('fails with translated fields not being in correct schema', () => {
-    const translatedFieldTypes = [{ field: 'richtext' }]
+    const translatedFieldTypes = [{ field: 'richtext' }] as any
 
     expect(() => setup({ config: { translatedFieldTypes } })).toThrow(
       'incorrect schema for translated fields'
@@ -74,7 +68,7 @@ describe('config', () => {
   })
 
   it('fails with translated fields of unhandled field type', () => {
-    const translatedFieldTypes = [{ type: 'richtext', format: 'xml' }]
+    const translatedFieldTypes = [{ type: 'richtext', format: 'xml' }] as any
 
     expect(() => setup({ config: { translatedFieldTypes } })).toThrow(
       'unhandled format xml for translated field richtext'

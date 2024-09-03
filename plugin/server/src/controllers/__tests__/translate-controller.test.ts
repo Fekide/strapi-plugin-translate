@@ -8,12 +8,13 @@ import {
 } from '@jest/globals'
 import { TranslateController } from '../translate'
 
-import { simpleContentType } from '../../../../__mocks__/contentTypes'
-import createContext from '../../../../__mocks__/createContext'
+import { simpleContentType } from '../../__mocks__/contentTypes'
+import createContext from '../../__mocks__/createContext'
+import initSetup, { SetupProps } from 'src/__mocks__/initSetup'
 
-const setup = function (params) {
+const setup = function (params: SetupProps) {
   Object.defineProperty(global, 'strapi', {
-    value: require('../../../../__mocks__/initSetup')(params),
+    value: initSetup(params),
     writable: true,
   })
 }

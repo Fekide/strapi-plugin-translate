@@ -3,7 +3,6 @@ import {
   expect,
   it,
   afterEach,
-  jest,
   beforeEach,
 } from '@jest/globals'
 import { cleanData } from '../clean-data'
@@ -13,20 +12,14 @@ import {
   nestedComponent,
   twoFieldComponent,
   createComponentWithRelation,
-} from '../../../../__mocks__/components'
+} from '../../__mocks__/components'
 import {
   simpleContentType,
   createRelationContentType,
   createContentTypeWithComponent,
   createContentTypeWithDynamicZone,
-} from '../../../../__mocks__/contentTypes'
-
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
+} from '../../__mocks__/contentTypes'
+import setup from 'src/__mocks__/initSetup'
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})

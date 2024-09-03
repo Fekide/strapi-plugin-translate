@@ -1,14 +1,26 @@
+import { Struct, UID} from "@strapi/strapi"
+import {  } from "zod"
+
 export const simpleContentType = createSimpleContentType(false)
 
 export function createSimpleContentType(
-  localized,
-  uid = 'simple',
+  localized: boolean,
+  uid: UID.ContentType = 'api::simple.simple',
   translate = 'translate'
-) {
+): Struct.ContentTypeSchema {
   return {
+    modelType: 'contentType',
+    uid,
+    globalId: 'Complex',
+    info: {
+      displayName: 'Complex',
+      pluralName: 'Complexes',
+      singularName: 'Complex',
+    },
+    modelName: 'complex',
     pluginOptions: {
       i18n: {
-        localized,
+        localized: true,
       },
     },
     kind: 'collectionType',
@@ -37,7 +49,16 @@ export function createSimpleContentType(
   }
 }
 
-export const mediaContentType = {
+export const mediaContentType: Struct.ContentTypeSchema = {
+  modelType: 'contentType',
+  uid: 'api::complex.complex',
+  globalId: 'Complex',
+  info: {
+    displayName: 'Complex',
+    pluralName: 'Complexes',
+    singularName: 'Complex',
+  },
+  modelName: 'complex',
   pluginOptions: {
     i18n: {
       localized: true,
@@ -66,10 +87,19 @@ export function createRelationContentType(
   inverseOrMapped,
   localized,
   target,
-  uid = 'api::first.first',
+  uid: UID.ContentType = 'api::first.first',
   translate = 'translate'
-) {
+): Struct.ContentTypeSchema {
   return {
+    modelType: 'contentType',
+    uid,
+    globalId: 'Complex',
+    info: {
+      displayName: 'Complex',
+      pluralName: 'Complexes',
+      singularName: 'Complex',
+    },
+    modelName: 'complex',
     pluginOptions: {
       i18n: {
         localized: !!localized,
@@ -101,8 +131,17 @@ export function createRelationContentType(
   }
 }
 
-export function createContentTypeWithUid(translated, uid = 'simple') {
+export function createContentTypeWithUid(translated: boolean, uid: UID.ContentType = 'api::simple.simple'): Struct.ContentTypeSchema {
   return {
+    modelType: 'contentType',
+    uid,
+    globalId: 'Complex',
+    info: {
+      displayName: 'Complex',
+      pluralName: 'Complexes',
+      singularName: 'Complex',
+    },
+    modelName: 'complex',
     pluginOptions: {
       i18n: {
         localized: !!translated,
@@ -134,8 +173,17 @@ export function createContentTypeWithUid(translated, uid = 'simple') {
 export function createContentTypeWithComponent(
   component,
   { localized = true, repeatable = false, translate = 'translate' }
-) {
+): Struct.ContentTypeSchema {
   return {
+    modelType: 'contentType',
+    uid: 'api::complex.complex',
+    globalId: 'Complex',
+    info: {
+      displayName: 'Complex',
+      pluralName: 'Complexes',
+      singularName: 'Complex',
+    },
+    modelName: 'complex',
     pluginOptions: {
       i18n: {
         localized: !!localized,
@@ -160,8 +208,17 @@ export function createContentTypeWithComponent(
   }
 }
 
-export function createContentTypeWithDynamicZone(components, { translated = true }) {
+export function createContentTypeWithDynamicZone(components, { translated = true }): Struct.ContentTypeSchema {
   return {
+    modelType: 'contentType',
+    uid: 'api::complex.complex',
+    globalId: 'Complex',
+    info: {
+      displayName: 'Complex',
+      pluralName: 'Complexes',
+      singularName: 'Complex',
+    },
+    modelName: 'complex',
     pluginOptions: {
       i18n: {
         localized: !!translated,
@@ -182,7 +239,16 @@ export function createContentTypeWithDynamicZone(components, { translated = true
   }
 }
 
-export const complexContentType = {
+export const complexContentType: Struct.ContentTypeSchema = {
+  modelType: 'contentType',
+  uid: 'api::complex.complex',
+  globalId: 'Complex',
+  info: {
+    displayName: 'Complex',
+    pluralName: 'Complexes',
+    singularName: 'Complex',
+  },
+  modelName: 'complex',
   pluginOptions: {
     i18n: {
       localized: true,
@@ -254,7 +320,7 @@ export const complexContentType = {
         },
       },
       type: 'dynamiczone',
-      components: ['simpleComponent', 'twoFieldComponent'],
+      components: ['simple.component', 'twofield.component'],
     },
     child_component: {
       pluginOptions: {
@@ -266,7 +332,7 @@ export const complexContentType = {
         },
       },
       type: 'component',
-      component: 'simpleComponent',
+      component: 'simple.component',
     },
     repeated_child_component: {
       pluginOptions: {
@@ -279,12 +345,21 @@ export const complexContentType = {
       },
       repeatable: true,
       type: 'component',
-      component: 'twoFieldComponent',
+      component: 'twofield.component',
     },
   },
 }
 
-export const complexContentTypeDelete = {
+export const complexContentTypeDelete: Struct.ContentTypeSchema  = {
+  modelType: 'contentType',
+  uid: 'api::complex.complex',
+  globalId: 'Complex',
+  info: {
+    displayName: 'Complex',
+    pluralName: 'Complexes',
+    singularName: 'Complex',
+  },
+  modelName: 'complex',
   pluginOptions: {
     i18n: {
       localized: true,
@@ -356,7 +431,7 @@ export const complexContentTypeDelete = {
         },
       },
       type: 'dynamiczone',
-      components: ['simpleComponent', 'twoFieldComponent'],
+      components: ['simple.component', 'twofield.component'],
     },
     child_component: {
       pluginOptions: {
@@ -368,7 +443,7 @@ export const complexContentTypeDelete = {
         },
       },
       type: 'component',
-      component: 'simpleComponent',
+      component: 'simple.component',
     },
     repeated_child_component: {
       pluginOptions: {
@@ -381,7 +456,7 @@ export const complexContentTypeDelete = {
       },
       repeatable: true,
       type: 'component',
-      component: 'twoFieldComponent',
+      component: 'twofield.component',
     },
   },
 }

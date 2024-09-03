@@ -1,9 +1,23 @@
+import { Core } from '@strapi/strapi'
 import { get, set, isEmpty, defaults } from 'lodash'
+import {jest} from '@jest/globals'
 
-import dummyProvider from '../server/src/utils/dummy-provider'
-import configModule from '../server/src/config'
+import dummyProvider from '../utils/dummy-provider'
+import configModule, { TranslateConfig } from '../config'
+import { TranslateProvider } from 'src/types/provider'
 
-export default ({
+export interface SetupProps {
+  config?: Partial<TranslateConfig>
+  toStore?: boolean
+  database?: Record<string, any>
+  components?: Record<string, any>
+  contentTypes?: Record<string, any>
+  plugins?: Record<string, any>
+  // db?:  Partial<Core.Strapi['db']>
+  provider?: TranslateProvider
+}
+
+const initSetup = ({
   config = {},
   toStore = false,
   database = {},
@@ -12,23 +26,59 @@ export default ({
   // contentTypes should not be in the actual format but the formatted version
   contentTypes = {},
   plugins = {},
-  db = {},
+  // db = {},
   provider = dummyProvider,
-}) => {
-  const dbConfig = toStore
-    ? {
-        plugin: {
-          translate: {
-            config: { ...config },
-          },
-        },
-      }
-    : {}
+}: SetupProps): Core.Strapi => {
+  // const dbConfig = toStore
+  //   ? {
+  //       plugin: {
+  //         translate: {
+  //           config: { ...config },
+  //         },
+  //       },
+  //     }
+  //   : {}
 
   defaults(config, configModule.default())
   configModule.validator(config)
+  let mock: Core.Strapi 
 
-  let mock = {
+  function store(storeProps) {
+    const { type, name } = storeProps // { type: 'plugin', name: 'comments' }
+
+    const mockedStore = {
+      get: async function (props) {
+        // { key: 'config' }
+        const { key } = props
+        return new Promise((resolve) =>
+          resolve(get(mock.db, `${type}.${name}.${key}`, undefined))
+        )
+      },
+      set: async function (props) {
+        // { key: 'config', value: {...} }
+        const { key, value } = props
+        set(mock.db, `${type}.${name}.${key}`, value)
+      },
+      delete: async function (props) {
+        // { key: 'config' }
+        const { key } = props
+        set(mock.db, `${type}.${name}.${key}`, undefined)
+      },
+    }
+
+    return mockedStore
+  }
+  store.set = function (props) {
+    return store(props).set(props)
+  }
+  store.get = function (props) {
+    return store(props).get(props)
+  }
+  store.delete = function (props) {
+    return store(props).delete(props)
+  }
+
+  mock = {
     db: {
       query: (uid) => {
         const [handler, collection] = uid.split('::')
@@ -45,11 +95,9 @@ export default ({
           create: async (value) => new Promise((resolve) => resolve(value)),
           update: async (value) => new Promise((resolve) => resolve(value)),
           delete: async (value) => new Promise((resolve) => resolve(value)),
-          ...db.query?.(uid, { strapi, values }),
-        }
+        } as any
       },
-      ...dbConfig,
-    },
+    }as any,
     components,
     contentTypes,
     getRef: function () {
@@ -58,57 +106,34 @@ export default ({
     plugin: function (name) {
       return this.plugins[name]
     },
-    store: async function (storeProps) {
-      const { type, name } = storeProps // { type: 'plugin', name: 'comments' }
-
-      const mockedStore = {
-        get: async function (props) {
-          // { key: 'config' }
-          const { key } = props
-          return new Promise((resolve) =>
-            resolve(get(mock.db, `${type}.${name}.${key}`, undefined))
-          )
-        },
-        set: async function (props) {
-          // { key: 'config', value: {...} }
-          const { key, value } = props
-          set(mock.db, `${type}.${name}.${key}`, value)
-          return this.get(key)
-        },
-        delete: async function (props) {
-          // { key: 'config' }
-          const { key } = props
-          set(mock.db, `${type}.${name}.${key}`, undefined)
-          return new Promise((resolve) => resolve(true))
-        },
-      }
-
-      return new Promise((resolve) => resolve(mockedStore))
-    },
+    store,
     plugins: {
       ...plugins,
       translate: {
+        config: function (key, defaultValue) {
+          return mock.config.get(`plugin.translate.${String(key)}`) || defaultValue
+        },
         service: function (name) {
-          return this.services[name]({ strapi: mock.getRef() })
+          return this.services[name]
         },
         controller: function (name) {
-          return this.controllers[name]({ strapi: mock.getRef() })
+          return this.controllers[name].call({ strapi: mock })
         },
-        package: require('../package.json'),
+        package: require('../../../package.json'),
         services: {
-          provider: require('../server/services/provider'),
-          translate: require('../server/services/translate'),
-          format: require('../server/services/format'),
-          chunks: require('../server/services/chunks'),
+          provider: {},
+          translate: {},
+          format: {},
+          chunks: {},
           'batch-translate-job': () => {
             const uid = 'plugin::translate.batch-translate-job'
             return {
-              findOne: this.db.query(uid).findOne,
-              find: this.db.query(uid).findMany,
-              count: this.db.query(uid).count,
-              create: this.db.query(uid).create,
-              update: this.db.query(uid).update,
-              delete: this.db.query(uid).delete,
+              findOne: mock.db.query(uid).findOne,
+              find: mock.db.query(uid).findMany,
+              count: mock.db.query(uid).count,
+              create: mock.db.query(uid).create,
+              update: mock.db.query(uid).update,
+              delete: mock.db.query(uid).delete,
             }
           },
         },
@@ -119,7 +144,18 @@ export default ({
         contentTypes: {
           'batch-translate-job': require('../server/content-types/batch-translate-job/schema.json'),
         },
-        provider: provider.init(),
+        provider: provider.init({}),
+        bootstrap: async function () {
+          this.services.provider = (await import('../services/provider')).default({ strapi: mock })
+          this.services.translate = (await import('../services/translate')).default({ strapi: mock })
+          this.services.format = (await import('../services/format')).default()
+          this.services.chunks = (await import('../services/chunks')).default()
+        },
+        destroy: jest.fn(() => Promise.resolve()),
+        middlewares: {},
+        policies: {},
+        register: jest.fn(() => Promise.resolve()),
+        routes: {},
       },
       'content-type-builder': {
         service: function (name) {
@@ -141,8 +177,11 @@ export default ({
       },
     },
     config: {
-      get: function (prop = '') {
-        return get(this.plugins, prop.replace('plugin.', ''))
+      has: function (prop = '') {
+        return !!get(this.plugins, prop.replace('plugin.', ''))
+      },
+      get: function (prop = '', defaultValue) {
+        return get(this.plugins, prop.replace('plugin.', '')) || defaultValue
       },
       set: function (prop = '', value) {
         return set(this.plugins, prop.replace('plugin.', ''), value)
@@ -194,3 +233,12 @@ export default ({
 
   return mock
 }
+
+const setup = function (params: SetupProps) {
+  Object.defineProperty(global, 'strapi', {
+    value: initSetup(params),
+    writable: true,
+  })
+}
+
+export default setup

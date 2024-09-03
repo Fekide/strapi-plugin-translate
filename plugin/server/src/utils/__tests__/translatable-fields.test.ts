@@ -9,18 +9,13 @@ import {
   nestedComponent,
   twoFieldComponent,
   createSimpleComponent,
-} from '../../../../__mocks__/components'
+} from '../../__mocks__/components'
 import {
   complexContentType,
   simpleContentType,
-} from '../../../../__mocks__/contentTypes'
-
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
+} from '../../__mocks__/contentTypes'
+import setup from 'src/__mocks__/initSetup'
+import { Schema, Utils } from '@strapi/strapi'
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
@@ -31,12 +26,12 @@ describe('translatable fields', () => {
     beforeEach(() =>
       setup({
         components: {
-          simpleComponent,
-          twoFieldComponent,
-          nestedComponent,
-          simpleComponentCopy: createSimpleComponent('copy'),
-          simpleComponentDelete: createSimpleComponent('delete'),
-          simpleComponentUnset: createSimpleComponent(null),
+          'simple.component': simpleComponent,
+          'twofield.component': twoFieldComponent,
+          'nested.component': nestedComponent,
+          'simple.componentcopy': createSimpleComponent('copy'),
+          'simple.componentdelete': createSimpleComponent('delete'),
+          'simple.componentunset': createSimpleComponent(null),
         },
       })
     )
@@ -44,20 +39,15 @@ describe('translatable fields', () => {
     it('text field translated', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = {
+      const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual({ field: attr, format: 'plain' })
@@ -66,20 +56,15 @@ describe('translatable fields', () => {
     it('text field without configuration translated', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = {
+      const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { i18n: { localized: true } },
       }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual({ field: attr, format: 'plain' })
@@ -88,20 +73,15 @@ describe('translatable fields', () => {
     it('text field copy not translated', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = {
+      const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'copy' } },
       }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toBeNull()
@@ -110,20 +90,15 @@ describe('translatable fields', () => {
     it('text field delete not translated', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = {
+      const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'delete' } },
       }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toBeNull()
@@ -132,17 +107,12 @@ describe('translatable fields', () => {
     it('other field not translated', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = { type: 'other' }
+      const schema: Schema.Attribute.AnyAttribute = { type: 'boolean' }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toBeNull()
@@ -151,21 +121,19 @@ describe('translatable fields', () => {
     it('component field translated nested', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponent',
+        component: 'simple.component',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual([
@@ -176,21 +144,19 @@ describe('translatable fields', () => {
     it('component field without configuration translated nested', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponent',
+        component: 'simple.component',
         pluginOptions: { i18n: { localized: true } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual([
@@ -201,21 +167,19 @@ describe('translatable fields', () => {
     it('component field with field without configuration translated nested', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponentUnset',
+        component: 'simple.componentunset',
         pluginOptions: { i18n: { localized: true } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual([
@@ -226,21 +190,19 @@ describe('translatable fields', () => {
     it('component with copy field not translated', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponentCopy',
+        component: 'simple.componentcopy',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual([])
@@ -249,21 +211,19 @@ describe('translatable fields', () => {
     it('component with delete field not translated', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponentDelete',
+        component: 'simple.componentdelete',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual([])
@@ -274,22 +234,23 @@ describe('translatable fields', () => {
       const data = {
         child_component: [{ text: 'some text' }, { text: 'some other text' }],
       }
-      const schema = {
+      const schema: Schema.Attribute.Component<
+        'simple.component',
+        Utils.Constants.True
+      > = {
         type: 'component',
-        component: 'simpleComponent',
+        component: 'simple.component',
         repeatable: true,
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual([
@@ -312,21 +273,19 @@ describe('translatable fields', () => {
           },
         },
       }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'nestedComponent',
+        component: 'nested.component',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'comp'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual([
@@ -340,30 +299,29 @@ describe('translatable fields', () => {
       // given
       const data = {
         dynamic_zone: [
-          { __component: 'simpleComponent', text: 'some text' },
+          { __component: 'simple.component', text: 'some text' },
           {
-            __component: 'twoFieldComponent',
+            __component: 'twofield.component',
             title: 'some other text',
             number: 5,
           },
-          { __component: 'simpleComponent', text: 'some simple text' },
+          { __component: 'simple.component', text: 'some simple text' },
         ],
       }
-      const schema = {
+      const schema: Schema.Attribute.DynamicZone = {
         type: 'dynamiczone',
-        components: ['simpleComponent', 'twoFieldComponent'],
+        components: ['simple.component', 'twofield.component'],
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'dynamic_zone'
-      const translatedFieldTypes = ['text', 'dynamiczone', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'dynamiczone',
+        'component',
+      ])
 
       // when
-      const translatedField = await getTranslateFields(
-        data,
-        schema,
-        attr,
-        translatedFieldTypes
-      )
+      const translatedField = await getTranslateFields(data, schema, attr)
 
       // then
       expect(translatedField).toEqual([
@@ -405,9 +363,9 @@ describe('translatable fields', () => {
         not_translated_field: 'not translated',
         enumeration: 'option_a',
         dynamic_zone: [
-          { __component: 'simpleComponent', text: 'some text' },
+          { __component: 'simple.component', text: 'some text' },
           {
-            __component: 'twoFieldComponent',
+            __component: 'twofield.component',
             title: 'some other text',
             number: 5,
           },

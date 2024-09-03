@@ -6,20 +6,15 @@ import {
   createNestedComponent,
   twoFieldComponent,
   createSimpleComponent,
-} from '../../../../__mocks__/components'
+} from '../../__mocks__/components'
 import {
   complexContentType,
   simpleContentType,
   complexContentTypeDelete,
-} from '../../../../__mocks__/contentTypes'
+} from '../../__mocks__/contentTypes'
 import { filterDeletedFields, filterAllDeletedFields } from '../delete-fields'
-
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
+import setup from 'src/__mocks__/initSetup'
+import { Core, Schema, Utils } from '@strapi/strapi'
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
@@ -30,11 +25,11 @@ describe('delete fields', () => {
     beforeEach(() =>
       setup({
         components: {
-          simpleComponent,
-          twoFieldComponent,
-          nestedComponentDelete: createNestedComponent('delete'),
-          simpleComponentCopy: createSimpleComponent('copy'),
-          simpleComponentDelete: createSimpleComponent('delete'),
+          'simple.component': simpleComponent,
+          'twofield.component': twoFieldComponent,
+          'nested.componentdelete': createNestedComponent('delete'),
+          'simple.componentcopy': createSimpleComponent('copy'),
+          'simple.componentdelete': createSimpleComponent('delete'),
         },
       })
     )
@@ -42,16 +37,16 @@ describe('delete fields', () => {
     it('translated field ignored', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = {
+      const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual(data)
@@ -60,16 +55,16 @@ describe('delete fields', () => {
     it('copied field ignored', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = {
+      const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'copy' } },
       }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual(data)
@@ -78,16 +73,16 @@ describe('delete fields', () => {
     it('deleted field is deleted', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = {
+      const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'delete' } },
       }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual({})
@@ -96,13 +91,13 @@ describe('delete fields', () => {
     it('other field ignored', async () => {
       // given
       const data = { field: 'some text' }
-      const schema = { type: 'other' }
+      const schema: Schema.Attribute.AnyAttribute = { type: 'integer' }
       const attr = 'field'
-      const translatedFieldTypes = ['text']
+      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual(data)
@@ -111,17 +106,20 @@ describe('delete fields', () => {
     it('deleted component field is deleted', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponent',
+        component: 'simple.component',
         pluginOptions: { translate: { translate: 'delete' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual({})
@@ -130,17 +128,20 @@ describe('delete fields', () => {
     it('component with translated field ignored', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponent',
+        component: 'simple.component',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual(data)
@@ -149,17 +150,20 @@ describe('delete fields', () => {
     it('component with copied field ignored', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponentCopy',
+        component: 'simple.componentcopy',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual(data)
@@ -168,17 +172,20 @@ describe('delete fields', () => {
     it('component with deleted field has field deleted', async () => {
       // given
       const data = { child_component: { text: 'some text' } }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'simpleComponentDelete',
+        component: 'simple.componentdelete',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual({ child_component: {} })
@@ -189,18 +196,24 @@ describe('delete fields', () => {
       const data = {
         child_component: [{ text: 'some text' }, { text: 'some other text' }],
       }
-      const schema = {
+      const schema: Schema.Attribute.Component<
+        'simple.componentdelete',
+        Utils.Constants.True
+      > = {
         type: 'component',
-        component: 'simpleComponentDelete',
+        component: 'simple.componentdelete',
         repeatable: true,
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual({ child_component: [{}, {}] })
@@ -220,17 +233,20 @@ describe('delete fields', () => {
           },
         },
       }
-      const schema = {
+      const schema: Schema.Attribute.Component = {
         type: 'component',
-        component: 'nestedComponentDelete',
+        component: 'nested.componentdelete',
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'comp'
-      const translatedFieldTypes = ['text', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'component',
+      ])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual({
@@ -242,37 +258,41 @@ describe('delete fields', () => {
       // given
       const data = {
         dynamic_zone: [
-          { __component: 'simpleComponentDelete', text: 'some text' },
+          { __component: 'simple.componentdelete', text: 'some text' },
           {
-            __component: 'twoFieldComponent',
+            __component: 'twofield.component',
             title: 'some other text',
             number: 5,
           },
-          { __component: 'simpleComponentDelete', text: 'some simple text' },
+          { __component: 'simple.componentdelete', text: 'some simple text' },
         ],
       }
-      const schema = {
+      const schema: Schema.Attribute.DynamicZone = {
         type: 'dynamiczone',
-        components: ['simpleComponentDelete', 'twoFieldComponent'],
+        components: ['simple.componentdelete', 'twofield.component'],
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'dynamic_zone'
-      const translatedFieldTypes = ['text', 'dynamiczone', 'component']
+      strapi.config.set('plugin.translate.translatedFieldTypes', [
+        'text',
+        'dynamiczone',
+        'component',
+      ])
 
       // when
       const newData = _.cloneDeep(data)
-      filterDeletedFields(newData, schema, attr, translatedFieldTypes)
+      filterDeletedFields(newData, schema, attr)
 
       // then
       expect(newData).toEqual({
         dynamic_zone: [
-          { __component: 'simpleComponentDelete' },
+          { __component: 'simple.componentdelete' },
           {
-            __component: 'twoFieldComponent',
+            __component: 'twofield.component',
             title: 'some other text',
             number: 5,
           },
-          { __component: 'simpleComponentDelete' },
+          { __component: 'simple.componentdelete' },
         ],
       })
     })
@@ -282,8 +302,8 @@ describe('delete fields', () => {
     beforeEach(() =>
       setup({
         components: {
-          simpleComponent,
-          twoFieldComponent,
+          'simple.component': simpleComponent,
+          'twofield.component': twoFieldComponent,
         },
       })
     )
@@ -309,9 +329,9 @@ describe('delete fields', () => {
         not_translated_field: 'not translated',
         enumeration: 'option_a',
         dynamic_zone: [
-          { __component: 'simpleComponent', text: 'some text' },
+          { __component: 'simple.component', text: 'some text' },
           {
-            __component: 'twoFieldComponent',
+            __component: 'twofield.component',
             title: 'some other text',
             number: 5,
           },
@@ -348,9 +368,9 @@ describe('delete fields', () => {
         not_translated_field: 'not translated',
         enumeration: 'option_a',
         dynamic_zone: [
-          { __component: 'simpleComponent', text: 'some text' },
+          { __component: 'simple.component', text: 'some text' },
           {
-            __component: 'twoFieldComponent',
+            __component: 'twofield.component',
             title: 'some other text',
             number: 5,
           },

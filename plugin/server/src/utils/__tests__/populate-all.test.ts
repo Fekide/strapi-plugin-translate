@@ -4,7 +4,7 @@ import {
   nestedComponent,
   twoFieldComponent,
   createComponentWithRelation,
-} from '../../../../__mocks__/components'
+} from '../../__mocks__/components'
 import {
   simpleContentType,
   mediaContentType,
@@ -12,16 +12,10 @@ import {
   createContentTypeWithComponent,
   createContentTypeWithDynamicZone,
   createSimpleContentType,
-} from '../../../../__mocks__/contentTypes'
+} from '../../__mocks__/contentTypes'
+import setup from 'src/__mocks__/initSetup'
 
 import { populateAll } from '../populate-all'
-
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
@@ -61,7 +55,7 @@ describe('populate all', () => {
         'api::complex.component': createContentTypeWithComponent('simple', {}),
         'api::complex.component-repeatable': createContentTypeWithComponent(
           'simple',
-          { repeatable: true, translated: false }
+          { repeatable: true }
         ),
         'api::complex.dynamiczone': createContentTypeWithDynamicZone(
           ['simple', 'two-field'],

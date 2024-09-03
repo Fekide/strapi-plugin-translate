@@ -1,4 +1,6 @@
 import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
+import setup from 'src/__mocks__/initSetup'
+import { getService } from 'src/utils'
 
 const markdown = `# Turndown Demo
 
@@ -60,13 +62,6 @@ console.log(
 </ul>
 <p>End of Document</p>`
 
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
-
 beforeEach(() => {
   setup({})
 })
@@ -78,30 +73,30 @@ afterEach(() => {
 describe('format', () => {
   it('markdown to html', () => {
     expect(
-      strapi.service('plugin::translate.format').markdownToHtml(markdown)
+      getService('format').markdownToHtml(markdown)
     ).toEqual(html)
   })
   it('markdown to html in list', () => {
     expect(
-      strapi.service('plugin::translate.format').markdownToHtml([markdown])
+      getService('format').markdownToHtml([markdown])
     ).toEqual([html])
   })
   it('html to markdown in list', () => {
     expect(
-      strapi.service('plugin::translate.format').htmlToMarkdown(html)
+      getService('format').htmlToMarkdown(html)
     ).toEqual(markdown)
     expect(
-      strapi.service('plugin::translate.format').htmlToMarkdown([html])
+      getService('format').htmlToMarkdown([html])
     ).toEqual([markdown])
   })
   it('html to markdown and back', () => {
-    const formatService = strapi.service('plugin::translate.format')
+    const formatService = getService('format')
     expect(
       formatService.markdownToHtml(formatService.htmlToMarkdown(html))
     ).toEqual(html)
   })
   it('markdown to html and back', () => {
-    const formatService = strapi.service('plugin::translate.format')
+    const formatService = getService('format')
     expect(
       formatService.htmlToMarkdown(formatService.markdownToHtml(markdown))
     ).toEqual(markdown)

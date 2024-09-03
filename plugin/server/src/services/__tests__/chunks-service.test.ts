@@ -2,13 +2,8 @@ import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
 import { faker } from '@faker-js/faker'
 import shuffle from 'lodash/shuffle'
 import { stringByteLengthEncoded } from '../../utils/byte-length'
-
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
+import setup from 'src/__mocks__/initSetup'
+import { getService } from 'src/utils'
 
 beforeEach(() => {
   setup({})
@@ -23,9 +18,7 @@ describe('chunks', () => {
     // given
     const textArray = faker.helpers.uniqueArray(faker.lorem.word, 100)
     // when
-    const { chunks } = strapi
-      .service('plugin::translate.chunks')
-      .split(textArray, {})
+    const { chunks } = getService('chunks').split(textArray, {})
     // then
     expect(chunks[0]).toEqual(textArray)
   })
@@ -34,9 +27,7 @@ describe('chunks', () => {
     const textArray = faker.helpers.uniqueArray(faker.lorem.sentence, 10)
     const maxLength = 3
     // when
-    const { chunks } = strapi
-      .service('plugin::translate.chunks')
-      .split(textArray, { maxLength })
+    const { chunks } = getService('chunks').split(textArray, { maxLength })
     // then
     chunks.forEach((chunk) => {
       expect(chunk.length).toBeLessThanOrEqual(maxLength)
@@ -47,9 +38,7 @@ describe('chunks', () => {
     const textArray = faker.helpers.uniqueArray(faker.lorem.paragraph, 1000)
     const maxByteSize = 1000
     // when
-    const { chunks } = strapi
-      .service('plugin::translate.chunks')
-      .split(textArray, { maxByteSize })
+    const { chunks } = getService('chunks').split(textArray, { maxByteSize })
     // then
     chunks.forEach((chunk) => {
       const byteSize = chunk.reduce(
@@ -64,9 +53,9 @@ describe('chunks', () => {
     const textArray = faker.helpers.uniqueArray(faker.lorem.sentence, 10)
     const maxLength = 3
     // when
-    const { chunks, reduceFunction } = strapi
-      .service('plugin::translate.chunks')
-      .split(textArray, { maxLength })
+    const { chunks, reduceFunction } = getService('chunks').split(textArray, {
+      maxLength,
+    })
     const mergedBack = reduceFunction(chunks)
     // then
     expect(mergedBack).toEqual(textArray)
@@ -79,9 +68,9 @@ describe('chunks', () => {
     )
     const maxByteSize = 1000
     // when
-    const { chunks, reduceFunction } = strapi
-      .service('plugin::translate.chunks')
-      .split(textArray, { maxByteSize })
+    const { chunks, reduceFunction } = getService('chunks').split(textArray, {
+      maxByteSize,
+    })
     const mergedBack = reduceFunction(chunks)
     // then
     expect(mergedBack).toEqual(textArray)
@@ -98,9 +87,10 @@ describe('chunks', () => {
     const maxLength = 10
     const maxByteSize = 1000
     // when
-    const { chunks, reduceFunction } = strapi
-      .service('plugin::translate.chunks')
-      .split(textArray, { maxLength, maxByteSize })
+    const { chunks, reduceFunction } = getService('chunks').split(textArray, {
+      maxLength,
+      maxByteSize,
+    })
     const mergedBack = reduceFunction(chunks)
     // then
     chunks.forEach((chunk) => {

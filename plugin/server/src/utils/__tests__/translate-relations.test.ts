@@ -1,20 +1,14 @@
 import { describe, expect, it, afterEach, beforeEach } from '@jest/globals'
 import { translateRelations } from '../translate-relations'
 
-import { createComponentWithRelation } from '../../../../__mocks__/components'
+import { createComponentWithRelation } from '../../__mocks__/components'
 import {
   createRelationContentType,
   createContentTypeWithComponent,
   createSimpleContentType,
   createContentTypeWithDynamicZone,
-} from '../../../../__mocks__/contentTypes'
-
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
+} from '../../__mocks__/contentTypes'
+import setup from 'src/__mocks__/initSetup'
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})

@@ -1,6 +1,8 @@
 'use strict'
 
-export default {
+import { TranslateProvider } from "src/types/provider"
+
+const dummyProvider: TranslateProvider = {
   provider: 'dummy',
   name: 'Dummy',
 
@@ -26,3 +28,5 @@ export default {
     }
   },
 }
+
+export default dummyProvider

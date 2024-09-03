@@ -1,12 +1,12 @@
 import { FieldFormat } from 'src/types/formats';
 import { TranslateProviderOptions } from 'src/types/provider';
 
-
+export type TranslatedFieldType = string | { type: string; format?: FieldFormat };
 
 export type TranslateConfig = {
   provider: string;
   providerOptions: TranslateProviderOptions;
-  translatedFieldTypes: Array<string | { type: string; format?: FieldFormat }>;
+  translatedFieldTypes: Array<TranslatedFieldType>;
   translateRelations: boolean;
   ignoreUpdatedContentTypes: string[];
   regenerateUids: boolean;
@@ -35,7 +35,7 @@ export default {
     translatedFieldTypes,
     translateRelations,
     ignoreUpdatedContentTypes,
-  }) {
+  }: Partial<TranslateConfig>) {
     if (provider === 'dummy' && process.env.NODE_ENV !== 'test') {
       console.warn(
         'provider is set to dummy by default. This only copies all values'

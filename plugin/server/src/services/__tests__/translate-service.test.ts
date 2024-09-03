@@ -1,6 +1,7 @@
 import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
-
+import setup from 'src/__mocks__/initSetup'
 import { getService } from '../../utils'
+import { TranslatableField } from 'src/utils/translatable-fields'
 
 // Every text to translate becomes "translated" in this mock so it can be verified to have been changed
 const translatedByFormat = {
@@ -9,12 +10,6 @@ const translatedByFormat = {
   html: 'translatedHTML',
 }
 
-const setup = function (params) {
-  Object.defineProperty(global, 'strapi', {
-    value: require('../../../__mocks__/initSetup')(params),
-    writable: true,
-  })
-}
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
 })
@@ -61,7 +56,7 @@ describe('provider service', () => {
       }
       const sourceLocale = 'en'
       const targetLocale = 'de'
-      const fieldsToTranslate = [{ field: 'title', format: 'plain' }]
+      const fieldsToTranslate: TranslatableField[] = [{ field: 'title', format: 'plain' }]
 
       // when
       const result = await getService('translate').translate({
