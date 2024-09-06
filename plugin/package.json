@@ -37,7 +37,10 @@
     "@faker-js/faker": "^8.4.0",
     "@strapi/plugin-i18n": "^4.15.0",
     "axios-mock-adapter": "^2.0.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "react": "^17.0 || ^18.0",
+    "react-dom": "^17.0 || ^18.0",
+    "react-router-dom": "^5.2.0"
   },
   "peerDependencies": {
     "@strapi/plugin-i18n": "^4.1.4",
