@@ -44,7 +44,7 @@
     "deepl-node": "^1.11.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.0",
+    "@faker-js/faker": "^9.0.0",
     "@strapi/plugin-i18n": "^4.15.0",
     "jest": "^29.7.0",
     "msw": "^2.1.5"
