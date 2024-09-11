@@ -1,5 +1,5 @@
 import { Core } from "@strapi/strapi"
-import { TranslateProviderUsageResult } from "src/types/provider"
+import { TranslateProviderUsageResult } from "../../../shared/types/provider"
 
 export interface ProviderService {
   usage(): Promise<TranslateProviderUsageResult>

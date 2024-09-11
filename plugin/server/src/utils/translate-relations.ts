@@ -2,18 +2,16 @@
 
 import { get, cloneDeep, has, compact } from 'lodash'
 import { getConfig } from './get-config'
-import { UID } from '@strapi/strapi'
+import { Modules, UID } from '@strapi/strapi'
 import { Struct, Schema } from '@strapi/strapi'
+import { keys } from './objects'
 
 async function getRelevantLocalization(
-  contentType: UID.Service,
-  id: string,
+  contentType: UID.ContentType,
+  documentId: string,
   locale: string
 ) {
-  const relationContent = await strapi
-    .service(contentType)
-    .findOne(id, { populate: 'localizations' })
-  return relationContent.localizations.filter((l) => l.locale === locale)[0]
+  return strapi.documents(contentType).findOne({ documentId, locale })
 }
 
 /**
@@ -26,21 +24,17 @@ async function getRelevantLocalization(
  *  - deleted if they cannot be reused
  *  - translated if the relation target is localized and the related instance has the targetLocale created
  */
-export async function translateRelations(
-  data: unknown,
+export async function translateRelations<TSchemaUID extends UID.ContentType>(
+  data: Modules.Documents.Document<TSchemaUID>,
   schema: Struct.ContentTypeSchema | Struct.ComponentSchema,
   targetLocale: string
 ) {
   const { translateRelations: shouldTranslateRelations } = getConfig()
 
-  const attributesSchema = get(schema, 'attributes', [])
+  const attributesSchema = schema['attributes']
   const resultData = cloneDeep(data)
   await Promise.all(
-    Object.keys(attributesSchema).map(async (attr) => {
-      if (attr === 'localizations') {
-        return
-      }
-
+    keys(attributesSchema).map(async (attr) => {
       const attributeData = get(data, attr, undefined)
 
       if (attributeData === null || attributeData === undefined) {
@@ -92,7 +86,7 @@ export async function translateRelations(
               )
             } else if (attributeSchema.type === 'dynamiczone') {
               resultData[attr] = await Promise.all(
-                attributeData.map((object: unknown) =>
+                attributeData.map((object: Modules.Documents.AnyDocument) =>
                   translateComponent(object, attributeSchema, targetLocale)
                 )
               )
@@ -105,10 +99,10 @@ export async function translateRelations(
   return resultData
 }
 
-async function translateComponent(
-  data: unknown,
+async function translateComponent<TSchemaUID extends UID.Component>(
+  data: Modules.Documents.Document<TSchemaUID>,
   componentReference: Schema.Attribute.AnyAttribute,
-  targetLocale
+  targetLocale: string
 ) {
   if (!data) {
     return undefined
@@ -128,7 +122,7 @@ async function translateComponent(
 }
 
 async function translateRelation(
-  attributeData: unknown,
+  attributeData: any,
   attributeSchema: Schema.Attribute.Relation,
   targetLocale: string
 ) {
@@ -176,7 +170,7 @@ async function translateRelation(
           attributeData.map(async (prevRelation) =>
             getRelevantLocalization(
               attributeSchema['target'],
-              prevRelation.id,
+              prevRelation['documentId'],
               targetLocale
             )
           )
@@ -188,7 +182,7 @@ async function translateRelation(
     ) {
       return getRelevantLocalization(
         attributeSchema['target'],
-        attributeData['id'],
+        attributeData['documentId'],
         targetLocale
       )
     }

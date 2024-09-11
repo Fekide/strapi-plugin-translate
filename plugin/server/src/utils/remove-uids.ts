@@ -1,7 +1,8 @@
 'use strict'
 
-import { UID } from '@strapi/strapi'
-import { get, cloneDeep } from 'lodash'
+import { Modules, UID } from '@strapi/strapi'
+import { cloneDeep } from 'lodash'
+import { keys } from './objects'
 
 /**
  * Remove all uids from a content type
@@ -9,11 +10,11 @@ import { get, cloneDeep } from 'lodash'
  * @param {object} contentTypeUid The uid of the content type
  * @returns The input data without uids
  */
-export function removeUids(data: unknown, contentTypeUid: UID.ContentType) {
+export function removeUids<TSchemaUID extends UID.ContentType>(data: Modules.Documents.Document<TSchemaUID>, contentTypeUid: TSchemaUID) {
   const schema = strapi.contentTypes[contentTypeUid]
-  const attributesSchema = get(schema, 'attributes', [])
+  const attributesSchema = schema['attributes']
   const resultData = cloneDeep(data)
-  Object.keys(attributesSchema).forEach(async (attr) => {
+  keys(attributesSchema).forEach(async (attr) => {
     if (attributesSchema[attr].type === 'uid') delete resultData[attr]
   })
 

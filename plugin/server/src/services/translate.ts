@@ -4,7 +4,7 @@ import get from 'lodash/get'
 import set from 'lodash/set'
 import groupBy from 'lodash/groupBy'
 
-import { getService } from '../utils/get-service'
+import { geti18nService, getService } from '../utils/get-service'
 import {
   getAllTranslatableFields,
   TranslatableField,
@@ -15,39 +15,41 @@ import { TRANSLATE_PRIORITY_BATCH_TRANSLATION } from '../utils/constants'
 import { updateUids } from '../utils/update-uids'
 import { removeUids } from '../utils/remove-uids'
 import { BatchTranslateManager } from './batch-translate'
-import { Core } from '@strapi/strapi'
+import { Core, UID, Data, Modules  } from '@strapi/strapi'
+import { Locale } from '@strapi/i18n/dist/shared/contracts/locales'
 import { TranslateConfig } from 'src/config'
+import { keys } from 'src/utils/objects'
 
 export interface TranslateService {
   batchTranslateManager: BatchTranslateManager
-  estimateUsage: (params: {
-    data: Record<string, any>
+  estimateUsage: <TSchemaUID extends UID.ContentType>(params: {
+    data: Modules.Documents.Document<TSchemaUID>
     fieldsToTranslate: Array<TranslatableField>
   }) => Promise<number>
-  translate: (params: {
-    data: Record<string, any>
+  translate: <TSchemaUID extends UID.ContentType>(params: {
+    data: Modules.Documents.Document<TSchemaUID>
     sourceLocale: string
     targetLocale: string
     fieldsToTranslate: Array<TranslatableField>
     priority?: number
-  }) => Promise<Record<string, any>>
-  batchTranslate: (params: {
-    contentType: string
+  }) => Promise<Modules.Documents.Document<TSchemaUID>>
+  batchTranslate: <TSchemaUID extends UID.ContentType>(params: {
+    contentType: TSchemaUID
     sourceLocale: string
     targetLocale: string
-    entityIds?: string[]
+    entityIds?: Data.DocumentID[]
     autoPublish?: boolean
-  }) => Promise<{ id: string }>
-  batchTranslatePauseJob: (id: string) => Promise<void>
-  batchTranslateResumeJob: (id: string) => Promise<void>
-  batchTranslateCancelJob: (id: string) => Promise<void>
+  }) => Promise<Modules.Documents.AnyDocument>
+  batchTranslatePauseJob: (id: Data.DocumentID) => Promise<Modules.Documents.AnyDocument>
+  batchTranslateResumeJob: (id: Data.DocumentID) => Promise<Modules.Documents.AnyDocument>
+  batchTranslateCancelJob: (id: Data.DocumentID) => Promise<Modules.Documents.AnyDocument>
   batchUpdate: (params: {
-    updatedEntryIDs: string[]
+    updatedEntryIDs: Data.DocumentID[]
     sourceLocale: string
-  }) => Promise<void>
+  }) => Promise<{result: 'success'}>
   contentTypes: () => Promise<{
     contentTypes: {
-      contentType: string
+      contentType: UID.ContentType
       collection: string
       localeReports: Record<
         string,
@@ -124,18 +126,16 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
     const { updatedEntryIDs, sourceLocale } = params
     for (const updateID of updatedEntryIDs) {
       const update = await strapi
-        .service('plugin::translate.updated-entry')
-        .findOne(updateID)
+        .documents('plugin::translate.updated-entry')
+        .findOne({documentId: updateID})
 
       if (!update) continue
-      const mainID = Number(update.groupID.split('-')[0])
+      const mainID = update.groupID.split('-')[0]
 
-      const entity = await strapi.db.query(update.contentType).findOne({
-        where: { id: mainID },
-        populate: { localizations: true },
+      const normalizedEntities = await strapi.documents(update.contentType).findMany({
+        filters: { documentId: mainID },
+        locale: "*"
       })
-
-      const normalizedEntities = [entity, ...entity.localizations]
 
       normalizedEntities.forEach((normalizedEntity) => {
         delete normalizedEntity.localizations
@@ -149,7 +149,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         throw new Error('No entity found with locale ' + sourceLocale)
 
       const targets = normalizedEntities
-        .map(({ locale, id }) => ({ id, locale }))
+        .map(({ documentId, locale }) => ({ documentId, locale }))
         .filter(({ locale }) => locale !== sourceLocale)
 
       const contentTypeSchema = strapi.contentTypes[update.contentType]
@@ -158,7 +158,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         contentTypeSchema
       )
 
-      for (const { locale, id } of targets) {
+      for (const { locale, documentId } of targets) {
         const translated = await this.translate({
           sourceLocale,
           targetLocale: locale,
@@ -183,39 +183,37 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
           contentTypeSchema
         )
 
-        delete fullyTranslatedData.locale
-
-        strapi.db.query(update.contentType).update({
-          where: { id },
+        strapi.documents(update.contentType).update({
+          documentId,
           data: fullyTranslatedData,
         })
       }
-      await strapi.service('plugin::translate.updated-entry').delete(updateID)
+      await strapi.documents('plugin::translate.updated-entry').delete({documentId: updateID})
+      return {result: 'success'}
     }
   },
   async contentTypes() {
-    const localizedContentTypes = Object.keys(strapi.contentTypes).filter(
-      (ct) => strapi.contentTypes[ct].pluginOptions?.i18n?.localized
+    
+    const localizedContentTypes: UID.ContentType[] = keys(strapi.contentTypes).filter(
+      (ct) => strapi.contentTypes[ct].pluginOptions?.i18n?.["localized"] === true
     )
 
-    const locales = await strapi.service('plugin::i18n.locales').find()
+    const locales: Locale[] = await geti18nService('locales').find()
 
     const reports = await Promise.all(
       localizedContentTypes.map(async (contentType) => {
         // get jobs
-        const translateJobs = await strapi.db
-          .query('plugin::translate.batch-translate-job')
+        const translateJobs = await strapi.documents('plugin::translate.batch-translate-job')
           .findMany({
-            where: { contentType: { $eq: contentType } },
-            orderBy: { updatedAt: 'desc' },
+            filters: { contentType: { $eq: contentType } },
+            sort: { updatedAt: 'desc' },
           })
 
         // calculate current translation statuses
         const info = await Promise.all(
           locales.map(async ({ code }) => {
-            const countPromise = strapi.db
-              .query(contentType)
-              .count({ where: { locale: code } })
+            const countPromise = strapi.documents(contentType)
+              .count({ locale: code  })
 
             const complete = await getService('untranslated').isFullyTranslated(
               contentType,

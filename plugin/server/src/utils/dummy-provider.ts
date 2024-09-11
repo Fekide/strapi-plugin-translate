@@ -1,6 +1,6 @@
 'use strict'
 
-import { TranslateProvider } from "src/types/provider"
+import { TranslateProvider } from "../../../shared/types/provider"
 
 const dummyProvider: TranslateProvider = {
   provider: 'dummy',

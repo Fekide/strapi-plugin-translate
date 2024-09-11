@@ -9,25 +9,26 @@ import { cleanData } from '../utils/clean-data'
 import { updateUids } from '../utils/update-uids'
 import { z } from 'zod'
 import { TranslateConfig } from 'src/config'
+import { TranslateEntity } from '../../../shared/contracts/translate'
 
 export interface TranslateController extends Core.Controller {
-  translate: Core.ControllerHandler
-  batchTranslate: Core.ControllerHandler
-  batchTranslatePauseJob: Core.ControllerHandler
-  batchTranslateResumeJob: Core.ControllerHandler
-  batchTranslateCancelJob: Core.ControllerHandler
-  batchTranslateJobStatus: Core.ControllerHandler
-  batchUpdate: Core.ControllerHandler
-  batchTranslateContentTypes: Core.ControllerHandler
+  translateEntity: Core.ControllerHandler<TranslateEntity.Response>
+  translateBatch: Core.ControllerHandler
+  translateBatchPauseJob: Core.ControllerHandler
+  translateBatchResumeJob: Core.ControllerHandler
+  translateBatchCancelJob: Core.ControllerHandler
+  translateBatchJobStatus: Core.ControllerHandler
+  translateBatchUpdate: Core.ControllerHandler
+  report: Core.ControllerHandler
   usageEstimate: Core.ControllerHandler
   usageEstimateCollection: Core.ControllerHandler
 }
 
 const translateBodySchema = z.object({
-  id: z.string(),
+  documentId: z.string(),
   sourceLocale: z.string(),
   targetLocale: z.string(),
-  contentTypeUid: z.string(),
+  contentType: z.string(),
 })
 
 const batchTranslateBodySchema = z.object({
@@ -35,11 +36,11 @@ const batchTranslateBodySchema = z.object({
   sourceLocale: z.string(),
   targetLocale: z.string(),
   autoPublish: z.boolean(),
-  entityIds: z.array(z.string()),
+  entityIds: z.array(z.string()).optional(),
 })
 
 const idQuerySchema = z.object({
-  id: z.string(),
+  documentId: z.string(),
 })
 
 const batchUpdateBodySchema = z.object({
@@ -48,8 +49,8 @@ const batchUpdateBodySchema = z.object({
 })
 
 const usageEstimateBodySchema = z.object({
-  id: z.string(),
-  contentTypeUid: z.string(),
+  documentId: z.string(),
+  contentType: z.string(),
   sourceLocale: z.string(),
 })
 
@@ -59,10 +60,14 @@ const usageEstimateCollectionBodySchema = z.object({
   targetLocale: z.string(),
 })
 
+function isContentTypeUID(uid: string): uid is UID.ContentType {
+  return strapi.contentTypes[uid] !== undefined
+}
+
 export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
-  async translate(ctx) {
+  async translateEntity(ctx) {
     const {
-      data: { id, sourceLocale, targetLocale, contentTypeUid },
+      data: { documentId, sourceLocale, targetLocale, contentType },
       error,
       success,
     } = translateBodySchema.safeParse(ctx.body)
@@ -71,18 +76,20 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       return ctx.badRequest({ message: 'request data invalid', error })
     }
 
-    const contentSchema = strapi.contentTypes[contentTypeUid]
-
-    if (!contentSchema) {
+    if (!isContentTypeUID(contentType)) {
       return ctx.notFound('corresponding content type not found')
     }
+
+    const contentSchema = strapi.contentTypes[contentType]
 
     const populateRule = populateAll(contentSchema, {
       populateMedia: true,
       populateRelations: true,
     })
-    const fullyPopulatedData = await strapi.db.query(contentTypeUid).findOne({
-      where: { id, locale: sourceLocale },
+
+    const fullyPopulatedData = await strapi.documents(contentType).findOne({
+      documentId,
+      locale: sourceLocale,
       populate: populateRule,
     })
 
@@ -101,7 +108,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
 
       const translatedRelations = await translateRelations(
         strapi.config.get<TranslateConfig>('plugin.translate').regenerateUids
-          ? await updateUids(translatedData, contentTypeUid as UID.ContentType)
+          ? await updateUids(translatedData, contentType)
           : translatedData,
         contentSchema,
         targetLocale
@@ -112,9 +119,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       )
       const cleanedData = cleanData(withFieldsDeleted, contentSchema, true)
 
-      cleanedData.localizations.push({ id })
+      // cleanedData.localizations.push({ id })
 
-      ctx.body = cleanedData
+      return {data: cleanedData}
     } catch (error) {
       strapi.log.error('Translating entity failed: ' + error.message)
       if (error.response?.status !== undefined) {
@@ -183,7 +190,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       }
     }
   },
-  async batchTranslate(ctx) {
+  async translateBatch(ctx) {
     const {
       data: { contentType, sourceLocale, targetLocale, autoPublish, entityIds },
       error,
@@ -194,9 +201,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       return ctx.badRequest({ message: 'request data invalid', error })
     }
 
-    const contentSchema = strapi.contentTypes[contentType]
-
-    if (!contentSchema) {
+    if (!isContentTypeUID(contentType)) {
       return ctx.notFound('corresponding content type not found')
     }
 
@@ -210,9 +215,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       }),
     }
   },
-  async batchTranslatePauseJob(ctx) {
+  async translateBatchPauseJob(ctx) {
     const {
-      data: { id },
+      data: { documentId: id },
       error,
       success,
     } = idQuerySchema.safeParse(ctx.query)
@@ -236,9 +241,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       }
     }
   },
-  async batchTranslateResumeJob(ctx) {
+  async translateBatchResumeJob(ctx) {
     const {
-      data: { id },
+      data: { documentId: id },
       error,
       success,
     } = idQuerySchema.safeParse(ctx.query)
@@ -262,9 +267,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       }
     }
   },
-  async batchTranslateCancelJob(ctx) {
+  async translateBatchCancelJob(ctx) {
     const {
-      data: { id },
+      data: { documentId: id },
       error,
       success,
     } = idQuerySchema.safeParse(ctx.query)
@@ -288,9 +293,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       }
     }
   },
-  async batchTranslateJobStatus(ctx) {
+  async translateBatchJobStatus(ctx) {
     const {
-      data: { id },
+      data: { documentId: id },
       error,
       success,
     } = idQuerySchema.safeParse(ctx.query)
@@ -311,7 +316,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       },
     }
   },
-  async batchUpdate(ctx) {
+  async translateBatchUpdate(ctx) {
     const {
       data: { sourceLocale, updatedEntryIDs },
       error,
@@ -329,14 +334,14 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       }),
     }
   },
-  async batchTranslateContentTypes(ctx) {
+  async report(ctx) {
     ctx.body = {
       data: await getService('translate').contentTypes(),
     }
   },
   async usageEstimate(ctx) {
     const {
-      data: { id, contentTypeUid, sourceLocale },
+      data: { documentId, contentType, sourceLocale },
       error,
       success,
     } = usageEstimateBodySchema.safeParse(ctx.body)
@@ -345,16 +350,16 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       return ctx.badRequest({ message: 'request data invalid', error })
     }
 
-    const contentSchema = strapi.contentTypes[contentTypeUid]
-
-    if (!contentSchema) {
+    if (!isContentTypeUID(contentType)) {
       return ctx.notFound('corresponding content type not found')
     }
+    const contentSchema = strapi.contentTypes[contentType]
 
     const populateRule = populateAll(contentSchema, { populateMedia: true })
 
-    const fullyPopulatedData = await strapi.db.query(contentTypeUid).findOne({
-      where: { id, locale: sourceLocale },
+    const fullyPopulatedData = await strapi.documents(contentType).findOne({
+      documentId,
+      locale: sourceLocale,
       populate: populateRule,
     })
 
@@ -381,21 +386,19 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       return ctx.badRequest({ message: 'request data invalid', error })
     }
 
-    const contentSchema = strapi.contentTypes[contentType]
-
-    if (!contentSchema) {
+    if (!isContentTypeUID(contentType)) {
       return ctx.notFound('corresponding content type not found')
     }
 
     const contentTypeSchema = strapi.contentTypes[contentType]
 
-    const entityIDs = await getService('untranslated').getUntranslatedEntityIDs(
-      {
-        uid: contentType,
-        targetLocale,
-        sourceLocale,
-      }
-    )
+    const entityIDs = await getService(
+      'untranslated'
+    ).getUntranslatedDocumentIDs({
+      uid: contentType,
+      targetLocale,
+      sourceLocale,
+    })
 
     let sum = 0
 

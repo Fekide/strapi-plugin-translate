@@ -1,8 +1,8 @@
 export default [
   {
     method: 'POST',
-    path: '/translate',
-    handler: 'translate.translate',
+    path: '/entity',
+    handler: 'translate.translateEntity',
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
@@ -15,7 +15,7 @@ export default [
   },
   {
     method: 'POST',
-    path: '/batch-translate',
+    path: '/batch',
     handler: 'translate.batchTranslate',
     config: {
       policies: [
@@ -29,8 +29,8 @@ export default [
   },
   {
     method: 'GET',
-    path: '/batch-translate/content-types',
-    handler: 'translate.batchTranslateContentTypes',
+    path: '/report',
+    handler: 'translate.report',
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
@@ -43,7 +43,7 @@ export default [
   },
   {
     method: 'GET',
-    path: '/batch-translate/status/:id',
+    path: '/batch/status/:id',
     handler: 'translate.batchTranslateJobStatus',
     config: {
       policies: [
@@ -56,8 +56,8 @@ export default [
     },
   },
   {
-    method: 'GET',
-    path: '/batch-translate/pause/:id',
+    method: 'POST',
+    path: '/batch/pause/:id',
     handler: 'translate.batchTranslatePauseJob',
     config: {
       policies: [
@@ -70,8 +70,8 @@ export default [
     },
   },
   {
-    method: 'GET',
-    path: '/batch-translate/resume/:id',
+    method: 'POST',
+    path: '/batch/resume/:id',
     handler: 'translate.batchTranslateResumeJob',
     config: {
       policies: [
@@ -84,8 +84,8 @@ export default [
     },
   },
   {
-    method: 'GET',
-    path: '/batch-translate/cancel/:id',
+    method: 'POST',
+    path: '/batch/cancel/:id',
     handler: 'translate.batchTranslateCancelJob',
     config: {
       policies: [
@@ -100,7 +100,7 @@ export default [
   {
     method: 'POST',
     path: '/batch-update',
-    handler: 'translate.batchUpdate',
+    handler: 'translate.translateBatchUpdate',
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
@@ -149,7 +149,7 @@ export default [
   },
   {
     method: 'POST',
-    path: '/usage/estimateCollection',
+    path: '/usage/estimate-collection',
     handler: 'translate.usageEstimateCollection',
     config: {
       policies: ['admin::isAuthenticatedAdmin'],

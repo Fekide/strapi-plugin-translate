@@ -24,9 +24,24 @@ describe('relation', () => {
     'one to one, relation localized: $relationIsLocalized, both ways: $bothWays',
     ({ relationIsLocalized, bothWays }) => {
       beforeEach(() => {
-        const firstEnglish = { id: 1, related: 1, locale: 'en' }
-        const firstGerman = { id: 2, related: undefined, locale: 'de' }
-        const secondEnglish = { id: 3, related: 3, locale: 'en' }
+        const firstEnglish = {
+          documentId: 'a',
+          id: 1,
+          related: 1,
+          locale: 'en',
+        }
+        const firstGerman = {
+          documentId: 'a',
+          id: 2,
+          related: undefined,
+          locale: 'de',
+        }
+        const secondEnglish = {
+          documentId: 'b',
+          id: 3,
+          related: 3,
+          locale: 'en',
+        }
         setup({
           contentTypes: {
             'api::first.first': createRelationContentType(
@@ -43,24 +58,18 @@ describe('relation', () => {
             ),
           },
           database: {
-            'api::second.second': [
-              {
-                ...firstEnglish,
-                localizations: relationIsLocalized ? [firstGerman] : [],
-              },
-              {
-                ...firstGerman,
-                localizations: relationIsLocalized ? [firstEnglish] : [],
-              },
-              { ...secondEnglish, localizations: [] },
-            ],
+            'api::second.second': [firstEnglish, firstGerman, secondEnglish],
           },
         })
       })
 
       it('is translated', async () => {
         // given
-        const data = { related: { id: 1, related: undefined } }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: { documentId: 'a', id: 1, related: undefined },
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -72,7 +81,12 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-              related: { id: 2, related: undefined, locale: targetLocale },
+              related: {
+                documentId: 'a',
+                id: 2,
+                related: undefined,
+                locale: targetLocale,
+              },
             }
           : bothWays
             ? { related: undefined }
@@ -84,7 +98,11 @@ describe('relation', () => {
 
       it('remove if relation translation is missing', async () => {
         // given
-        const data = { related: { id: 3, related: undefined } }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: { documentId: 'b', id: 3, related: undefined },
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -105,7 +123,11 @@ describe('relation', () => {
 
       it('missing relation not translated', async () => {
         // given
-        const data = { related: undefined }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: undefined,
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -122,7 +144,11 @@ describe('relation', () => {
 
       it('wrong locale of relation is not translated', async () => {
         // given
-        const data = { related: { id: 2, related: undefined } }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: { documentId: 'a', id: 2, related: undefined },
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -152,9 +178,24 @@ describe('relation', () => {
     'one to many, relation localized: $relationIsLocalized, both ways: $bothWays',
     ({ relationIsLocalized, bothWays }) => {
       beforeEach(() => {
-        const firstEnglish = { id: 1, related: undefined, locale: 'en' }
-        const firstGerman = { id: 2, related: undefined, locale: 'de' }
-        const secondEnglish = { id: 3, related: undefined, locale: 'en' }
+        const firstEnglish = {
+          documentId: 'a',
+          id: 1,
+          related: undefined,
+          locale: 'en',
+        }
+        const firstGerman = {
+          documentId: 'a',
+          id: 2,
+          related: undefined,
+          locale: 'de',
+        }
+        const secondEnglish = {
+          documentId: 'b',
+          id: 3,
+          related: undefined,
+          locale: 'en',
+        }
         setup({
           contentTypes: {
             'api::first.first': createRelationContentType(
@@ -173,50 +214,17 @@ describe('relation', () => {
               : createSimpleContentType(relationIsLocalized),
           },
           database: {
-            'api::second.second': [
-              {
-                ...firstEnglish,
-                localizations: relationIsLocalized ? [firstGerman] : [],
-              },
-              {
-                ...firstGerman,
-                localizations: relationIsLocalized ? [firstEnglish] : [],
-              },
-              { ...secondEnglish, localizations: [] },
-            ],
+            'api::second.second': [firstEnglish, firstGerman, secondEnglish],
           },
         })
       })
       it('is translated', async () => {
         // given
-        const data = { related: [{ id: 1, related: undefined, locale: 'en' }] }
-        const schema = strapi.contentTypes['api::first.first']
-        const targetLocale = 'de'
-        // when
-        const relationsTranslated = await translateRelations(
-          data,
-          schema,
-          targetLocale
-        )
-        // then
-        const result = relationIsLocalized
-          ? {
-              related: [{ id: 2, related: undefined, locale: targetLocale }],
-            }
-          : bothWays
-            ? { related: [] }
-            : data
-        // if the relation is translated, the corresponding locale should be used,
-        // otherwise it should stay the same if the relation is not both ways but be removed otherwise
-        expect(relationsTranslated).toEqual(result)
-      })
-
-      it('remove if a relation translation is missing', async () => {
-        // given
         const data = {
+          documentId: 'a',
+          id: 1,
           related: [
-            { id: 1, related: undefined, locale: 'en' },
-            { id: 3, related: undefined, locale: 'en' },
+            { documentId: 'a', id: 1, related: undefined, locale: 'en' },
           ],
         }
         const schema = strapi.contentTypes['api::first.first']
@@ -230,7 +238,52 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-              related: [{ id: 2, related: undefined, locale: targetLocale }],
+              related: [
+                {
+                  documentId: 'a',
+                  id: 2,
+                  related: undefined,
+                  locale: targetLocale,
+                },
+              ],
+            }
+          : bothWays
+            ? { related: [] }
+            : data
+        // if the relation is translated, the corresponding locale should be used,
+        // otherwise it should stay the same if the relation is not both ways but be removed otherwise
+        expect(relationsTranslated).toEqual(result)
+      })
+
+      it('remove if a relation translation is missing', async () => {
+        // given
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: [
+            { documentId: 'a', id: 1, related: undefined, locale: 'en' },
+            { documentId: 'b', id: 3, related: undefined, locale: 'en' },
+          ],
+        }
+        const schema = strapi.contentTypes['api::first.first']
+        const targetLocale = 'de'
+        // when
+        const relationsTranslated = await translateRelations(
+          data,
+          schema,
+          targetLocale
+        )
+        // then
+        const result = relationIsLocalized
+          ? {
+              related: [
+                {
+                  documentId: 'a',
+                  id: 2,
+                  related: undefined,
+                  locale: targetLocale,
+                },
+              ],
             }
           : bothWays
             ? {
@@ -242,7 +295,11 @@ describe('relation', () => {
 
       it('missing relation not translated', async () => {
         // given
-        const data = { related: [] }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: [],
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -258,7 +315,11 @@ describe('relation', () => {
       })
       it('wrong locale of relation is not translated', async () => {
         // given
-        const data = { related: [{ id: 2, related: undefined }] }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: [{ documentId: 'a', id: 2, related: undefined }],
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -288,9 +349,24 @@ describe('relation', () => {
     'many to one, relation localized: $relationIsLocalized, both ways: $bothWays',
     ({ relationIsLocalized, bothWays }) => {
       beforeEach(() => {
-        const firstEnglish = { id: 1, related: undefined, locale: 'en' }
-        const firstGerman = { id: 2, related: undefined, locale: 'de' }
-        const secondEnglish = { id: 3, related: undefined, locale: 'en' }
+        const firstEnglish = {
+          documentId: 'a',
+          id: 1,
+          related: undefined,
+          locale: 'en',
+        }
+        const firstGerman = {
+          documentId: 'a',
+          id: 2,
+          related: undefined,
+          locale: 'de',
+        }
+        const secondEnglish = {
+          documentId: 'b',
+          id: 3,
+          related: undefined,
+          locale: 'en',
+        }
         setup({
           contentTypes: {
             'api::first.first': createRelationContentType(
@@ -317,24 +393,18 @@ describe('relation', () => {
                 },
           },
           database: {
-            'api::second.second': [
-              {
-                ...firstEnglish,
-                localizations: relationIsLocalized ? [firstGerman] : [],
-              },
-              {
-                ...firstGerman,
-                localizations: relationIsLocalized ? [firstEnglish] : [],
-              },
-              { ...secondEnglish, localizations: [] },
-            ],
+            'api::second.second': [firstEnglish, firstGerman, secondEnglish],
           },
         })
       })
 
       it('is translated', async () => {
         // given
-        const data = { related: { id: 1, related: undefined } }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: { documentId: 'a', id: 1, related: undefined },
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -346,7 +416,12 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-              related: { id: 2, related: undefined, locale: targetLocale },
+              related: {
+                documentId: 'a',
+                id: 2,
+                related: undefined,
+                locale: targetLocale,
+              },
             }
           : data
         // if the relation is translated, the corresponding locale should be used,
@@ -356,7 +431,11 @@ describe('relation', () => {
 
       it('remove if relation translation is missing', async () => {
         // given
-        const data = { related: { id: 3, related: undefined } }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: { documentId: 'b', id: 3, related: undefined },
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -376,7 +455,11 @@ describe('relation', () => {
 
       it('missing relation not translated', async () => {
         // given
-        const data = { related: undefined }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: undefined,
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -393,7 +476,11 @@ describe('relation', () => {
 
       it('wrong locale of relation is not translated', async () => {
         // given
-        const data = { related: { id: 2, related: undefined } }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: { documentId: 'a', id: 2, related: undefined },
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -420,9 +507,24 @@ describe('relation', () => {
     'many to many, relation localized: $relationIsLocalized',
     ({ relationIsLocalized }) => {
       beforeEach(() => {
-        const firstEnglish = { id: 1, related: undefined, locale: 'en' }
-        const firstGerman = { id: 2, related: undefined, locale: 'de' }
-        const secondEnglish = { id: 3, related: undefined, locale: 'en' }
+        const firstEnglish = {
+          documentId: 'a',
+          id: 1,
+          related: undefined,
+          locale: 'en',
+        }
+        const firstGerman = {
+          documentId: 'a',
+          id: 2,
+          related: undefined,
+          locale: 'de',
+        }
+        const secondEnglish = {
+          documentId: 'b',
+          id: 3,
+          related: undefined,
+          locale: 'en',
+        }
         setup({
           contentTypes: {
             'api::first.first': createRelationContentType(
@@ -439,48 +541,17 @@ describe('relation', () => {
             ),
           },
           database: {
-            'api::second.second': [
-              {
-                ...firstEnglish,
-                localizations: relationIsLocalized ? [firstGerman] : [],
-              },
-              {
-                ...firstGerman,
-                localizations: relationIsLocalized ? [firstEnglish] : [],
-              },
-              { ...secondEnglish, localizations: [] },
-            ],
+            'api::second.second': [firstEnglish, firstGerman, secondEnglish],
           },
         })
       })
       it('is translated', async () => {
         // given
-        const data = { related: [{ id: 1, related: undefined, locale: 'en' }] }
-        const schema = strapi.contentTypes['api::first.first']
-        const targetLocale = 'de'
-        // when
-        const relationsTranslated = await translateRelations(
-          data,
-          schema,
-          targetLocale
-        )
-        // then
-        const result = relationIsLocalized
-          ? {
-              related: [{ id: 2, related: undefined, locale: targetLocale }],
-            }
-          : data
-        // if the relation is translated, the corresponding locale should be used,
-        // otherwise it should stay the same if the relation is not both ways but be removed otherwise
-        expect(relationsTranslated).toEqual(result)
-      })
-
-      it('remove if a relation translation is missing', async () => {
-        // given
         const data = {
+          documentId: 'a',
+          id: 1,
           related: [
-            { id: 1, related: undefined, locale: 'en' },
-            { id: 3, related: undefined, locale: 'en' },
+            { documentId: 'a', id: 1, related: undefined, locale: 'en' },
           ],
         }
         const schema = strapi.contentTypes['api::first.first']
@@ -494,7 +565,50 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-              related: [{ id: 2, related: undefined, locale: targetLocale }],
+              related: [
+                {
+                  documentId: 'a',
+                  id: 2,
+                  related: undefined,
+                  locale: targetLocale,
+                },
+              ],
+            }
+          : data
+        // if the relation is translated, the corresponding locale should be used,
+        // otherwise it should stay the same if the relation is not both ways but be removed otherwise
+        expect(relationsTranslated).toEqual(result)
+      })
+
+      it('remove if a relation translation is missing', async () => {
+        // given
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: [
+            { documentId: 'a', id: 1, related: undefined, locale: 'en' },
+            { documentId: 'b', id: 3, related: undefined, locale: 'en' },
+          ],
+        }
+        const schema = strapi.contentTypes['api::first.first']
+        const targetLocale = 'de'
+        // when
+        const relationsTranslated = await translateRelations(
+          data,
+          schema,
+          targetLocale
+        )
+        // then
+        const result = relationIsLocalized
+          ? {
+              related: [
+                {
+                  documentId: 'a',
+                  id: 2,
+                  related: undefined,
+                  locale: targetLocale,
+                },
+              ],
             }
           : data
         expect(relationsTranslated).toEqual(result)
@@ -502,7 +616,11 @@ describe('relation', () => {
 
       it('missing relation not translated', async () => {
         // given
-        const data = { related: [] }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: [],
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -518,7 +636,11 @@ describe('relation', () => {
       })
       it('wrong locale of relation is not translated', async () => {
         // given
-        const data = { related: [{ id: 2, related: undefined }] }
+        const data = {
+          documentId: 'a',
+          id: 1,
+          related: [{ documentId: 'a', id: 2, related: undefined }],
+        }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
         // when
@@ -546,9 +668,9 @@ describe('relation', () => {
       'one to one, relation localized: $relationIsLocalized',
       ({ relationIsLocalized }) => {
         beforeEach(() => {
-          const firstEnglish = { id: 1, locale: 'en' }
-          const firstGerman = { id: 2, locale: 'de' }
-          const secondEnglish = { id: 3, locale: 'en' }
+          const firstEnglish = { documentId: 'a', id: 1, locale: 'en' }
+          const firstGerman = { documentId: 'a', id: 2, locale: 'de' }
+          const secondEnglish = { documentId: 'b', id: 3, locale: 'en' }
           setup({
             components: {
               'shared.first': createComponentWithRelation(
@@ -569,23 +691,17 @@ describe('relation', () => {
                 createSimpleContentType(relationIsLocalized),
             },
             database: {
-              'api::second.second': [
-                {
-                  ...firstEnglish,
-                  localizations: relationIsLocalized ? [firstGerman] : [],
-                },
-                {
-                  ...firstGerman,
-                  localizations: relationIsLocalized ? [firstEnglish] : [],
-                },
-                { ...secondEnglish, localizations: [] },
-              ],
+              'api::second.second': [firstEnglish, firstGerman, secondEnglish],
             },
           })
         })
         it('null component ignored', async () => {
           // given
-          const data = { component: null }
+          const data = {
+            documentId: 'a',
+            id: 1,
+            component: null,
+          }
           const schema = strapi.contentTypes['api::first.notRepeated']
           const targetLocale = 'de'
           // when
@@ -600,7 +716,11 @@ describe('relation', () => {
 
         it('is translated', async () => {
           // given
-          const data = { component: { related: { id: 1, locale: 'en' } } }
+          const data = {
+            documentId: 'a',
+            id: 1,
+            component: { related: { documentId: 'a', id: 1, locale: 'en' } },
+          }
           const schema = strapi.contentTypes['api::first.notRepeated']
           const targetLocale = 'de'
           // when
@@ -611,7 +731,11 @@ describe('relation', () => {
           )
           // then
           const result = relationIsLocalized
-            ? { component: { related: { id: 2, locale: targetLocale } } }
+            ? {
+                component: {
+                  related: { documentId: 'a', id: 2, locale: targetLocale },
+                },
+              }
             : data
           // if the relation is translated, the corresponding locale should be used,
           // otherwise it should stay the same if the relation is not both ways but be removed otherwise
@@ -620,7 +744,11 @@ describe('relation', () => {
 
         it('remove if relation translation is missing', async () => {
           // given
-          const data = { component: { related: { id: 3, locale: 'en' } } }
+          const data = {
+            documentId: 'a',
+            id: 1,
+            component: { related: { documentId: 'b', id: 3, locale: 'en' } },
+          }
           const schema = strapi.contentTypes['api::first.notRepeated']
           const targetLocale = 'de'
           // when
@@ -640,7 +768,11 @@ describe('relation', () => {
 
         it('missing relation not translated', async () => {
           // given
-          const data = { component: { related: undefined } }
+          const data = {
+            documentId: 'a',
+            id: 1,
+            component: { related: undefined },
+          }
           const schema = strapi.contentTypes['api::first.notRepeated']
           const targetLocale = 'de'
           // when
@@ -655,7 +787,11 @@ describe('relation', () => {
 
         it('wrong locale of relation is not translated', async () => {
           // given
-          const data = { component: { related: { id: 2, locale: 'de' } } }
+          const data = {
+            documentId: 'a',
+            id: 1,
+            component: { related: { documentId: 'a', id: 2, locale: 'de' } },
+          }
           const schema = strapi.contentTypes['api::first.notRepeated']
           const targetLocale = 'de'
           // when
@@ -676,30 +812,11 @@ describe('relation', () => {
         describe('repeatable', () => {
           it('is translated', async () => {
             // given
-            const data = { component: [{ related: { id: 1, locale: 'en' } }] }
-            const schema = strapi.contentTypes['api::first.repeated']
-            const targetLocale = 'de'
-            // when
-            const relationsTranslated = await translateRelations(
-              data,
-              schema,
-              targetLocale
-            )
-            // then
-            const result = relationIsLocalized
-              ? { component: [{ related: { id: 2, locale: targetLocale } }] }
-              : data
-            // if the relation is translated, the corresponding locale should be used,
-            // otherwise it should stay the same if the relation is not both ways but be removed otherwise
-            expect(relationsTranslated).toEqual(result)
-          })
-
-          it('remove if relation translation is missing', async () => {
-            // given
             const data = {
+              documentId: 'a',
+              id: 1,
               component: [
-                { related: { id: 1, locale: 'en' } },
-                { related: { id: 3, locale: 'en' } },
+                { related: { documentId: 'a', id: 1, locale: 'en' } },
               ],
             }
             const schema = strapi.contentTypes['api::first.repeated']
@@ -714,7 +831,42 @@ describe('relation', () => {
             const result = relationIsLocalized
               ? {
                   component: [
-                    { related: { id: 2, locale: targetLocale } },
+                    {
+                      related: { documentId: 'a', id: 2, locale: targetLocale },
+                    },
+                  ],
+                }
+              : data
+            // if the relation is translated, the corresponding locale should be used,
+            // otherwise it should stay the same if the relation is not both ways but be removed otherwise
+            expect(relationsTranslated).toEqual(result)
+          })
+
+          it('remove if relation translation is missing', async () => {
+            // given
+            const data = {
+              documentId: 'a',
+              id: 1,
+              component: [
+                { related: { documentId: 'a', id: 1, locale: 'en' } },
+                { related: { documentId: 'b', id: 3, locale: 'en' } },
+              ],
+            }
+            const schema = strapi.contentTypes['api::first.repeated']
+            const targetLocale = 'de'
+            // when
+            const relationsTranslated = await translateRelations(
+              data,
+              schema,
+              targetLocale
+            )
+            // then
+            const result = relationIsLocalized
+              ? {
+                  component: [
+                    {
+                      related: { documentId: 'a', id: 2, locale: targetLocale },
+                    },
                     { related: undefined },
                   ],
                 }
@@ -724,7 +876,11 @@ describe('relation', () => {
 
           it('missing relation not translated', async () => {
             // given
-            const data = { component: [{ related: undefined }] }
+            const data = {
+              documentId: 'a',
+              id: 1,
+              component: [{ related: undefined }],
+            }
             const schema = strapi.contentTypes['api::first.repeated']
             const targetLocale = 'de'
             // when
@@ -739,7 +895,13 @@ describe('relation', () => {
 
           it('wrong locale of relation is not translated', async () => {
             // given
-            const data = { component: [{ related: { id: 2, locale: 'de' } }] }
+            const data = {
+              documentId: 'a',
+              id: 1,
+              component: [
+                { related: { documentId: 'a', id: 2, locale: 'de' } },
+              ],
+            }
             const schema = strapi.contentTypes['api::first.repeated']
             const targetLocale = 'de'
             // when
@@ -767,9 +929,9 @@ describe('relation', () => {
       'one to many, relation localized: $relationIsLocalized',
       ({ relationIsLocalized }) => {
         beforeEach(() => {
-          const firstEnglish = { id: 1, locale: 'en' }
-          const firstGerman = { id: 2, locale: 'de' }
-          const secondEnglish = { id: 3, locale: 'en' }
+          const firstEnglish = { documentId: 'a', id: 1, locale: 'en' }
+          const firstGerman = { documentId: 'a', id: 2, locale: 'de' }
+          const secondEnglish = { documentId: 'b', id: 3, locale: 'en' }
           setup({
             components: {
               'shared.first': createComponentWithRelation(
@@ -790,23 +952,17 @@ describe('relation', () => {
                 createSimpleContentType(relationIsLocalized),
             },
             database: {
-              'api::second.second': [
-                {
-                  ...firstEnglish,
-                  localizations: relationIsLocalized ? [firstGerman] : [],
-                },
-                {
-                  ...firstGerman,
-                  localizations: relationIsLocalized ? [firstEnglish] : [],
-                },
-                { ...secondEnglish, localizations: [] },
-              ],
+              'api::second.second': [firstEnglish, firstGerman, secondEnglish],
             },
           })
         })
         it('is translated', async () => {
           // given
-          const data = { component: { related: [{ id: 1, locale: 'en' }] } }
+          const data = {
+            documentId: 'a',
+            id: 1,
+            component: { related: [{ documentId: 'a', id: 1, locale: 'en' }] },
+          }
           const schema = strapi.contentTypes['api::first.notRepeated']
           const targetLocale = 'de'
           // when
@@ -817,7 +973,11 @@ describe('relation', () => {
           )
           // then
           const result = relationIsLocalized
-            ? { component: { related: [{ id: 2, locale: targetLocale }] } }
+            ? {
+                component: {
+                  related: [{ documentId: 'a', id: 2, locale: targetLocale }],
+                },
+              }
             : data
           // if the relation is translated, the corresponding locale should be used,
           // otherwise it should stay the same if the relation is not both ways but be removed otherwise
@@ -827,10 +987,12 @@ describe('relation', () => {
         it('remove if relation translation is missing', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             component: {
               related: [
-                { id: 1, locale: 'en' },
-                { id: 3, locale: 'en' },
+                { documentId: 'a', id: 1, locale: 'en' },
+                { documentId: 'b', id: 3, locale: 'en' },
               ],
             },
           }
@@ -845,7 +1007,9 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-                component: { related: [{ id: 2, locale: 'de' }] },
+                component: {
+                  related: [{ documentId: 'a', id: 2, locale: 'de' }],
+                },
               }
             : data
           expect(relationsTranslated).toEqual(result)
@@ -853,7 +1017,11 @@ describe('relation', () => {
 
         it('missing relation not translated', async () => {
           // given
-          const data = { component: { related: [] } }
+          const data = {
+            documentId: 'a',
+            id: 1,
+            component: { related: [] },
+          }
           const schema = strapi.contentTypes['api::first.notRepeated']
           const targetLocale = 'de'
           // when
@@ -868,7 +1036,11 @@ describe('relation', () => {
 
         it('wrong locale of relation is not translated', async () => {
           // given
-          const data = { component: { related: [{ id: 2, locale: 'de' }] } }
+          const data = {
+            documentId: 'a',
+            id: 1,
+            component: { related: [{ documentId: 'a', id: 2, locale: 'de' }] },
+          }
           const schema = strapi.contentTypes['api::first.notRepeated']
           const targetLocale = 'de'
           // when
@@ -889,7 +1061,13 @@ describe('relation', () => {
         describe('repeatable', () => {
           it('is translated', async () => {
             // given
-            const data = { component: [{ related: [{ id: 1, locale: 'en' }] }] }
+            const data = {
+              documentId: 'a',
+              id: 1,
+              component: [
+                { related: [{ documentId: 'a', id: 1, locale: 'en' }] },
+              ],
+            }
             const schema = strapi.contentTypes['api::first.repeated']
             const targetLocale = 'de'
             // when
@@ -900,7 +1078,15 @@ describe('relation', () => {
             )
             // then
             const result = relationIsLocalized
-              ? { component: [{ related: [{ id: 2, locale: targetLocale }] }] }
+              ? {
+                  component: [
+                    {
+                      related: [
+                        { documentId: 'a', id: 2, locale: targetLocale },
+                      ],
+                    },
+                  ],
+                }
               : data
             // if the relation is translated, the corresponding locale should be used,
             // otherwise it should stay the same if the relation is not both ways but be removed otherwise
@@ -910,17 +1096,19 @@ describe('relation', () => {
           it('remove if relation translation is missing', async () => {
             // given
             const data = {
+              documentId: 'a',
+              id: 1,
               component: [
                 {
                   related: [
-                    { id: 1, locale: 'en' },
-                    { id: 3, locale: 'en' },
+                    { documentId: 'a', id: 1, locale: 'en' },
+                    { documentId: 'b', id: 3, locale: 'en' },
                   ],
                 },
                 {
                   related: [
-                    { id: 1, locale: 'en' },
-                    { id: 3, locale: 'en' },
+                    { documentId: 'a', id: 1, locale: 'en' },
+                    { documentId: 'b', id: 3, locale: 'en' },
                   ],
                 },
               ],
@@ -937,8 +1125,16 @@ describe('relation', () => {
             const result = relationIsLocalized
               ? {
                   component: [
-                    { related: [{ id: 2, locale: targetLocale }] },
-                    { related: [{ id: 2, locale: targetLocale }] },
+                    {
+                      related: [
+                        { documentId: 'a', id: 2, locale: targetLocale },
+                      ],
+                    },
+                    {
+                      related: [
+                        { documentId: 'a', id: 2, locale: targetLocale },
+                      ],
+                    },
                   ],
                 }
               : data
@@ -947,7 +1143,11 @@ describe('relation', () => {
 
           it('missing relation not translated', async () => {
             // given
-            const data = { component: [{ related: [] }] }
+            const data = {
+              documentId: 'a',
+              id: 1,
+              component: [{ related: [] }],
+            }
             const schema = strapi.contentTypes['api::first.repeated']
             const targetLocale = 'de'
             // when
@@ -962,7 +1162,13 @@ describe('relation', () => {
 
           it('wrong locale of relation is not translated', async () => {
             // given
-            const data = { component: [{ related: [{ id: 2, locale: 'de' }] }] }
+            const data = {
+              documentId: 'a',
+              id: 1,
+              component: [
+                { related: [{ documentId: 'a', id: 2, locale: 'de' }] },
+              ],
+            }
             const schema = strapi.contentTypes['api::first.repeated']
             const targetLocale = 'de'
             // when
@@ -992,9 +1198,9 @@ describe('relation', () => {
       'one to one, relation localized: $relationIsLocalized',
       ({ relationIsLocalized }) => {
         beforeEach(() => {
-          const firstEnglish = { id: 1, locale: 'en' }
-          const firstGerman = { id: 2, locale: 'de' }
-          const secondEnglish = { id: 3, locale: 'en' }
+          const firstEnglish = { documentId: 'a', id: 1, locale: 'en' }
+          const firstGerman = { documentId: 'a', id: 2, locale: 'de' }
+          const secondEnglish = { documentId: 'b', id: 3, locale: 'en' }
           setup({
             components: {
               'shared.first': createComponentWithRelation(
@@ -1015,28 +1221,23 @@ describe('relation', () => {
                 createSimpleContentType(relationIsLocalized),
             },
             database: {
-              'api::second.second': [
-                {
-                  ...firstEnglish,
-                  localizations: relationIsLocalized ? [firstGerman] : [],
-                },
-                {
-                  ...firstGerman,
-                  localizations: relationIsLocalized ? [firstEnglish] : [],
-                },
-                { ...secondEnglish, localizations: [] },
-              ],
+              'api::second.second': [firstEnglish, firstGerman, secondEnglish],
             },
           })
         })
         it('is translated', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             dynamic_zone: [
-              { __component: 'shared.first', related: { id: 1, locale: 'en' } },
+              {
+                __component: 'shared.first',
+                related: { documentId: 'a', id: 1, locale: 'en' },
+              },
               {
                 __component: 'shared.second',
-                related: { id: 1, locale: 'en' },
+                related: { documentId: 'a', id: 1, locale: 'en' },
               },
             ],
           }
@@ -1054,11 +1255,11 @@ describe('relation', () => {
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
-                    related: { id: 2, locale: targetLocale },
+                    related: { documentId: 'a', id: 2, locale: targetLocale },
                   },
                   {
                     __component: 'shared.second',
-                    related: { id: 2, locale: targetLocale },
+                    related: { documentId: 'a', id: 2, locale: targetLocale },
                   },
                 ],
               }
@@ -1071,11 +1272,16 @@ describe('relation', () => {
         it('remove if relation translation is missing', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             dynamic_zone: [
-              { __component: 'shared.first', related: { id: 1, locale: 'en' } },
+              {
+                __component: 'shared.first',
+                related: { documentId: 'a', id: 1, locale: 'en' },
+              },
               {
                 __component: 'shared.second',
-                related: { id: 3, locale: 'en' },
+                related: { documentId: 'b', id: 3, locale: 'en' },
               },
             ],
           }
@@ -1093,7 +1299,7 @@ describe('relation', () => {
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
-                    related: { id: 2, locale: targetLocale },
+                    related: { documentId: 'a', id: 2, locale: targetLocale },
                   },
                   {
                     __component: 'shared.second',
@@ -1108,6 +1314,8 @@ describe('relation', () => {
         it('missing relation not translated', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             dynamic_zone: [
               { __component: 'shared.first', related: undefined },
               {
@@ -1131,11 +1339,16 @@ describe('relation', () => {
         it('wrong locale of relation is not translated', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             dynamic_zone: [
-              { __component: 'shared.first', related: { id: 2, locale: 'de' } },
+              {
+                __component: 'shared.first',
+                related: { documentId: 'a', id: 2, locale: 'de' },
+              },
               {
                 __component: 'shared.second',
-                related: { id: 2, locale: 'de' },
+                related: { documentId: 'a', id: 2, locale: 'de' },
               },
             ],
           }
@@ -1174,9 +1387,9 @@ describe('relation', () => {
       'one to many, relation localized: $relationIsLocalized',
       ({ relationIsLocalized }) => {
         beforeEach(() => {
-          const firstEnglish = { id: 1, locale: 'en' }
-          const firstGerman = { id: 2, locale: 'de' }
-          const secondEnglish = { id: 3, locale: 'en' }
+          const firstEnglish = { documentId: 'a', id: 1, locale: 'en' }
+          const firstGerman = { documentId: 'a', id: 2, locale: 'de' }
+          const secondEnglish = { documentId: 'b', id: 3, locale: 'en' }
           setup({
             components: {
               'shared.first': createComponentWithRelation(
@@ -1197,31 +1410,23 @@ describe('relation', () => {
                 createSimpleContentType(relationIsLocalized),
             },
             database: {
-              'api::second.second': [
-                {
-                  ...firstEnglish,
-                  localizations: relationIsLocalized ? [firstGerman] : [],
-                },
-                {
-                  ...firstGerman,
-                  localizations: relationIsLocalized ? [firstEnglish] : [],
-                },
-                { ...secondEnglish, localizations: [] },
-              ],
+              'api::second.second': [firstEnglish, firstGerman, secondEnglish],
             },
           })
         })
         it('is translated', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             dynamic_zone: [
               {
                 __component: 'shared.first',
-                related: [{ id: 1, locale: 'en' }],
+                related: [{ documentId: 'a', id: 1, locale: 'en' }],
               },
               {
                 __component: 'shared.second',
-                related: [{ id: 1, locale: 'en' }],
+                related: [{ documentId: 'a', id: 1, locale: 'en' }],
               },
             ],
           }
@@ -1239,11 +1444,11 @@ describe('relation', () => {
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
-                    related: [{ id: 2, locale: targetLocale }],
+                    related: [{ documentId: 'a', id: 2, locale: targetLocale }],
                   },
                   {
                     __component: 'shared.second',
-                    related: [{ id: 2, locale: targetLocale }],
+                    related: [{ documentId: 'a', id: 2, locale: targetLocale }],
                   },
                 ],
               }
@@ -1256,16 +1461,18 @@ describe('relation', () => {
         it('remove if relation translation is missing', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             dynamic_zone: [
               {
                 __component: 'shared.first',
-                related: [{ id: 1, locale: 'en' }],
+                related: [{ documentId: 'a', id: 1, locale: 'en' }],
               },
               {
                 __component: 'shared.second',
                 related: [
-                  { id: 1, locale: 'en' },
-                  { id: 3, locale: 'en' },
+                  { documentId: 'a', id: 1, locale: 'en' },
+                  { documentId: 'b', id: 3, locale: 'en' },
                 ],
               },
             ],
@@ -1284,11 +1491,11 @@ describe('relation', () => {
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
-                    related: [{ id: 2, locale: 'de' }],
+                    related: [{ documentId: 'a', id: 2, locale: 'de' }],
                   },
                   {
                     __component: 'shared.second',
-                    related: [{ id: 2, locale: 'de' }],
+                    related: [{ documentId: 'a', id: 2, locale: 'de' }],
                   },
                 ],
               }
@@ -1299,6 +1506,8 @@ describe('relation', () => {
         it('missing relation not translated', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             dynamic_zone: [
               {
                 __component: 'shared.first',
@@ -1325,14 +1534,16 @@ describe('relation', () => {
         it('wrong locale of relation is not translated', async () => {
           // given
           const data = {
+            documentId: 'a',
+            id: 1,
             dynamic_zone: [
               {
                 __component: 'shared.first',
-                related: [{ id: 2, locale: 'de' }],
+                related: [{ documentId: 'a', id: 2, locale: 'de' }],
               },
               {
                 __component: 'shared.second',
-                related: [{ id: 2, locale: 'de' }],
+                related: [{ documentId: 'a', id: 2, locale: 'de' }],
               },
             ],
           }
@@ -1367,8 +1578,8 @@ describe('relation', () => {
 
   describe('config do not translate relations', () => {
     beforeEach(() => {
-      const firstEnglish = { id: 1, locale: 'en' }
-      const firstGerman = { id: 2, locale: 'de' }
+      const firstEnglish = { documentId: 'a', id: 1, locale: 'en' }
+      const firstGerman = { documentId: 'a', id: 2, locale: 'de' }
       setup({
         config: {
           translateRelations: false,
@@ -1384,23 +1595,16 @@ describe('relation', () => {
           'api::second.second': createSimpleContentType(true),
         },
         database: {
-          'api::second.second': [
-            {
-              ...firstEnglish,
-              localizations: [firstGerman],
-            },
-            {
-              ...firstGerman,
-              localizations: [firstEnglish],
-            },
-          ],
+          'api::second.second': [firstEnglish, firstGerman],
         },
       })
     })
     it('is not translated', async () => {
       // given
       const data = {
-        related: { id: 1, locale: 'en' },
+        documentId: 'a',
+        id: 1,
+        related: { documentId: 'a', id: 1, locale: 'en' },
       }
       const schema = strapi.contentTypes['api::first.first']
       const targetLocale = 'de'
@@ -1427,8 +1631,18 @@ describe('relation', () => {
       'copy oneToOne with relation both ways = $bothWays and localized = $relationIsLocalized',
       ({ relationIsLocalized, bothWays }) => {
         beforeEach(() => {
-          const firstEnglish = { id: 1, title: 'test', locale: 'en' }
-          const firstGerman = { id: 2, title: 'test', locale: 'de' }
+          const firstEnglish = {
+            documentId: 'a',
+            id: 1,
+            title: 'test',
+            locale: 'en',
+          }
+          const firstGerman = {
+            documentId: 'a',
+            id: 2,
+            title: 'test',
+            locale: 'de',
+          }
           setup({
             contentTypes: {
               'api::first.first': createRelationContentType(
@@ -1448,23 +1662,16 @@ describe('relation', () => {
               ),
             },
             database: {
-              'api::second.second': [
-                {
-                  ...firstEnglish,
-                  localizations: relationIsLocalized ? [firstGerman] : [],
-                },
-                {
-                  ...firstGerman,
-                  localizations: relationIsLocalized ? [firstEnglish] : [],
-                },
-              ],
+              'api::second.second': [firstEnglish, firstGerman],
             },
           })
         })
         it('copied only if relation is not localized and does not go both ways', async () => {
           // given
           const data = {
-            related: { id: 1, title: 'test', locale: 'en' },
+            documentId: 'a',
+            id: 1,
+            related: { documentId: 'a', id: 1, title: 'test', locale: 'en' },
           }
           const schema = strapi.contentTypes['api::first.first']
           const targetLocale = 'de'
@@ -1488,8 +1695,18 @@ describe('relation', () => {
 
     describe('default behavior is translate', () => {
       beforeEach(() => {
-        const firstEnglish = { id: 1, title: 'test', locale: 'en' }
-        const firstGerman = { id: 2, title: 'test', locale: 'de' }
+        const firstEnglish = {
+          documentId: 'a',
+          id: 1,
+          title: 'test',
+          locale: 'en',
+        }
+        const firstGerman = {
+          documentId: 'a',
+          id: 2,
+          title: 'test',
+          locale: 'de',
+        }
         setup({
           contentTypes: {
             'api::first.first': createRelationContentType(
@@ -1510,23 +1727,16 @@ describe('relation', () => {
             ),
           },
           database: {
-            'api::second.second': [
-              {
-                ...firstEnglish,
-                localizations: [firstGerman],
-              },
-              {
-                ...firstGerman,
-                localizations: [firstEnglish],
-              },
-            ],
+            'api::second.second': [firstEnglish, firstGerman],
           },
         })
       })
       it('is translated', async () => {
         // given
         const data = {
-          related: { id: 1, title: 'test', locale: 'en' },
+          documentId: 'a',
+          id: 1,
+          related: { documentId: 'a', id: 1, title: 'test', locale: 'en' },
         }
         const schema = strapi.contentTypes['api::first.first']
         const targetLocale = 'de'
@@ -1537,87 +1747,11 @@ describe('relation', () => {
           targetLocale
         )
         const result = {
-          related: { id: 2, title: 'test', locale: 'de' },
+          related: { documentId: 'a', id: 2, title: 'test', locale: 'de' },
         }
         // then
         expect(relationsTranslated).toEqual(result)
       })
     })
-  })
-
-  describe('localizations', () => {
-    describe.each([
-      { relationIsLocalized: true, bothWays: false },
-      { relationIsLocalized: false, bothWays: false },
-    ])(
-      'one to one, relation localized: $relationIsLocalized, both ways: $bothWays',
-      ({ relationIsLocalized, bothWays }) => {
-        beforeEach(() => {
-          const firstEnglish = { id: 1, related: 1, locale: 'en' }
-          const firstGerman = { id: 2, related: undefined, locale: 'de' }
-          setup({
-            contentTypes: {
-              'api::first.first': createRelationContentType(
-                'oneToOne',
-                bothWays ? { inversedBy: 'related' } : {},
-                true,
-                'api::second.second',
-                'api::first.first'
-              ),
-              'api::second.second': createRelationContentType(
-                'oneToOne',
-                bothWays ? { mappedBy: 'related' } : {},
-                relationIsLocalized,
-                'api::first.first',
-                'api::second.second'
-              ),
-            },
-            database: {
-              'api::first.first': [
-                {
-                  ...firstEnglish,
-                  localizations: [],
-                },
-              ],
-              'api::second.second': [
-                {
-                  ...firstEnglish,
-                  localizations: relationIsLocalized ? [firstGerman] : [],
-                },
-                {
-                  ...firstGerman,
-                  localizations: relationIsLocalized ? [firstEnglish] : [],
-                },
-              ],
-            },
-          })
-        })
-        it('are not removed', async () => {
-          // given
-          const data = {
-            related: { id: 1 },
-            localizations: [{ id: 1, locale: 'en' }],
-          }
-          const schema = strapi.contentTypes['api::first.first']
-          const targetLocale = 'de'
-          // when
-          const relationsTranslated = await translateRelations(
-            data,
-            schema,
-            targetLocale
-          )
-          // then
-          const result = relationIsLocalized
-            ? {
-                related: { id: 2, locale: 'de', related: undefined },
-                localizations: [{ id: 1, locale: 'en' }],
-              }
-            : data
-          // if the relation is translated, the corresponding locale should be used,
-          // otherwise it should stay the same if the relation is not both ways but be removed otherwise
-          expect(relationsTranslated).toEqual(result)
-        })
-      }
-    )
   })
 })

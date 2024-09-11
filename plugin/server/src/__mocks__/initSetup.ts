@@ -1,10 +1,14 @@
-import { Core } from '@strapi/strapi'
+import { Core, UID } from '@strapi/strapi'
 import { get, set, isEmpty, defaults } from 'lodash'
 import {jest} from '@jest/globals'
 
 import dummyProvider from '../utils/dummy-provider'
 import configModule, { TranslateConfig } from '../config'
-import { TranslateProvider } from 'src/types/provider'
+import { TranslateProvider } from '../../../shared/types/provider'
+
+function draftAndPublishEnabled(uid: UID.ContentType) {
+  return strapi.contentTypes[uid].options.draftAndPublish === true
+}
 
 export interface SetupProps {
   config?: Partial<TranslateConfig>
@@ -41,7 +45,7 @@ const initSetup = ({
 
   defaults(config, configModule.default())
   configModule.validator(config)
-  let mock: Core.Strapi 
+  let mock: Partial<Core.Strapi>
 
   function store(storeProps) {
     const { type, name } = storeProps // { type: 'plugin', name: 'comments' }
@@ -78,6 +82,28 @@ const initSetup = ({
     return store(props).delete(props)
   }
 
+  const documents: Core.Strapi["documents"] = function documents(uid: UID.ContentType ) {
+    return {
+      findOne: (params) =>
+        mock.db.query(uid).findOne({ where: { documentId: { $eq: params.documentId } }, ...params }),
+      findFirst: (params) => mock.db.query(uid).findMany(params)[0],
+      findMany: (params) =>
+        mock.db.query(uid).findMany({ ...params, where: params.filters }),
+      create: (params) => mock.db.query(uid).create(params),
+      update: (params) => mock.db.query(uid).update(params),
+      delete: (params) => mock.db.query(uid).delete(params),
+      clone: (params) => mock.db.query(uid).delete(params),
+      count: (params) => mock.db.query(uid).delete(params),
+      publish: draftAndPublishEnabled(uid) ? (params) => mock.db.query(uid).update(params) : undefined, 
+      unpublish: draftAndPublishEnabled(uid) ?(params) => mock.db.query(uid).update(params) : undefined,
+      discardDraft: draftAndPublishEnabled(uid) ? (params) => mock.db.query(uid).delete(params) : undefined,
+    }
+  } as any
+
+  documents.utils= {transformData: jest.fn(() => Promise.resolve(null))}
+  documents.use= jest.fn(() => mock.documents)
+  
+
   mock = {
     db: {
       query: (uid) => {
@@ -100,9 +126,6 @@ const initSetup = ({
     }as any,
     components,
     contentTypes,
-    getRef: function () {
-      return this
-    },
     plugin: function (name) {
       return this.plugins[name]
     },
@@ -113,11 +136,11 @@ const initSetup = ({
         config: function (key, defaultValue) {
           return mock.config.get(`plugin.translate.${String(key)}`) || defaultValue
         },
-        service: function (name) {
-          return this.services[name]
+        service(name) {
+          return this.services[name] as any
         },
         controller: function (name) {
-          return this.controllers[name].call({ strapi: mock })
+          return this.controllers[name] as any
         },
         package: require('../../../package.json'),
         services: {
@@ -146,8 +169,8 @@ const initSetup = ({
         },
         provider: provider.init({}),
         bootstrap: async function () {
-          this.services.provider = (await import('../services/provider')).default({ strapi: mock })
-          this.services.translate = (await import('../services/translate')).default({ strapi: mock })
+          this.services.provider = (await import('../services/provider')).default({ strapi: mock as Core.Strapi })
+          this.services.translate = (await import('../services/translate')).default({ strapi: mock as Core.Strapi })
           this.services.format = (await import('../services/format')).default()
           this.services.chunks = (await import('../services/chunks')).default()
         },
@@ -159,7 +182,7 @@ const initSetup = ({
       },
       'content-type-builder': {
         service: function (name) {
-          return this.services[name]
+          return this.services[name] as any
         },
         services: {
           components: {
@@ -174,14 +197,14 @@ const initSetup = ({
             },
           },
         },
-      },
+      } as any,
     },
     config: {
       has: function (prop = '') {
         return !!get(this.plugins, prop.replace('plugin.', ''))
       },
       get: function (prop = '', defaultValue) {
-        return get(this.plugins, prop.replace('plugin.', '')) || defaultValue
+        return get(this.plugins, String(prop).replace('plugin.', '')) || defaultValue
       },
       set: function (prop = '', value) {
         return set(this.plugins, prop.replace('plugin.', ''), value)
@@ -193,35 +216,36 @@ const initSetup = ({
         },
       },
     },
+    documents,
     entityService: {
       findOne: (uid, id, params) =>
         mock.db.query(uid).findOne({ where: { id: { $eq: id } }, ...params }),
       findMany: (uid, params) =>
-        mock.db.query(uid).findMany({ ...params, where: params.filters }),
+        mock.db.query(uid).findMany({ ...params, where: params.filters }) as any,
       create: (uid, params) => mock.db.query(uid).create(params),
-      update: (uid, id, params) => mock.db.query(uid).update(id, params),
-      delete: (uid, id, params) => mock.db.query(uid).delete(id, params),
-    },
+      update: (uid, id, params) => mock.db.query(uid).update(params),
+      delete: (uid, id, params) => mock.db.query(uid).delete(params),
+    } as any,
     service(uid) {
       const [handler, collection] = uid.split('::')
       if (handler === 'plugin') {
         const [plugin, service] = collection.split('.')
-        return this.plugins[plugin].services[service]({ strapi: mock.getRef() })
+        return this.plugins[plugin].services[service]
       }
       return {
-        findOne: (id, params) => this.entityService.findOne(uid, id, params),
-        find: (params) => this.entityService.findMany(uid, params),
-        create: (params) => this.entityService.create(uid, params),
-        update: (id, params) => this.entityService.update(uid, id, params),
-        delete: (id, params) => this.entityService.delete(uid, id, params),
+        findOne: (id, params) => this.documents(uid).findOne({documentId: id, ...params}),
+        find: (params) => this.documents(uid).findMany(params),
+        create: (params) => this.documents(uid).create(params),
+        update: (id, params) => this.documents(uid).update({documentId: id, ...params}),
+        delete: (id, params) => this.documents(uid).delete({documentId: id, ...params}),
       }
     },
     log: {
-      debug: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-    },
+      debug: jest.fn() as any,
+      info: jest.fn() as any,
+      warn: jest.fn() as any,
+      error: jest.fn() as any,
+    } as any,
   }
 
   if (!isEmpty(database)) {
@@ -231,7 +255,7 @@ const initSetup = ({
     })
   }
 
-  return mock
+  return mock as Core.Strapi
 }
 
 const setup = function (params: SetupProps) {

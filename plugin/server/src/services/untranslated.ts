@@ -1,24 +1,25 @@
-import { Core } from '@strapi/strapi'
+import { Core, Modules, UID } from '@strapi/strapi'
+import { PopulateRule } from 'src/utils/populate-all';
 
 export interface UntranslatedService {
-  getUntranslatedEntity(
+  getUntranslatedEntity<TSchemaUID extends UID.ContentType>(
     {
       uid,
       targetLocale,
       sourceLocale,
-    }: { uid: string; targetLocale: string; sourceLocale: string },
-    { populate }: { populate: string[] }
-  ): Promise<any>
-  getUntranslatedEntityIDs({
+    }: { uid: TSchemaUID; targetLocale: string; sourceLocale: string },
+    { populate }: { populate: PopulateRule }
+  ): Promise<Modules.Documents.Document<TSchemaUID>>
+  getUntranslatedDocumentIDs({
     uid,
     targetLocale,
     sourceLocale,
   }: {
-    uid: string
+    uid: UID.ContentType
     targetLocale: string
     sourceLocale: string
   }): Promise<number[]>
-  isFullyTranslated(uid: string, targetLocale: string): Promise<boolean>
+  isFullyTranslated(uid: UID.ContentType, targetLocale: string): Promise<boolean>
 }
 
 export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
@@ -26,20 +27,21 @@ export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
     /**
      * Get an untranslated source entity based not the parameters
      *
-     * @param {object} param0 Parameters for the content type
-     * @param {object} param1 Parameters for the query result
+     * @param param0 Parameters for the content type
+     * @param param1 Parameters for the query result
      * @returns One entity of the content type 'uid' that has not yet been translated from 'sourceLocale' to 'targetLocale'
      */
     async getUntranslatedEntity(
       { uid, targetLocale, sourceLocale },
       { populate }
     ) {
+      throw new Error("getUntranslatedEntity: to be migrated")
       const metadata = strapi.db.metadata.get(uid)
       if (!metadata) {
         throw new Error('Content Type does not exist')
       }
       const tableName = metadata.tableName
-      const joinTable = metadata.attributes?.localizations?.joinTable
+      const joinTable = metadata.attributes?.localizations?.["joinTable"]
       if (!joinTable) {
         throw new Error('Content Type not localized')
       }
@@ -96,17 +98,17 @@ export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
     /**
      * Get all ids of untranslated source entities based not the parameters
      *
-     * @param {object} param0 Parameters for the content type
-     * @param {object} param1 Parameters for the query result
+     * @param param0 Parameters for the content type
      * @returns IDs of all entities of the content type 'uid' that have not yet been translated from 'sourceLocale' to 'targetLocale'
      */
-    async getUntranslatedEntityIDs({ uid, targetLocale, sourceLocale }) {
+    async getUntranslatedDocumentIDs({ uid, targetLocale, sourceLocale }) {
+      throw new Error("getUntranslatedEntityIDs: to be migrated")
       const metadata = strapi.db.metadata.get(uid)
       if (!metadata) {
         throw new Error('Content Type does not exist')
       }
       const tableName = metadata.tableName
-      const joinTable = metadata.attributes?.localizations?.joinTable
+      const joinTable = metadata.attributes?.localizations?.["joinTable"]
       if (!joinTable) {
         throw new Error('Content Type not localized')
       }
@@ -160,17 +162,18 @@ export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
      * i.e. there are no other entities in any other locale
      * that do not have a localization in this locale
      *
-     * @param {string} uid Content-Type-UID
-     * @param {string} targetLocale the target locale
+     * @param uid Content-Type-UID
+     * @param targetLocale the target locale
      * @returns if the target locale is fully translated
      */
     async isFullyTranslated(uid, targetLocale) {
+      throw new Error("isFullyTranslated: to be migrated")
       const metadata = strapi.db.metadata.get(uid)
       if (!metadata) {
         throw new Error('Content Type does not exist')
       }
       const tableName = metadata.tableName
-      const joinTable = metadata.attributes?.localizations?.joinTable
+      const joinTable = metadata.attributes?.localizations?.["joinTable"]
       if (!joinTable) {
         throw new Error('Content Type not localized')
       }

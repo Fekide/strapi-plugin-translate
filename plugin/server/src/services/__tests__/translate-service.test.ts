@@ -52,11 +52,15 @@ describe('provider service', () => {
     it('single field', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         title: 'test',
       }
       const sourceLocale = 'en'
       const targetLocale = 'de'
-      const fieldsToTranslate: TranslatableField[] = [{ field: 'title', format: 'plain' }]
+      const fieldsToTranslate: TranslatableField[] = [
+        { field: 'title', format: 'plain' },
+      ]
 
       // when
       const result = await getService('translate').translate({
@@ -76,6 +80,8 @@ describe('provider service', () => {
     it('no fields', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         title: 'test',
       }
       const sourceLocale = 'en'

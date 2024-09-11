@@ -1,9 +1,10 @@
 import { get, difference, cloneDeep, has } from 'lodash'
 import { ContentTypeSchema, ComponentSchema } from '@strapi/types/dist/struct'
 import { Attribute } from '@strapi/types/dist/schema'
+import { Modules, UID } from '@strapi/strapi'
 
-export function deleteInvalidFields(
-  data: unknown,
+export function deleteInvalidFields<TSchemaUID extends UID.ContentType>(
+  data: Modules.Documents.Document<TSchemaUID>,
   schema: ContentTypeSchema | ComponentSchema
 ) {
   if (!data) {
@@ -27,8 +28,8 @@ export function deleteInvalidFields(
  * @param {object} schema The schema of the content-type
  * @returns The input data with invalid fields (like id or localizations) removed
  */
-export function cleanData(
-  data: unknown,
+export function cleanData<TSchemaUID extends UID.ContentType>(
+  data: Modules.Documents.Document<TSchemaUID>,
   schema: ContentTypeSchema | ComponentSchema,
   forFrontend = false
 ) {
@@ -52,7 +53,7 @@ export function cleanData(
         forFrontend
       )
     } else if (attributeSchema.type === 'dynamiczone') {
-      resultData[attr] = get(data, attr, []).map((object: unknown) =>
+      resultData[attr] = get(data, attr, []).map((object: Modules.Documents.AnyDocument) =>
         cleanComponent(object, attributeSchema, forFrontend)
       )
     } else if (attributeSchema.type === 'relation' && !forFrontend) {
@@ -68,8 +69,8 @@ export function cleanData(
   return resultData
 }
 
-function cleanComponent(
-  data: unknown,
+function cleanComponent<TSchemaUID extends UID.Component>(
+  data: Modules.Documents.Document<TSchemaUID>,
   componentReference: Attribute.Component | Attribute.DynamicZone,
   forFrontend: boolean
 ) {

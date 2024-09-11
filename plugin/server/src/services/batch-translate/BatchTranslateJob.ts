@@ -1,6 +1,6 @@
 'use strict'
 
-import { Struct, UID } from '@strapi/strapi'
+import { Data, Modules, Struct, UID } from '@strapi/strapi'
 import { cleanData } from '../../utils/clean-data'
 import {
   batchContentTypeUid,
@@ -12,6 +12,7 @@ import { populateAll } from '../../utils/populate-all'
 import { getAllTranslatableFields } from '../../utils/translatable-fields'
 import { translateRelations } from '../../utils/translate-relations'
 import { updateUids } from '../../utils/update-uids'
+import { differenceBy, intersectionBy } from 'lodash'
 
 export class BatchTranslateJob {
   totalEntities: number
@@ -23,7 +24,7 @@ export class BatchTranslateJob {
   contentTypeSchema: Struct.ContentTypeSchema
   sourceLocale: string
   targetLocale: string
-  entityIds: string[]
+  documentIds: Data.DocumentID[]
   status:
     | 'created'
     | 'setup'
@@ -35,18 +36,18 @@ export class BatchTranslateJob {
   promise: Promise<any>
 
   constructor({
-    id,
+    documentId,
     contentType,
     sourceLocale,
     targetLocale,
     entityIds,
     status,
     autoPublish = false,
-  }) {
+  }: Modules.Documents.AnyDocument) {
     this.totalEntities = 0
     this.translatedEntities = 0
     this.intervalId = null
-    this.id = id
+    this.id = documentId
     this.autoPublish = autoPublish
     this.contentType = contentType
     this.contentTypeSchema = strapi.contentTypes[contentType]
@@ -56,9 +57,9 @@ export class BatchTranslateJob {
     this.sourceLocale = sourceLocale
     this.targetLocale = targetLocale
     if (Array.isArray(entityIds) && entityIds.length > 0) {
-      this.entityIds = entityIds
+      this.documentIds = entityIds
     } else {
-      this.entityIds = null
+      this.documentIds = null
     }
     this.status = status
   }
@@ -108,27 +109,28 @@ export class BatchTranslateJob {
 
   async setup() {
     await this.updateStatus('setup')
-    if (!this.entityIds) {
-      this.totalEntities = await strapi.db
-        .query(this.contentType)
-        .count({ where: { locale: this.sourceLocale } })
-      this.translatedEntities = await strapi.db.query(this.contentType).count({
-        where: {
-          locale: this.sourceLocale,
-          localizations: { locale: { $eq: this.targetLocale } },
-        },
+    if (!this.documentIds) {
+      const sourceEntities = await strapi
+        .documents(this.contentType)
+        .findMany({ locale: this.sourceLocale })
+      const translatedEntities = await strapi.documents(this.contentType).findMany({
+        locale: this.targetLocale,
       })
+
+      this.documentIds = differenceBy(sourceEntities, translatedEntities, 'documentId').map(e => e.documentId)
+
+      this.translatedEntities = intersectionBy(sourceEntities, translatedEntities, 'documentId').length
+
     } else {
       // entity Ids were provided to the job, so the job is restricted to handling just those
-      this.totalEntities = this.entityIds.length
-      this.translatedEntities = await strapi.db.query(this.contentType).count({
-        where: {
-          locale: this.sourceLocale,
-          localizations: { locale: { $eq: this.targetLocale } },
-          id: { $in: this.entityIds },
+      this.translatedEntities = await strapi.documents(this.contentType).count({
+        locale: this.sourceLocale,
+        filters: {
+          documentId: { $in: this.documentIds },
         },
       })
     }
+    this.totalEntities = this.documentIds.length
 
     // TODO: Initialize variables (which ids have to be translated, how many etc)
     if (this.status !== 'setup') {
@@ -160,13 +162,14 @@ export class BatchTranslateJob {
 
     const populate = populateAll(this.contentTypeSchema)
     while (this.status === 'running') {
-      if (this.entityIds !== null) {
+      if (this.documentIds !== null) {
         // Get an entity from the provided entity id list
         // Try until we get one or the list is empty
-        while (!entity && this.entityIds.length > 0) {
-          const nextId = this.entityIds.pop()
-          entity = await strapi.db.query(this.contentType).findOne({
-            where: { id: nextId, locale: this.sourceLocale },
+        while (!entity && this.documentIds.length > 0) {
+          const nextId = this.documentIds.pop()
+          entity = await strapi.documents(this.contentType).findOne({
+            documentId: nextId,
+            locale: this.sourceLocale,
             populate,
           })
           if (entity?.locale !== this.sourceLocale) {
@@ -234,20 +237,12 @@ export class BatchTranslateJob {
           withFieldsDeleted,
           this.contentTypeSchema
         )
-        // Add reference to other localizations
-        const newLocalizations = entity.localizations.map(({ id }) => id)
-        newLocalizations.push(entity.id)
-        fullyTranslatedData.localizations = newLocalizations
-        // Set locale
-        fullyTranslatedData.locale = this.targetLocale
-        // Set publishedAt to null so the translation is not published directly
-        fullyTranslatedData.publishedAt =
-          entity.publishedAt && this.autoPublish ? new Date() : null
+
         // Create localized entry
-        await strapi.entityService.create(this.contentType, {
+        await strapi.documents(this.contentType).create({
           data: fullyTranslatedData,
-          // Needed for syncing localizations
-          populate: ['localizations'],
+          locale: this.targetLocale,
+          status: this.autoPublish ? 'published' : 'draft',
         })
 
         this.translatedEntities++

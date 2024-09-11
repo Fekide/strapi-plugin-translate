@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig",
-  "include": ["./src"],
-  "exclude": ["**/*.test.ts"],
+  "include": ["./src", "../shared"],
+  "exclude": ["**/*.test.ts", "src/__mocks__"],
   "compilerOptions": {
     "rootDir": "../",
     "baseUrl": ".",

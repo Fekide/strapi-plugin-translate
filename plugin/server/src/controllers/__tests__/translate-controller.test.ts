@@ -59,7 +59,7 @@ describe('translate controller', () => {
     await strapi
       .plugin('translate')
       .controller<TranslateController>('translate')
-      .translate(
+      .translateEntity(
         ctx,
         jest.fn(() => Promise.resolve())
       )
@@ -84,7 +84,7 @@ describe('translate controller', () => {
     await strapi
       .plugin('translate')
       .controller<TranslateController>('translate')
-      .translate(
+      .translateEntity(
         ctx,
         jest.fn(() => Promise.resolve())
       )
@@ -109,7 +109,7 @@ describe('translate controller', () => {
     await strapi
       .plugin('translate')
       .controller<TranslateController>('translate')
-      .translate(
+      .translateEntity(
         ctx,
         jest.fn(() => Promise.resolve())
       )
@@ -136,7 +136,7 @@ describe('translate controller', () => {
     await strapi
       .plugin('translate')
       .controller<TranslateController>('translate')
-      .translate(
+      .translateEntity(
         ctx,
         jest.fn(() => Promise.resolve())
       )
@@ -163,7 +163,7 @@ describe('translate controller', () => {
     await strapi
       .plugin('translate')
       .controller<TranslateController>('translate')
-      .translate(
+      .translateEntity(
         ctx,
         jest.fn(() => Promise.resolve())
       )

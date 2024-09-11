@@ -5,7 +5,7 @@ import {toLower} from 'lodash';
 import { actions } from './services/permissions/actions';
 import { getService } from './utils/get-service';
 import { TranslateConfig } from './config';
-import { TranslateProvider } from './types/provider';
+import { TranslateProvider } from '../../shared/types/provider';
 
 const createProvider = (translateConfig: TranslateConfig) => {
   const providerName = toLower(translateConfig.provider)

@@ -36,7 +36,11 @@ describe('update uids', () => {
   )
   it('simple content type without uid not changed', async () => {
     // given
-    const data = { title: 'some text' }
+    const data = {
+      documentId: 'a',
+      id: 1,
+      title: 'some text',
+    }
 
     // when
     const updatedUids = await updateUids(data, 'api::simple.simple')
@@ -47,7 +51,11 @@ describe('update uids', () => {
 
   it('simple content type with uid not changed', async () => {
     // given
-    const data = { uid: 'some-uid' }
+    const data = {
+      documentId: 'a',
+      id: 1,
+      uid: 'some-uid',
+    }
 
     // when
     const updatedUids = await updateUids(data, 'api::simple.simple-with-uid')

@@ -2,6 +2,7 @@ import { get, cloneDeep, unset } from 'lodash'
 import { isTranslatedFieldType } from './translated-field-types'
 import { ContentTypeSchema, ComponentSchema } from '@strapi/types/dist/struct'
 import { Attribute } from '@strapi/types/dist/schema'
+import { Modules, UID } from '@strapi/strapi'
 
 /**
  * Return new data without all attributes that have the config option pluginOptions.translate.translate=delete
@@ -10,8 +11,8 @@ import { Attribute } from '@strapi/types/dist/schema'
  * @param {object} schema The schema of the content type
  * @returns all attributes that can be translated
  */
-export function filterAllDeletedFields(
-  data: unknown,
+export function filterAllDeletedFields<TSchemaUID extends UID.ContentType>(
+  data: Modules.Documents.Document<TSchemaUID>,
   schema: ContentTypeSchema | ComponentSchema
 ) {
   const attributesSchema = get(schema, 'attributes', [])
@@ -36,8 +37,8 @@ export function filterAllDeletedFields(
  * @param {string} attributeName The name of the attribute
  * @returns The attribute or a list of child attributes if this attribute is a component or a dynamic zone
  */
-export function filterDeletedFields(
-  data: unknown,
+export function filterDeletedFields<TSchemaUID extends UID.ContentType>(
+  data: Modules.Documents.Document<TSchemaUID>,
   attribute: Attribute.AnyAttribute,
   attributeName: string
 ) {
@@ -61,7 +62,7 @@ export function filterDeletedFields(
           data[attributeName] = componenData
         }
       } else if (attribute.type == 'dynamiczone') {
-        data[attributeName] = data[attributeName].map((object: unknown) => {
+        data[attributeName] = data[attributeName].map((object: Modules.Documents.AnyDocument) => {
           recursiveComponentDeleteFields(attribute, object)
           return object
         })
@@ -77,9 +78,10 @@ export function filterDeletedFields(
  * @param {object} componentReference The schema of the component in the content-type or component (to know if it is repeated or not)
  * @param {object} data The data of the component
  */
-export function recursiveComponentDeleteFields(
+export function recursiveComponentDeleteFields<TSchemaUID extends UID.
+Component>(
   componentReference: Attribute.Component | Attribute.DynamicZone,
-  data: unknown
+  data: Modules.Documents.Document<TSchemaUID>
 ) {
   const componentSchema =
     componentReference.type == 'dynamiczone'

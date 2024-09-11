@@ -1,5 +1,5 @@
-import { FieldFormat } from 'src/types/formats';
-import { TranslateProviderOptions } from 'src/types/provider';
+import { FieldFormat } from '../../../shared/types/formats';
+import { TranslateProviderOptions } from '../../../shared/types/provider';
 
 export type TranslatedFieldType = string | { type: string; format?: FieldFormat };
 
