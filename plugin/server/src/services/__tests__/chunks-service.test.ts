@@ -2,8 +2,8 @@ import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
 import { faker } from '@faker-js/faker'
 import shuffle from 'lodash/shuffle'
 import { stringByteLengthEncoded } from '../../utils/byte-length'
-import setup from 'src/__mocks__/initSetup'
-import { getService } from 'src/utils'
+import setup from '../../__mocks__/initSetup'
+import { getService } from '../../utils'
 
 beforeEach(() => {
   setup({})

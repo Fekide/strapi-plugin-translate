@@ -6,13 +6,14 @@ import { actions } from './services/permissions/actions';
 import { getService } from './utils/get-service';
 import { TranslateConfig } from './config';
 import { TranslateProvider } from '../../shared/types/provider';
+import dummyProvider from './utils/dummy-provider';
 
 const createProvider = (translateConfig: TranslateConfig) => {
   const providerName = toLower(translateConfig.provider)
   let provider: TranslateProvider
 
   if (providerName === 'dummy') {
-    provider = require('./utils/dummy-provider')
+    provider = dummyProvider
   } else {
     let modulePath : string
     try {

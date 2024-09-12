@@ -8,6 +8,7 @@ import {
 import { ContentTypeSchema } from '@strapi/types/dist/struct'
 import { Attribute } from '@strapi/types/dist/schema'
 import { TranslatableField } from '@shared/types/utils'
+import { Modules, UID } from '@strapi/strapi'
 
 
 /**
@@ -17,8 +18,8 @@ import { TranslatableField } from '@shared/types/utils'
  * @param {object} schema The schema of the content type
  * @returns all attributes that can be translated
  */
-export async function getAllTranslatableFields(
-  data: unknown,
+export async function getAllTranslatableFields<TSchemaUID extends UID.ContentType>(
+  data: Modules.Documents.Document<TSchemaUID>,
   schema: ContentTypeSchema
 ) {
   const attributesSchema = _.get(schema, 'attributes', [])
@@ -44,8 +45,8 @@ export async function getAllTranslatableFields(
  * @param {string} attr The name of the attribute
  * @returns The attribute or a list of child attributes if this attribute is a component or a dynamic zone
  */
-export async function getTranslateFields(
-  data: unknown,
+export async function getTranslateFields<TSchemaUID extends UID.ContentType>(
+  data: Modules.Documents.Document<TSchemaUID>,
   schema: Attribute.AnyAttribute,
   attr: string
 ): Promise<Array<TranslatableField> | TranslatableField> {
@@ -95,9 +96,9 @@ export async function getTranslateFields(
  * @param {object} data The data of the component
  * @returns A list of attributes to translate for this component
  */
-export async function recursiveComponentFieldsToTranslate(
+export async function recursiveComponentFieldsToTranslate<TSchemaUID extends UID.Component>(
   componentReference: Attribute.Component | Attribute.DynamicZone,
-  data: unknown | Array<unknown>
+  data: Modules.Documents.Document<TSchemaUID>
 ) {
   const componentSchema =
     componentReference.type == 'dynamiczone'

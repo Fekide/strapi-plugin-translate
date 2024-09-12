@@ -1,10 +1,4 @@
-import {
-  describe,
-  expect,
-  it,
-  afterEach,
-  beforeEach,
-} from '@jest/globals'
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals'
 import { cleanData } from '../clean-data'
 
 import {
@@ -19,7 +13,7 @@ import {
   createContentTypeWithComponent,
   createContentTypeWithDynamicZone,
 } from '../../__mocks__/contentTypes'
-import setup from 'src/__mocks__/initSetup'
+import setup from '../../__mocks__/initSetup'
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
@@ -65,7 +59,12 @@ describe('clean data', () => {
   )
   it('simple content type other field removed', () => {
     // given
-    const data = { title: 'some text', otherField: 'some other text' }
+    const data = {
+      documentId: 'a',
+      id: 1,
+      title: 'some text',
+      otherField: 'some other text',
+    }
     const schema = strapi.contentTypes['api::simple.simple']
 
     // when
@@ -77,7 +76,11 @@ describe('clean data', () => {
 
   it('content type relation transformed to id', () => {
     // given
-    const data = { related: { id: 1, title: 'some text' } }
+    const data = {
+      documentId: 'a',
+      id: 1,
+      related: { id: 1, title: 'some text' },
+    }
     const schema = strapi.contentTypes['api::complex.relation']
 
     // when
@@ -89,7 +92,11 @@ describe('clean data', () => {
 
   it('content type relation null kept', () => {
     // given
-    const data = { related: null }
+    const data = {
+      documentId: 'a',
+      id: 1,
+      related: null,
+    }
     const schema = strapi.contentTypes['api::complex.relation']
 
     // when
@@ -102,6 +109,8 @@ describe('clean data', () => {
   it('content type multiple relation transformed to id', () => {
     // given
     const data = {
+      documentId: 'a',
+      id: 1,
       related: [
         { id: 1, title: 'some text' },
         { id: 2, title: 'some text' },
@@ -119,6 +128,7 @@ describe('clean data', () => {
   it('component other field removed', () => {
     // given
     const data = {
+      documentId: 'a',
       text: 'test',
       id: 1,
     }
@@ -146,8 +156,9 @@ describe('clean data', () => {
   it('nested component other field removed', () => {
     // given
     const data = {
-      text: 'test',
+      documentId: 'a',
       id: 1,
+      text: 'test',
       nested: {
         text: 'test',
         id: 2,
@@ -172,6 +183,8 @@ describe('clean data', () => {
   it('content type with component other field removed', () => {
     // given
     const data = {
+      documentId: 'a',
+      id: 1,
       component: {
         text: 'test',
         id: 1,
@@ -193,6 +206,8 @@ describe('clean data', () => {
   it('content type with repeatable component other fields removed', () => {
     // given
     const data = {
+      documentId: 'a',
+      id: 1,
       component: [
         {
           text: 'test',
@@ -225,6 +240,8 @@ describe('clean data', () => {
   it('content type with component null kept', () => {
     // given
     const data = {
+      documentId: 'a',
+      id: 1,
       component: null,
     }
     const schema = strapi.contentTypes['api::complex.component']
@@ -241,6 +258,8 @@ describe('clean data', () => {
   it('content type with dynamic zone __component kept and other fields removed', () => {
     // given
     const data = {
+      documentId: 'a',
+      id: 1,
       dynamic_zone: [
         {
           __component: 'simple',

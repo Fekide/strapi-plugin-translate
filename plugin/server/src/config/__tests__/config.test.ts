@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach } from '@jest/globals'
 import { TranslateConfig, TranslatedFieldType } from '..'
-import setup from 'src/__mocks__/initSetup'
+import setup from '../../__mocks__/initSetup'
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})

@@ -1,4 +1,4 @@
-'use strict'
+
 
 import { Data, Modules } from '@strapi/strapi'
 import { batchContentTypeUid } from '../../utils/constants'

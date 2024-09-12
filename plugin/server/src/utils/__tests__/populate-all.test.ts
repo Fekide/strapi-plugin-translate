@@ -13,7 +13,7 @@ import {
   createContentTypeWithDynamicZone,
   createSimpleContentType,
 } from '../../__mocks__/contentTypes'
-import setup from 'src/__mocks__/initSetup'
+import setup from '../../__mocks__/initSetup'
 
 import { populateAll } from '../populate-all'
 

@@ -13,7 +13,7 @@ import {
   complexContentTypeDelete,
 } from '../../__mocks__/contentTypes'
 import { filterDeletedFields, filterAllDeletedFields } from '../delete-fields'
-import setup from 'src/__mocks__/initSetup'
+import setup from '../../__mocks__/initSetup'
 import { Core, Schema, Utils } from '@strapi/strapi'
 
 afterEach(() => {
@@ -36,7 +36,11 @@ describe('delete fields', () => {
 
     it('translated field ignored', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'translate' } },
@@ -54,7 +58,11 @@ describe('delete fields', () => {
 
     it('copied field ignored', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'copy' } },
@@ -72,7 +80,11 @@ describe('delete fields', () => {
 
     it('deleted field is deleted', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'delete' } },
@@ -90,7 +102,11 @@ describe('delete fields', () => {
 
     it('other field ignored', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.AnyAttribute = { type: 'integer' }
       const attr = 'field'
       strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
@@ -105,7 +121,11 @@ describe('delete fields', () => {
 
     it('deleted component field is deleted', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.component',
@@ -127,7 +147,11 @@ describe('delete fields', () => {
 
     it('component with translated field ignored', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.component',
@@ -149,7 +173,11 @@ describe('delete fields', () => {
 
     it('component with copied field ignored', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.componentcopy',
@@ -171,7 +199,11 @@ describe('delete fields', () => {
 
     it('component with deleted field has field deleted', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.componentdelete',
@@ -194,6 +226,8 @@ describe('delete fields', () => {
     it('repeated component field with deleted field has fields deleted', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         child_component: [{ text: 'some text' }, { text: 'some other text' }],
       }
       const schema: Schema.Attribute.Component<
@@ -222,6 +256,8 @@ describe('delete fields', () => {
     it('nested component with deleted fields has fields deleted', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         comp: {
           text: 'some text',
           nested: {
@@ -257,6 +293,8 @@ describe('delete fields', () => {
     it('dynamic zone field with deleted fields has fields deleted', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         dynamic_zone: [
           { __component: 'simple.componentdelete', text: 'some text' },
           {
@@ -310,7 +348,11 @@ describe('delete fields', () => {
 
     it('simple content type translated ignored', async () => {
       // given
-      const data = { title: 'some title' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        title: 'some title',
+      }
       const schema = simpleContentType
 
       // when
@@ -323,6 +365,8 @@ describe('delete fields', () => {
     it('complex content type translated ignored', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         title: 'some title',
         content: 'some long content',
         slug: 'some-title',
@@ -362,6 +406,8 @@ describe('delete fields', () => {
     it('complex content type with deleted fields has fields deleted', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         title: 'some title',
         content: 'some long content',
         slug: 'some-title',

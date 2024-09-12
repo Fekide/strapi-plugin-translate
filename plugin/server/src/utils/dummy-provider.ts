@@ -1,4 +1,4 @@
-'use strict'
+
 
 import { TranslateProvider } from "../../../shared/types/provider"
 

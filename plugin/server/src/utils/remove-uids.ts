@@ -1,4 +1,4 @@
-'use strict'
+
 
 import { Modules, UID } from '@strapi/strapi'
 import { cloneDeep } from 'lodash'

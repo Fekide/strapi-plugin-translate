@@ -4,7 +4,7 @@ import {
   createContentTypeWithUid,
 } from '../../__mocks__/contentTypes'
 import { updateUids } from '../update-uids'
-import setup from 'src/__mocks__/initSetup'
+import setup from '../../__mocks__/initSetup'
 
 const defaultUid = 'unique-uid'
 

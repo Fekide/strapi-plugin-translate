@@ -1,6 +1,5 @@
 import { UntranslatedService } from '@shared/services/untranslated';
-import { Core, Modules, UID } from '@strapi/strapi'
-import { PopulateRule } from 'src/utils/populate-all';
+import { Core } from '@strapi/strapi'
 
 export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
   return {

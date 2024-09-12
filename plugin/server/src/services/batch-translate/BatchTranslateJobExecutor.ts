@@ -1,4 +1,4 @@
-'use strict'
+
 
 import { Data, Modules, Struct, UID } from '@strapi/strapi'
 import { cleanData } from '../../utils/clean-data'

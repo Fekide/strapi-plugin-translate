@@ -1,4 +1,4 @@
-'use strict'
+
 
 /**
  * Calculate the length of a string in byte when it is encoded using `encodeURI`

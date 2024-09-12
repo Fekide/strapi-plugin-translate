@@ -14,7 +14,7 @@ import {
   complexContentType,
   simpleContentType,
 } from '../../__mocks__/contentTypes'
-import setup from 'src/__mocks__/initSetup'
+import setup from '../../__mocks__/initSetup'
 import { Schema, Utils } from '@strapi/strapi'
 
 afterEach(() => {
@@ -38,7 +38,11 @@ describe('translatable fields', () => {
 
     it('text field translated', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'translate' } },
@@ -55,7 +59,11 @@ describe('translatable fields', () => {
 
     it('text field without configuration translated', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { i18n: { localized: true } },
@@ -72,7 +80,11 @@ describe('translatable fields', () => {
 
     it('text field copy not translated', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'copy' } },
@@ -89,7 +101,11 @@ describe('translatable fields', () => {
 
     it('text field delete not translated', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.Text = {
         type: 'text',
         pluginOptions: { translate: { translate: 'delete' } },
@@ -106,7 +122,11 @@ describe('translatable fields', () => {
 
     it('other field not translated', async () => {
       // given
-      const data = { field: 'some text' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        field: 'some text',
+      }
       const schema: Schema.Attribute.AnyAttribute = { type: 'boolean' }
       const attr = 'field'
       strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
@@ -120,7 +140,11 @@ describe('translatable fields', () => {
 
     it('component field translated nested', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.component',
@@ -143,7 +167,11 @@ describe('translatable fields', () => {
 
     it('component field without configuration translated nested', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.component',
@@ -166,7 +194,11 @@ describe('translatable fields', () => {
 
     it('component field with field without configuration translated nested', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.componentunset',
@@ -189,7 +221,11 @@ describe('translatable fields', () => {
 
     it('component with copy field not translated', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.componentcopy',
@@ -210,7 +246,11 @@ describe('translatable fields', () => {
 
     it('component with delete field not translated', async () => {
       // given
-      const data = { child_component: { text: 'some text' } }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        child_component: { text: 'some text' },
+      }
       const schema: Schema.Attribute.Component = {
         type: 'component',
         component: 'simple.componentdelete',
@@ -232,6 +272,8 @@ describe('translatable fields', () => {
     it('repeated component field translated', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         child_component: [{ text: 'some text' }, { text: 'some other text' }],
       }
       const schema: Schema.Attribute.Component<
@@ -262,6 +304,8 @@ describe('translatable fields', () => {
     it('nested component field translated', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         comp: {
           text: 'some text',
           nested: {
@@ -298,6 +342,8 @@ describe('translatable fields', () => {
     it('dynamic zone field translated', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         dynamic_zone: [
           { __component: 'simple.component', text: 'some text' },
           {
@@ -344,7 +390,11 @@ describe('translatable fields', () => {
 
     it('simple content type translated', async () => {
       // given
-      const data = { title: 'some title' }
+      const data = {
+        documentId: 'a',
+        id: 1,
+        title: 'some title',
+      }
       const schema = simpleContentType
 
       // when
@@ -357,6 +407,8 @@ describe('translatable fields', () => {
     it('complex content type translated', async () => {
       // given
       const data = {
+        documentId: 'a',
+        id: 1,
         title: 'some title',
         content: 'some long content',
         slug: 'some-title',

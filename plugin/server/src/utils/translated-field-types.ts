@@ -1,4 +1,5 @@
-import { TranslateConfig } from 'src/config'
+import { TranslateConfig } from "../config"
+
 
 function getFieldTypeConfig(type: string) {
   const { translatedFieldTypes } =

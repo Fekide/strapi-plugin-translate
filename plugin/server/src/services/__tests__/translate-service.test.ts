@@ -1,7 +1,7 @@
 import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
-import setup from 'src/__mocks__/initSetup'
+import setup from '../../__mocks__/initSetup'
 import { getService } from '../../utils'
-import { TranslatableField } from 'src/utils/translatable-fields'
+import { TranslatableField } from '@shared/types/utils'
 
 // Every text to translate becomes "translated" in this mock so it can be verified to have been changed
 const translatedByFormat = {

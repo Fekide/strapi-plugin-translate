@@ -1,6 +1,6 @@
 import { describe, expect, afterEach, beforeEach, it } from '@jest/globals'
-import setup from 'src/__mocks__/initSetup'
-import { getService } from 'src/utils'
+import setup from '../../__mocks__/initSetup'
+import { getService } from '../../utils'
 
 const markdown = `# Turndown Demo
 

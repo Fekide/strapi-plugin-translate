@@ -8,7 +8,7 @@ import { populateAll } from '../utils/populate-all'
 import { cleanData } from '../utils/clean-data'
 import { updateUids } from '../utils/update-uids'
 import { z } from 'zod'
-import { TranslateConfig } from 'src/config'
+import { TranslateConfig } from '../config'
 import { TranslateEntity } from '../../../shared/contracts/translate'
 
 export interface TranslateController extends Core.Controller {

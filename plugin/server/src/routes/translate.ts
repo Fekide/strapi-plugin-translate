@@ -16,7 +16,7 @@ export default [
   {
     method: 'POST',
     path: '/batch',
-    handler: 'translate.batchTranslate',
+    handler: 'translate.translateBatch',
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
@@ -44,7 +44,7 @@ export default [
   {
     method: 'GET',
     path: '/batch/status/:id',
-    handler: 'translate.batchTranslateJobStatus',
+    handler: 'translate.translateBatchJobStatus',
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
@@ -58,7 +58,7 @@ export default [
   {
     method: 'POST',
     path: '/batch/pause/:id',
-    handler: 'translate.batchTranslatePauseJob',
+    handler: 'translate.translateBatchPauseJob',
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
@@ -72,7 +72,7 @@ export default [
   {
     method: 'POST',
     path: '/batch/resume/:id',
-    handler: 'translate.batchTranslateResumeJob',
+    handler: 'translate.translateBatchResumeJob',
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',
@@ -86,7 +86,7 @@ export default [
   {
     method: 'POST',
     path: '/batch/cancel/:id',
-    handler: 'translate.batchTranslateCancelJob',
+    handler: 'translate.translateBatchCancelJob',
     config: {
       policies: [
         'admin::isAuthenticatedAdmin',

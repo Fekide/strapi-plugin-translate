@@ -1,4 +1,4 @@
-'use strict'
+
 
 import get from 'lodash/get'
 import set from 'lodash/set'
@@ -16,8 +16,8 @@ import { removeUids } from '../utils/remove-uids'
 import { BatchTranslateManagerImpl } from './batch-translate'
 import { Core, UID } from '@strapi/strapi'
 import { Locale } from '@strapi/i18n/dist/shared/contracts/locales'
-import { TranslateConfig } from 'src/config'
-import { keys } from 'src/utils/objects'
+import { TranslateConfig } from '../config'
+import { keys } from '../utils/objects'
 import { TranslateService } from '@shared/services/translate'
 
 export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
