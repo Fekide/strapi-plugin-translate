@@ -1,8 +1,7 @@
 import { Main } from '@strapi/design-system';
-import { useIntl } from 'react-intl';
 
-import PluginHeader from 'src/components/PluginHeader';
-import PluginPage from 'src/components/PluginPage';
+import PluginHeader from '../components/PluginHeader';
+import PluginPage from '../components/PluginPage';
 
 const HomePage = () => {
   return (

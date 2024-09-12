@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import useAlert from './useAlert'
-import { useLazyEstimateUsageCollectionQuery, useLazyEstimateUsageQuery, useProviderUsageQuery } from 'src/services/usage'
+import { useLazyEstimateUsageCollectionQuery, useLazyEstimateUsageQuery, useProviderUsageQuery } from '../services/usage'
 import { TranslateProviderUsageResult } from '@shared/types/provider'
 
 

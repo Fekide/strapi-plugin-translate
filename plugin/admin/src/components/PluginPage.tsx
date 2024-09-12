@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
-import { Box } from '@strapi/design-system/Box'
-import { CollectionTable } from '../Collection'
-import UsageOverview from '../Usage'
+import { Box } from '@strapi/design-system'
+import { CollectionTable } from './Collection'
+import UsageOverview from './Usage'
 
 const PluginPage = () => {
   return (

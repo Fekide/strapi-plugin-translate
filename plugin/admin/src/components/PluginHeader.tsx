@@ -1,14 +1,13 @@
 import React, { memo } from 'react'
-import { Box } from '@strapi/design-system/Box'
-import { BaseHeaderLayout } from '@strapi/design-system/Layout'
+import { Box } from '@strapi/design-system'
+import { Layouts } from '@strapi/strapi/admin'
 
 const PluginHeader = () => {
   return (
     <Box background="neutral100">
-      <BaseHeaderLayout
+      <Layouts.BaseHeader
         title="Translate"
         subtitle="Manage integration and batch translations"
-        as="h2"
       />
     </Box>
   )

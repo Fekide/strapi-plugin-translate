@@ -4,7 +4,7 @@ import { PLUGIN_ID } from '../pluginId'
 import { getTranslation } from '../utils/getTranslation'
 import useAlert from './useAlert'
 import { isFetchError } from '@strapi/strapi/admin'
-import { useContentTypesTranslationReportQuery } from 'src/services/report'
+import { useContentTypesTranslationReportQuery } from '../services/report'
 
 export function useCollection() {
   // const [collections, setCollections] = useState([])

@@ -12,46 +12,50 @@ import {
 import { useIntl } from 'react-intl'
 
 import useUsage from '../../Hooks/useUsage'
-import {  getTranslation } from '../../utils'
+import { getTranslation } from '../../utils'
 
 const UsageOverview = () => {
   const { usage, error } = useUsage()
 
   const { formatMessage } = useIntl()
 
-  const content = error || !usage
-    ? [
-        <Td key="error">
-          <Typography textColor="neutral800">
-            {formatMessage({
-              id: getTranslation('usage.failed-to-load'),
-              defaultMessage: 'Failed to load Usage data',
-            })}
-          </Typography>
-        </Td>,
-      ]
-    : [
-        <Td key="usage">
-          <Typography textColor="neutral800">
-            {usage.count}/{usage.limit}{' '}
-            {formatMessage({
-              id: getTranslation('usage.characters-used'),
-              defaultMessage: 'characters used',
-            })}
-          </Typography>
-        </Td>,
-        <Td key="progress-bar">
-          <CardBadge>
-            <ProgressBar value={usage ? (usage.count / usage.limit) * 100 : 0}>
+  const content =
+    error || !usage
+      ? [
+          <Td key="error">
+            <Typography textColor="neutral800">
+              {formatMessage({
+                id: getTranslation('usage.failed-to-load'),
+                defaultMessage: 'Failed to load Usage data',
+              })}
+            </Typography>
+          </Td>,
+        ]
+      : [
+          <Td key="usage">
+            <Typography textColor="neutral800">
               {usage.count}/{usage.limit}{' '}
               {formatMessage({
                 id: getTranslation('usage.characters-used'),
                 defaultMessage: 'characters used',
               })}
-            </ProgressBar>
-          </CardBadge>
-        </Td>,
-      ]
+            </Typography>
+          </Td>,
+          <Td key="progress-bar">
+            <CardBadge>
+              <ProgressBar
+                value={usage ? (usage.count / usage.limit) * 100 : 0}
+              />
+              <Typography>
+                {usage.count}/{usage.limit}{' '}
+                {formatMessage({
+                  id: getTranslation('usage.characters-used'),
+                  defaultMessage: 'characters used',
+                })}
+              </Typography>
+            </CardBadge>
+          </Td>,
+        ]
 
   return (
     <Box background="neutral100" marginTop={4}>

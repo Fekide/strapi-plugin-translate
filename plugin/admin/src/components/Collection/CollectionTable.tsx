@@ -1,16 +1,14 @@
 import React, { memo, useState, useEffect } from 'react'
-import { Table, Tbody } from '@strapi/design-system/Table'
-import { Box } from '@strapi/design-system/Box'
-import { Layout } from '@strapi/design-system/Layout'
-import { Dialog, DialogBody, DialogFooter } from '@strapi/design-system/Dialog'
+import { Field, Table, Tbody } from '@strapi/design-system'
+import { Box } from '@strapi/design-system'
+import { Dialog } from '@strapi/design-system'
 import { useIntl } from 'react-intl'
-import { Stack } from '@strapi/design-system/Stack'
-import { Flex } from '@strapi/design-system/Flex'
-import { Typography } from '@strapi/design-system/Typography'
-import {WarningCircle} from '@strapi/icons'
-import { Select, Option } from '@strapi/design-system/Select'
-import { Button } from '@strapi/design-system/Button'
-import { ToggleInput } from '@strapi/design-system/ToggleInput'
+import { Flex } from '@strapi/design-system'
+import { Typography } from '@strapi/design-system'
+import { WarningCircle } from '@strapi/icons'
+import { SingleSelect, SingleSelectOption } from '@strapi/design-system'
+import { Button } from '@strapi/design-system'
+import { Toggle } from '@strapi/design-system'
 import useCollection from '../../Hooks/useCollection'
 import { getTranslation } from '../../utils'
 import useUsage from '../../Hooks/useUsage'
@@ -20,12 +18,11 @@ import {
   useTranslateBatchJobCancelMutation,
   useTranslateBatchJobPauseMutation,
   useTranslateBatchJobResumeMutation,
-} from 'src/services/batch-jobs'
-import { useTranslateBatchMutation } from 'src/services/translation'
+} from '../../services/batch-jobs'
+import { useTranslateBatchMutation } from '../../services/translation'
 import { ContentTypeTranslationReport } from '@shared/types/report'
-import useAlert from 'src/Hooks/useAlert'
+import useAlert from '../../Hooks/useAlert'
 import { ActionType } from './actions'
-
 
 type HandleActionProps = {
   action: ActionType
@@ -34,13 +31,14 @@ type HandleActionProps = {
 }
 
 const CollectionTable = () => {
-  const {
-    collections,
-    locales,
-  } = useCollection()
+  const { collections, locales } = useCollection()
   const { formatMessage } = useIntl()
   const { handleNotification } = useAlert()
-  const { usage, estimateUsageForCollection, estimateUsageForCollectionResult: expectedCost } = useUsage()
+  const {
+    usage,
+    estimateUsageForCollection,
+    estimateUsageForCollectionResult: expectedCost,
+  } = useUsage()
 
   const [translateBatch, translateBatchResult] = useTranslateBatchMutation()
   const [pauseTranslation, pauseTranslationResult] =
@@ -98,8 +96,9 @@ const CollectionTable = () => {
     setDialogOpen((prev) => !prev)
   }
 
-  const handleSourceLocaleChange = (value: string) => {
-    setSourceLocale(value)
+  const handleSourceLocaleChange = (value: string | number) => {
+    if (typeof value === 'string') setSourceLocale(value)
+    else console.error('Invalid value')
   }
 
   const toggleAutoPublish = () => {
@@ -202,7 +201,7 @@ const CollectionTable = () => {
   const COL_COUNT = locales.length + 1
 
   return (
-    <Layout>
+    <div>
       <Table colCount={COL_COUNT} rowCount={ROW_COUNT}>
         <CollectionTableHeader locales={locales} />
         <Tbody>
@@ -219,115 +218,134 @@ const CollectionTable = () => {
         </Tbody>
       </Table>
       {dialogOpen && (
-        <Dialog
-          onClose={handleToggleDialog}
-          title={formatMessage({
-            id: getTranslation(`batch-translate.dialog.${action}.title`),
-            defaultMessage: 'Confirmation',
-          })}
-          isOpen={dialogOpen}
-        >
-          <DialogBody icon={<WarningCircle />}>
-            <Stack size={2}>
-              <Flex justifyContent="center">
-                <Typography id="confirm-description">
-                  {formatMessage({
-                    id: getTranslation(`batch-translate.dialog.${action}.content`),
-                    defaultMessage: 'Confirmation body',
-                  })}
-                </Typography>
-              </Flex>
-              <Box>
-                {action === 'translate' && (
-                  <Stack spacing={2}>
-                    <Select
-                      label={formatMessage({
-                        id: getTranslation('Settings.locales.modal.locales.label'),
-                      })}
-                      onChange={handleSourceLocaleChange}
-                      value={sourceLocale}
-                    >
-                      {locales
-                        .filter((loc) => loc.code !== targetLocale)
-                        .map(({ name, code }) => {
-                          return (
-                            <Option key={code} value={code}>
-                              {name}
-                            </Option>
-                          )
-                        })}
-                    </Select>
-                    <ToggleInput
-                      label={formatMessage({
-                        id: getTranslation(
-                          'batch-translate.dialog.translate.autoPublish.label'
-                        ),
-                        defaultMessage: 'Auto-Publish',
-                      })}
-                      hint={formatMessage({
-                        id: getTranslation(
-                          'batch-translate.dialog.translate.autoPublish.hint'
-                        ),
-                        defaultMessage:
-                          'Publish translated entities automatically',
-                      })}
-                      name="auto-publish"
-                      onLabel="True"
-                      offLabel="False"
-                      checked={autoPublish}
-                      onChange={toggleAutoPublish}
-                    />
-                    {expectedCost && usage && (
-                      <Typography>
-                        {formatMessage({
-                          id: getTranslation('usage.estimatedUsage'),
+        <Dialog.Root open={dialogOpen}>
+          <Dialog.Content>
+            <Dialog.Header>
+              {formatMessage({
+                id: getTranslation(`batch-translate.dialog.${action}.title`),
+                defaultMessage: 'Confirmation',
+              })}
+            </Dialog.Header>
+            <Dialog.Body icon={<WarningCircle />}>
+              <Flex width={2}>
+                <Flex justifyContent="center">
+                  <Typography id="confirm-description">
+                    {formatMessage({
+                      id: getTranslation(
+                        `batch-translate.dialog.${action}.content`
+                      ),
+                      defaultMessage: 'Confirmation body',
+                    })}
+                  </Typography>
+                </Flex>
+                <Box>
+                  {action === 'translate' && (
+                    <Flex gap={2} direction="row">
+                      <Field.Root>
+                        <Field.Label>
+                          {formatMessage({
+                            id: getTranslation(
+                              'Settings.locales.modal.locales.label'
+                            ),
+                          })}
+                        </Field.Label>
+                        <SingleSelect
+                          onChange={handleSourceLocaleChange}
+                          value={sourceLocale}
+                        >
+                          {locales
+                            .filter((loc) => loc.code !== targetLocale)
+                            .map(({ name, code }) => {
+                              return (
+                                <SingleSelectOption key={code} value={code}>
+                                  {name}
+                                </SingleSelectOption>
+                              )
+                            })}
+                        </SingleSelect>
+                      </Field.Root>
+                      <Field.Root
+                        name="auto-publish"
+                        hint={formatMessage({
+                          id: getTranslation(
+                            'batch-translate.dialog.translate.autoPublish.hint'
+                          ),
                           defaultMessage:
-                            'This action is expected to increase your API usage by: ',
+                            'Publish translated entities automatically',
                         })}
-                        {expectedCost}
-                      </Typography>
-                    )}
-                    {usage &&
-                      expectedCost &&
-                      expectedCost > usage?.limit - usage?.count && (
+                      >
+                        <Field.Label>
+                          {formatMessage({
+                            id: getTranslation(
+                              'batch-translate.dialog.translate.autoPublish.label'
+                            ),
+                            defaultMessage: 'Auto-Publish',
+                          })}
+                        </Field.Label>
+                        <Toggle
+                          onLabel="True"
+                          offLabel="False"
+                          checked={autoPublish}
+                          onChange={toggleAutoPublish}
+                        />
+                        <Field.Hint />
+                      </Field.Root>
+                      {expectedCost && usage && (
                         <Typography>
                           {formatMessage({
-                            id: getTranslation('usage.estimatedUsageExceedsQuota'),
+                            id: getTranslation('usage.estimatedUsage'),
                             defaultMessage:
-                              'This action is expected to exceed your API Quota',
+                              'This action is expected to increase your API usage by: ',
                           })}
+                          {expectedCost}
                         </Typography>
                       )}
-                  </Stack>
-                )}
-              </Box>
-            </Stack>
-          </DialogBody>
-          <DialogFooter
-            startAction={
-              <Button onClick={handleToggleDialog} variant="tertiary">
-                {formatMessage({
-                  id: 'popUpWarning.button.cancel',
-                  defaultMessage: 'No, cancel',
-                })}
-              </Button>
-            }
-            endAction={
-              <Button
-                variant="success"
-                onClick={handleConfirm}
-                loading={loading}
-              >
-                {formatMessage({
-                  id: getTranslation(`batch-translate.dialog.${action}.submit-text`),
-                  defaultMessage: 'Confirm',
-                })}
-              </Button>
-            }
-          />
-        </Dialog>
+                      {usage &&
+                        expectedCost &&
+                        expectedCost > usage?.limit - usage?.count && (
+                          <Typography>
+                            {formatMessage({
+                              id: getTranslation(
+                                'usage.estimatedUsageExceedsQuota'
+                              ),
+                              defaultMessage:
+                                'This action is expected to exceed your API Quota',
+                            })}
+                          </Typography>
+                        )}
+                    </Flex>
+                  )}
+                </Box>
+              </Flex>
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Dialog.Cancel>
+                <Button onClick={handleToggleDialog} variant="tertiary">
+                  {formatMessage({
+                    id: 'popUpWarning.button.cancel',
+                    defaultMessage: 'No, cancel',
+                  })}
+                </Button>
+              </Dialog.Cancel>
+              <Dialog.Action>
+                <Button
+                  variant="success"
+                  onClick={handleConfirm}
+                  loading={loading}
+                >
+                  {formatMessage({
+                    id: getTranslation(
+                      `batch-translate.dialog.${action}.submit-text`
+                    ),
+                    defaultMessage: 'Confirm',
+                  })}
+                </Button>
+              </Dialog.Action>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Root>
       )}
-    </Layout>
+    </div>
   )
 }
 

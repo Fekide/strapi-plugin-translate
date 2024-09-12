@@ -1,11 +1,10 @@
 import React, { memo } from 'react'
-import { Thead, Tr, Th } from '@strapi/design-system/Table'
-import { Typography } from '@strapi/design-system/Typography'
+import { Thead, Tr, Th, Typography } from '@strapi/design-system'
 import PropTypes from 'prop-types'
 import { Locale } from '@shared/types/locale'
 
 type CollectionTableHeaderProps = {
-  locales: Array<Pick<Locale, 'code'| 'name'>>
+  locales: Array<Pick<Locale, 'code' | 'name'>>
 }
 
 const CollectionTableHeader = ({ locales }: CollectionTableHeaderProps) => {

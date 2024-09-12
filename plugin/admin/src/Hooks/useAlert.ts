@@ -1,4 +1,4 @@
-import { NotificationConfig, useNotification } from '@strapi/strapi/admin'
+import { useNotification } from '@strapi/strapi/admin'
 import { useIntl } from 'react-intl'
 
 export function useAlert() {
@@ -8,13 +8,11 @@ export function useAlert() {
     type = 'info',
     id,
     defaultMessage,
-    link,
     blockTransition = true,
   }: {
     type?: 'info' | 'warning' | 'success' | 'danger' | undefined
     id: string
     defaultMessage?: string
-    link?: NotificationConfig['link']
     blockTransition?: boolean
   }) => {
     toggleNotification({
@@ -23,7 +21,6 @@ export function useAlert() {
         id,
         defaultMessage,
       }),
-      link,
       blockTransition,
       // onClose: () => localStorage.setItem('STRAPI_UPDATE_NOTIF', 'true'),
     })
