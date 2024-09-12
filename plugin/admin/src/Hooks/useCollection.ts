@@ -1,193 +1,205 @@
 import { useState, useEffect } from 'react'
-import { request } from '@strapi/helper-plugin'
-import pluginId from '../pluginId'
-import getTrad from '../utils/getTrad'
+import { useFetchClient } from '@strapi/admin/strapi-admin'
+import { PLUGIN_ID } from '../pluginId'
+import { getTranslation } from '../utils/getTranslation'
 import useAlert from './useAlert'
+import { isFetchError } from '@strapi/strapi/admin'
+import { useContentTypesTranslationReportQuery } from 'src/services/report'
 
 export function useCollection() {
-  const [collections, setCollections] = useState([])
+  // const [collections, setCollections] = useState([])
   const [locales, setLocales] = useState([])
   const [refetchIndex, setRefetchIndex] = useState(true)
   const [realTimeReports, setRealTimeReports] = useState(false)
 
   const { handleNotification } = useAlert()
 
-  const refetchCollection = () =>
-    setRefetchIndex((prevRefetchIndex) => !prevRefetchIndex)
-
-  const fetchCollections = async () => {
-    const { data, error } = await request(
-      `/${pluginId}/batch-translate/content-types/`,
-      {
-        method: 'GET',
-      }
-    )
-
-    if (error) {
-      handleNotification({
-        type: 'warning',
-        id: error.message,
-        defaultMessage: 'Failed to fetch Collections',
-        link: error.link,
-      })
-    } else {
-      const isTranslating = data.contentTypes.find(
-        (col) =>
-          !!Object.keys(col.localeReports).find((locale) =>
-            ['created', 'setup', 'running'].includes(
-              col.localeReports[locale].job?.status
-            )
-          )
-      )
-
-      if (!isTranslating) setRealTimeReports(false)
-      else setRealTimeReports(true)
-
-      setCollections(data.contentTypes)
-      setLocales(data.locales)
-    }
-  }
-
-  const translateCollection = async ({
-    contentType,
-    sourceLocale,
-    targetLocale,
-    autoPublish,
-  }) => {
-    const { error } = await request(`/${pluginId}/batch-translate`, {
-      method: 'POST',
-      body: {
-        contentType,
-        sourceLocale,
-        targetLocale,
-        autoPublish,
-      },
+  const unkownError = () =>
+    handleNotification({
+      type: 'danger',
+      id: getTranslation('errors.unknown-error'),
+      defaultMessage: 'Unknown error occured',
     })
+  
+  const { get, post } = useFetchClient()
 
-    if (error) {
+  const {
+    data: report,
+    refetch: refetchReport,
+    error: reportError,
+  } = useContentTypesTranslationReportQuery(
+    {},
+    { pollingInterval: realTimeReports ? 1000 : 0 }
+  )
+
+  if (reportError) {
+    if (isFetchError(reportError)) {
       handleNotification({
         type: 'warning',
-        id: error.message,
-        defaultMessage: 'Failed to translate collection',
-        link: error.link,
+        id: reportError.message,
+        defaultMessage: 'Failed to fetch Collections',
       })
-    } else {
-      refetchCollection()
-      handleNotification({
-        type: 'success',
-        id: getTrad('batch-translate.start-success'),
-        defaultMessage: 'Request to translate content-type was successful',
-        blockTransition: false,
-      })
-    }
+    } else unkownError()
   }
 
-  const pauseTranslation = async ({ jobID }) => {
-    const { error } = await request(
-      `/${pluginId}/batch-translate/pause/${jobID}`,
-      {
-        method: 'GET',
-      }
-    )
+  // const fetchCollections = async () => {
+  //   try {
+  //     const { data } = await get(`/${PLUGIN_ID}/batch-translate/content-types/`)
+  //     const isTranslating = data.contentTypes.find(
+  //       (col) =>
+  //         !!Object.keys(col.localeReports).find((locale) =>
+  //           ['created', 'setup', 'running'].includes(
+  //             col.localeReports[locale].job?.status
+  //           )
+  //         )
+  //     )
 
-    if (error) {
-      handleNotification({
-        type: 'warning',
-        id: error.message,
-        defaultMessage: 'Failed to pause translation',
-        link: error.link,
-      })
-    } else {
-      refetchCollection()
-      handleNotification({
-        type: 'success',
-        id: getTrad('batch-translate.pause-success'),
-        defaultMessage: 'Successfully paused translation',
-        blockTransition: false,
-      })
-    }
-  }
+  //     if (!isTranslating) setRealTimeReports(false)
+  //     else setRealTimeReports(true)
 
-  const resumeTranslation = async ({ jobID }) => {
-    const { error } = await request(
-      `/${pluginId}/batch-translate/resume/${jobID}`,
-      {
-        method: 'GET',
-      }
-    )
+  //     setCollections(data.contentTypes)
+  //     setLocales(data.locales)
+  //   } catch (error) {
+  //     if (isFetchError(error)) {
+  //       handleNotification({
+  //         type: 'warning',
+  //         id: error.message,
+  //         defaultMessage: 'Failed to fetch Collections',
+  //       })
+  //     }
+  //   }
+  // }
 
-    if (error) {
-      handleNotification({
-        type: 'warning',
-        id: error.message,
-        defaultMessage: 'Failed to resume translation',
-        link: error.link,
-      })
-    } else {
-      refetchCollection()
-      handleNotification({
-        type: 'success',
-        id: getTrad('batch-translate.resume-success'),
-        defaultMessage: 'Successfully resumed translation',
-        blockTransition: false,
-      })
-    }
-  }
+  // const translateCollection = async ({
+  //   contentType,
+  //   sourceLocale,
+  //   targetLocale,
+  //   autoPublish,
+  // }) => {
+  //   try {
+  //     await post(`/${PLUGIN_ID}/batch-translate`, {
+  //       body: {
+  //         contentType,
+  //         sourceLocale,
+  //         targetLocale,
+  //         autoPublish,
+  //       },
+  //     })
+  //     refetchCollection()
+  //     handleNotification({
+  //       type: 'success',
+  //       id: getTranslation('batch-translate.start-success'),
+  //       defaultMessage: 'Request to translate content-type was successful',
+  //       blockTransition: false,
+  //     })
+  //   } catch (error) {
+  //     if (isFetchError(error)) {
+  //       handleNotification({
+  //         type: 'warning',
+  //         id: error.message,
+  //         defaultMessage: 'Failed to translate collection',
+  //       })
+  //     } else {
+  //       unkownError()
+  //     }
+  //   }
+  // }
 
-  const cancelTranslation = async ({ jobID }) => {
-    const { error } = await request(
-      `/${pluginId}/batch-translate/cancel/${jobID}`,
-      {
-        method: 'GET',
-      }
-    )
+  // const pauseTranslation = async ({ jobID }) => {
+  //   try {
+  //     await get(`/${PLUGIN_ID}/batch-translate/pause/${jobID}`)
+  //     refetchCollection()
+  //     handleNotification({
+  //       type: 'success',
+  //       id: getTranslation('batch-translate.pause-success'),
+  //       defaultMessage: 'Successfully paused translation',
+  //       blockTransition: false,
+  //     })
+  //   } catch (error) {
+  //     if (isFetchError(error)) {
+  //       handleNotification({
+  //         type: 'warning',
+  //         id: error.message,
+  //         defaultMessage: 'Failed to pause translation',
+  //       })
+  //     } else {
+  //       unkownError()
+  //     }
+  //   }
+  // }
 
-    if (error) {
-      handleNotification({
-        type: 'warning',
-        id: error.message,
-        defaultMessage: 'Failed to cancel translation',
-        link: error.link,
-      })
-    } else {
-      refetchCollection()
-      handleNotification({
-        type: 'success',
-        id: getTrad('batch-translate.cancel-success'),
-        defaultMessage: 'Successfully cancelled translation',
-        blockTransition: false,
-      })
-    }
-  }
+  // const resumeTranslation = async ({ jobID }) => {
+  //   try {
+  //     await get(`/${PLUGIN_ID}/batch-translate/resume/${jobID}`)
+  //     refetchCollection()
+  //     handleNotification({
+  //       type: 'success',
+  //       id: getTranslation('batch-translate.resume-success'),
+  //       defaultMessage: 'Successfully resumed translation',
+  //       blockTransition: false,
+  //     })
+  //   } catch (error) {
+  //     if (isFetchError(error)) {
+  //       handleNotification({
+  //         type: 'warning',
+  //         id: error.message,
+  //         defaultMessage: 'Failed to resume translation',
+  //       })
+  //     } else {
+  //       unkownError()
+  //     }
+  //   }
+  // }
 
-  useEffect(() => {
-    fetchCollections()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refetchIndex])
+  // const cancelTranslation = async ({ jobID }) => {
+  //   try {
+  //     get(`/${PLUGIN_ID}/batch-translate/cancel/${jobID}`)
+  //     refetchCollection()
+  //     handleNotification({
+  //       type: 'success',
+  //       id: getTranslation('batch-translate.cancel-success'),
+  //       defaultMessage: 'Successfully cancelled translation',
+  //       blockTransition: false,
+  //     })
+  //   } catch (error) {
+  //     if (isFetchError(error)) {
+  //       handleNotification({
+  //         type: 'warning',
+  //         id: error.message,
+  //         defaultMessage: 'Failed to cancel translation',
+  //       })
+  //     } else {
+  //       unkownError()
+  //     }
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchCollections()
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [refetchIndex])
 
   // Start refreshing the collections when a collection is being indexed
-  useEffect(() => {
-    let interval
+  // useEffect(() => {
+  //   let interval: NodeJS.Timer | undefined
 
-    if (realTimeReports) {
-      interval = setInterval(() => {
-        refetchCollection()
-      }, 1000)
-    } else {
-      clearInterval(interval)
-    }
+  //   if (realTimeReports) {
+  //     interval = setInterval(() => {
+  //       refetchCollection()
+  //     }, 1000)
+  //   }
 
-    return () => clearInterval(interval)
-  }, [realTimeReports])
+  //   return () => clearInterval(interval)
+  // }, [realTimeReports])
 
   return {
-    collections,
-    locales,
-    translateCollection,
-    pauseTranslation,
-    resumeTranslation,
-    cancelTranslation,
-    refetchCollection,
+    collections: report?.data?.contentTypes || [],
+    locales: report?.data?.locales || [],
+    // translateCollection,
+    // pauseTranslation,
+    // resumeTranslation,
+    // cancelTranslation,
+    refetchCollection: refetchReport,
     handleNotification,
   }
 }

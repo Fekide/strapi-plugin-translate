@@ -1,14 +1,14 @@
 import { Main } from '@strapi/design-system';
 import { useIntl } from 'react-intl';
 
-import { getTranslation } from '../utils/getTranslation';
+import PluginHeader from 'src/components/PluginHeader';
+import PluginPage from 'src/components/PluginPage';
 
 const HomePage = () => {
-  const { formatMessage } = useIntl();
-
   return (
     <Main>
-      <h1>Welcome to {formatMessage({ id: getTranslation('plugin.name') })}</h1>
+      <PluginHeader />
+      <PluginPage />
     </Main>
   );
 };

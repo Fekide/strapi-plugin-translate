@@ -1,11 +1,12 @@
 import { has, get, omit } from 'lodash'
 import TRANSLATABLE_FIELDS from './translatableFields'
+import type { Schema } from '@strapi/types'
 
 const localizedPath = ['pluginOptions', 'i18n', 'localized']
 const translatePath = ['pluginOptions', 'translate', 'translate']
 
-const addTranslationToFields = (attributes) =>
-  Object.keys(attributes).reduce((acc, current) => {
+const addTranslationToFields = (attributes: Schema.ContentType['attributes']) =>
+  Object.keys(attributes).reduce<Schema.ContentType['attributes']>((acc, current) => {
     const currentAttribute = attributes[current]
 
     const attributeIsLocalized = get(currentAttribute, localizedPath, true)
@@ -40,14 +41,29 @@ const addTranslationToFields = (attributes) =>
     return acc
   }, {})
 
-const disableAttributesLocalisation = (attributes) =>
-  Object.keys(attributes).reduce((acc, current) => {
+type OmitByPath<T extends object, K extends string[]> = Pick<
+  T,
+  Exclude<keyof T, K[number]>
+>
+
+const disableAttributesLocalisation = (
+  attributes: Schema.ContentType['attributes']
+) =>
+  Object.keys(attributes).reduce<
+    Record<
+      string,
+      OmitByPath<
+        Schema.ContentType['attributes'][string],
+        ['pluginOptions', 'translate']
+      >
+    >
+  >((acc, current) => {
     acc[current] = omit(attributes[current], 'pluginOptions.translate')
 
     return acc
   }, {})
 
-const mutateCTBContentTypeSchema = (nextSchema) => {
+const mutateCTBContentTypeSchema = (nextSchema: Schema.ContentType) => {
   // Don't perform mutations components
   if (!has(nextSchema, localizedPath)) {
     return nextSchema

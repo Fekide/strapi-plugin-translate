@@ -12,23 +12,19 @@ import {
 import { useIntl } from 'react-intl'
 
 import useUsage from '../../Hooks/useUsage'
-import { getTrad } from '../../utils'
+import {  getTranslation } from '../../utils'
 
 const UsageOverview = () => {
-  const { usage, error, hasUsageInformation } = useUsage()
+  const { usage, error } = useUsage()
 
   const { formatMessage } = useIntl()
 
-  if (!error && !hasUsageInformation) {
-    return null
-  }
-
-  const content = error
+  const content = error || !usage
     ? [
         <Td key="error">
           <Typography textColor="neutral800">
             {formatMessage({
-              id: getTrad('usage.failed-to-load'),
+              id: getTranslation('usage.failed-to-load'),
               defaultMessage: 'Failed to load Usage data',
             })}
           </Typography>
@@ -39,7 +35,7 @@ const UsageOverview = () => {
           <Typography textColor="neutral800">
             {usage.count}/{usage.limit}{' '}
             {formatMessage({
-              id: getTrad('usage.characters-used'),
+              id: getTranslation('usage.characters-used'),
               defaultMessage: 'characters used',
             })}
           </Typography>
@@ -49,7 +45,7 @@ const UsageOverview = () => {
             <ProgressBar value={usage ? (usage.count / usage.limit) * 100 : 0}>
               {usage.count}/{usage.limit}{' '}
               {formatMessage({
-                id: getTrad('usage.characters-used'),
+                id: getTranslation('usage.characters-used'),
                 defaultMessage: 'characters used',
               })}
             </ProgressBar>
@@ -65,7 +61,7 @@ const UsageOverview = () => {
             <Td>
               <Typography variant="sigma">
                 {formatMessage({
-                  id: getTrad('usage.title'),
+                  id: getTranslation('usage.title'),
                   defaultMessage: 'Usage',
                 })}
               </Typography>

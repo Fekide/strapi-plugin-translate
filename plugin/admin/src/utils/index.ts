@@ -1,1 +1,1 @@
-export { default as getTrad } from './getTrad'
+export { getTranslation } from './getTranslation'

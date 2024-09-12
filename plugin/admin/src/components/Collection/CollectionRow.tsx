@@ -7,14 +7,20 @@ import { Stack } from '@strapi/design-system/Stack'
 import { useIntl } from 'react-intl'
 import { IconButton, IconButtonGroup } from '@strapi/design-system/IconButton'
 import { Tooltip } from '@strapi/design-system/Tooltip'
-import Earth from '@strapi/icons/Earth'
-import Cross from '@strapi/icons/Cross'
-import Clock from '@strapi/icons/Clock'
-import Play from '@strapi/icons/Play'
+import { Earth, Cross, Clock, Play } from '@strapi/icons'
 import PropTypes from 'prop-types'
-import { getTrad } from '../../utils'
+import { getTranslation } from '../../utils'
+import { ContentTypeTranslationReport } from '@shared/types/report'
+import { Locale } from '@shared/types/locale'
+import { ActionType } from './actions'
 
-const CollectionRow = ({ entry, locales, onAction }) => {
+interface CollectionRowProps {
+  entry: ContentTypeTranslationReport
+  locales: Array<Pick<Locale, 'code'| 'name'>>
+  onAction: (action: ActionType, locale: string) => void
+}
+
+const CollectionRow = ({ entry, locales, onAction }: CollectionRowProps) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -33,7 +39,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
               <Typography textColor="neutral800">
                 {count}{' '}
                 {formatMessage({
-                  id: getTrad(`batch-translate.table.entries`),
+                  id: getTranslation(`batch-translate.table.entries`),
                   defaultMessage: 'entries',
                 })}
               </Typography>
@@ -43,7 +49,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   backgroundColor={complete ? 'success500' : 'warning500'}
                 >
                   {formatMessage({
-                    id: getTrad(`batch-translate.table.complete.${complete}`),
+                    id: getTranslation(`batch-translate.table.complete.${complete}`),
                     defaultMessage: complete ? 'complete' : 'incomplete',
                   })}
                 </Badge>
@@ -61,7 +67,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                       backgroundColor={'success500'}
                     >
                       {formatMessage({
-                        id: getTrad(
+                        id: getTranslation(
                           `batch-translate.table.job-status.${job.status}`
                         ),
                         defaultMessage: `Job ${job.status}`,
@@ -72,7 +78,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                       description={
                         job.failureReason?.message ||
                         formatMessage({
-                          id: getTrad(`errors.unknown`),
+                          id: getTranslation(`errors.unknown`),
                           defaultMessage: 'Unknown error',
                         })
                       }
@@ -83,7 +89,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                         backgroundColor={'danger500'}
                       >
                         {formatMessage({
-                          id: getTrad(
+                          id: getTranslation(
                             `batch-translate.table.job-status.${job.status}`
                           ),
                           defaultMessage: `Job ${job.status}`,
@@ -97,7 +103,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   data-cy={`${entry.contentType}.${locale.code}.translate`}
                   onClick={() => onAction('translate', locale.code)}
                   label={formatMessage({
-                    id: getTrad(
+                    id: getTranslation(
                       'batch-translate.table.actions.labels.translate'
                     ),
                     defaultMessage: 'Translate',
@@ -115,7 +121,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   data-cy={`${entry.contentType}.${locale.code}.cancel`}
                   onClick={() => onAction('cancel', locale.code)}
                   label={formatMessage({
-                    id: getTrad('batch-translate.table.actions.labels.cancel'),
+                    id: getTranslation('batch-translate.table.actions.labels.cancel'),
                     defaultMessage: 'Cancel',
                   })}
                   icon={<Cross />}
@@ -128,7 +134,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   data-cy={`${entry.contentType}.${locale.code}.pause`}
                   onClick={() => onAction('pause', locale.code)}
                   label={formatMessage({
-                    id: getTrad('batch-translate.table.actions.labels.pause'),
+                    id: getTranslation('batch-translate.table.actions.labels.pause'),
                     defaultMessage: 'Pause',
                   })}
                   icon={<Clock />}
@@ -141,7 +147,7 @@ const CollectionRow = ({ entry, locales, onAction }) => {
                   data-cy={`${entry.contentType}.${locale.code}.resume`}
                   onClick={() => onAction('resume', locale.code)}
                   label={formatMessage({
-                    id: getTrad('batch-translate.table.actions.labels.resume'),
+                    id: getTranslation('batch-translate.table.actions.labels.resume'),
                     defaultMessage: 'Resume',
                   })}
                   icon={<Play />}

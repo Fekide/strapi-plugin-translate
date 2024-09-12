@@ -1,29 +1,31 @@
-import { useNotification } from '@strapi/helper-plugin'
+import { NotificationConfig, useNotification } from '@strapi/strapi/admin'
+import { useIntl } from 'react-intl'
 
 export function useAlert() {
-  const toggleNotification = useNotification() // HERE
+  const { toggleNotification } = useNotification() // HERE
+  const { formatMessage } = useIntl()
   const handleNotification = ({
     type = 'info',
     id,
     defaultMessage,
     link,
     blockTransition = true,
-  }: { type?: "info" | "warning" | "softWarning" | "success"; id: string, defaultMessage?: string; link?: any; blockTransition?: boolean }) => {
+  }: {
+    type?: 'info' | 'warning' | 'success' | 'danger' | undefined
+    id: string
+    defaultMessage?: string
+    link?: NotificationConfig['link']
+    blockTransition?: boolean
+  }) => {
     toggleNotification({
-      // required
-      // type: 'info|success|warning',
       type,
-      // required
-      message: {
+      message: formatMessage({
         id,
         defaultMessage,
-      },
-      // optional
+      }),
       link,
-      // optional: default = false
       blockTransition,
-      // optional
-      onClose: () => localStorage.setItem('STRAPI_UPDATE_NOTIF', "true"),
+      // onClose: () => localStorage.setItem('STRAPI_UPDATE_NOTIF', 'true'),
     })
   }
 

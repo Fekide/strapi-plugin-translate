@@ -4,41 +4,60 @@ import { Box } from '@strapi/design-system/Box'
 import { Layout } from '@strapi/design-system/Layout'
 import { Dialog, DialogBody, DialogFooter } from '@strapi/design-system/Dialog'
 import { useIntl } from 'react-intl'
-import { useNotification } from '@strapi/helper-plugin'
 import { Stack } from '@strapi/design-system/Stack'
 import { Flex } from '@strapi/design-system/Flex'
 import { Typography } from '@strapi/design-system/Typography'
-import ExclamationMarkCircle from '@strapi/icons/ExclamationMarkCircle'
+import {WarningCircle} from '@strapi/icons'
 import { Select, Option } from '@strapi/design-system/Select'
 import { Button } from '@strapi/design-system/Button'
 import { ToggleInput } from '@strapi/design-system/ToggleInput'
 import useCollection from '../../Hooks/useCollection'
-import { getTrad } from '../../utils'
+import { getTranslation } from '../../utils'
 import useUsage from '../../Hooks/useUsage'
 import CollectionTableHeader from './CollectionHeader'
 import CollectionRow from './CollectionRow'
+import {
+  useTranslateBatchJobCancelMutation,
+  useTranslateBatchJobPauseMutation,
+  useTranslateBatchJobResumeMutation,
+} from 'src/services/batch-jobs'
+import { useTranslateBatchMutation } from 'src/services/translation'
+import { ContentTypeTranslationReport } from '@shared/types/report'
+import useAlert from 'src/Hooks/useAlert'
+import { ActionType } from './actions'
+
+
+type HandleActionProps = {
+  action: ActionType
+  targetLocale: string
+  collection: ContentTypeTranslationReport
+}
 
 const CollectionTable = () => {
   const {
     collections,
     locales,
-    translateCollection,
-    cancelTranslation,
-    pauseTranslation,
-    resumeTranslation,
   } = useCollection()
   const { formatMessage } = useIntl()
-  const toggleNotification = useNotification()
-  const { usage, estimateUsageForCollection, hasUsageInformation } = useUsage()
+  const { handleNotification } = useAlert()
+  const { usage, estimateUsageForCollection, estimateUsageForCollectionResult: expectedCost } = useUsage()
+
+  const [translateBatch, translateBatchResult] = useTranslateBatchMutation()
+  const [pauseTranslation, pauseTranslationResult] =
+    useTranslateBatchJobPauseMutation()
+  const [resumeTranslation, resumeTranslationResult] =
+    useTranslateBatchJobResumeMutation()
+  const [cancelTranslation, cancelTranslationResult] =
+    useTranslateBatchJobCancelMutation()
 
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [targetLocale, setTargetLocale] = useState(null)
-  const [sourceLocale, setSourceLocale] = useState(null)
+  const [targetLocale, setTargetLocale] = useState<string | null>(null)
+  const [sourceLocale, setSourceLocale] = useState<string | null>(null)
   const [autoPublish, setAutoPublish] = useState(false)
-  const [collection, setCollection] = useState(null)
-  const [action, setAction] = useState(null)
+  const [collection, setCollection] =
+    useState<ContentTypeTranslationReport | null>(null)
+  const [action, setAction] = useState<ActionType | null>(null)
   const [loading, setLoading] = useState(false)
-  const [expectedCost, setExpectedCost] = useState(undefined)
 
   useEffect(() => {
     if (
@@ -46,13 +65,14 @@ const CollectionTable = () => {
       action === 'translate' &&
       sourceLocale &&
       targetLocale &&
-      hasUsageInformation
+      collection &&
+      usage
     ) {
       estimateUsageForCollection({
         contentType: collection.contentType,
         sourceLocale,
         targetLocale,
-      }).then(setExpectedCost, () => {})
+      })
     }
   }, [
     dialogOpen,
@@ -61,10 +81,14 @@ const CollectionTable = () => {
     collection,
     estimateUsageForCollection,
     action,
-    hasUsageInformation,
+    usage,
   ])
 
-  const handleAction = ({ action, targetLocale, collection }) => {
+  const handleAction = ({
+    action,
+    targetLocale,
+    collection,
+  }: HandleActionProps) => {
     setTargetLocale(targetLocale)
     setCollection(collection)
     setAction(action)
@@ -74,12 +98,21 @@ const CollectionTable = () => {
     setDialogOpen((prev) => !prev)
   }
 
-  const handleSourceLocaleChange = (value) => {
+  const handleSourceLocaleChange = (value: string) => {
     setSourceLocale(value)
   }
 
   const toggleAutoPublish = () => {
     setAutoPublish(!autoPublish)
+  }
+
+  const dialogFieldMissing = (field: string) => {
+    handleNotification({
+      type: 'warning',
+      id: `batch-translate.dialog.translate.${field}-missing`,
+      defaultMessage: `${field} is missing`,
+    })
+    setLoading(false)
   }
 
   const handleConfirm = async () => {
@@ -89,19 +122,21 @@ const CollectionTable = () => {
         case 'translate':
           setLoading(true)
 
-          if (!sourceLocale) {
-            toggleNotification({
-              type: 'warning',
-              message: {
-                id: 'batch-translate.dialog.translate.source-locale-missing',
-                defaultMessage: 'Source locale is missing',
-              },
-            })
-            setLoading(false)
-
+          if (!targetLocale) {
+            dialogFieldMissing('target-locale')
             return
           }
-          await translateCollection({
+
+          if (!sourceLocale) {
+            dialogFieldMissing('source-locale')
+            return
+          }
+
+          if (!collection) {
+            dialogFieldMissing('collection')
+            return
+          }
+          await translateBatch({
             contentType: collection.contentType,
             sourceLocale,
             targetLocale,
@@ -109,18 +144,42 @@ const CollectionTable = () => {
           })
           break
         case 'cancel':
+          if (!targetLocale) {
+            dialogFieldMissing('target-locale')
+            return
+          }
+          if (!collection) {
+            dialogFieldMissing('collection')
+            return
+          }
           await cancelTranslation({
-            jobID: collection.localeReports[targetLocale]?.job?.id,
+            documentId: collection.localeReports[targetLocale].job.documentId,
           })
           break
         case 'pause':
+          if (!targetLocale) {
+            dialogFieldMissing('target-locale')
+            return
+          }
+          if (!collection) {
+            dialogFieldMissing('collection')
+            return
+          }
           await pauseTranslation({
-            jobID: collection.localeReports[targetLocale]?.job?.id,
+            documentId: collection.localeReports[targetLocale].job.documentId,
           })
           break
         case 'resume':
+          if (!targetLocale) {
+            dialogFieldMissing('target-locale')
+            return
+          }
+          if (!collection) {
+            dialogFieldMissing('collection')
+            return
+          }
           await resumeTranslation({
-            jobID: collection.localeReports[targetLocale]?.job?.id,
+            documentId: collection.localeReports[targetLocale].job.documentId,
           })
           break
         default:
@@ -136,14 +195,6 @@ const CollectionTable = () => {
     } catch (error) {
       setLoading(false)
       console.error(error)
-
-      toggleNotification({
-        type: 'warning',
-        message: {
-          id: getTrad(error.response?.data?.error?.message),
-          defaultMessage: `Failed to do action ${action}`,
-        },
-      })
     }
   }
 
@@ -171,17 +222,17 @@ const CollectionTable = () => {
         <Dialog
           onClose={handleToggleDialog}
           title={formatMessage({
-            id: getTrad(`batch-translate.dialog.${action}.title`),
+            id: getTranslation(`batch-translate.dialog.${action}.title`),
             defaultMessage: 'Confirmation',
           })}
           isOpen={dialogOpen}
         >
-          <DialogBody icon={<ExclamationMarkCircle />}>
+          <DialogBody icon={<WarningCircle />}>
             <Stack size={2}>
               <Flex justifyContent="center">
                 <Typography id="confirm-description">
                   {formatMessage({
-                    id: getTrad(`batch-translate.dialog.${action}.content`),
+                    id: getTranslation(`batch-translate.dialog.${action}.content`),
                     defaultMessage: 'Confirmation body',
                   })}
                 </Typography>
@@ -191,7 +242,7 @@ const CollectionTable = () => {
                   <Stack spacing={2}>
                     <Select
                       label={formatMessage({
-                        id: getTrad('Settings.locales.modal.locales.label'),
+                        id: getTranslation('Settings.locales.modal.locales.label'),
                       })}
                       onChange={handleSourceLocaleChange}
                       value={sourceLocale}
@@ -208,13 +259,13 @@ const CollectionTable = () => {
                     </Select>
                     <ToggleInput
                       label={formatMessage({
-                        id: getTrad(
+                        id: getTranslation(
                           'batch-translate.dialog.translate.autoPublish.label'
                         ),
                         defaultMessage: 'Auto-Publish',
                       })}
                       hint={formatMessage({
-                        id: getTrad(
+                        id: getTranslation(
                           'batch-translate.dialog.translate.autoPublish.hint'
                         ),
                         defaultMessage:
@@ -226,22 +277,22 @@ const CollectionTable = () => {
                       checked={autoPublish}
                       onChange={toggleAutoPublish}
                     />
-                    {expectedCost && hasUsageInformation && (
+                    {expectedCost && usage && (
                       <Typography>
                         {formatMessage({
-                          id: getTrad('usage.estimatedUsage'),
+                          id: getTranslation('usage.estimatedUsage'),
                           defaultMessage:
                             'This action is expected to increase your API usage by: ',
                         })}
                         {expectedCost}
                       </Typography>
                     )}
-                    {hasUsageInformation &&
+                    {usage &&
                       expectedCost &&
-                      expectedCost > usage.limit - usage.count && (
+                      expectedCost > usage?.limit - usage?.count && (
                         <Typography>
                           {formatMessage({
-                            id: getTrad('usage.estimatedUsageExceedsQuota'),
+                            id: getTranslation('usage.estimatedUsageExceedsQuota'),
                             defaultMessage:
                               'This action is expected to exceed your API Quota',
                           })}
@@ -268,7 +319,7 @@ const CollectionTable = () => {
                 loading={loading}
               >
                 {formatMessage({
-                  id: getTrad(`batch-translate.dialog.${action}.submit-text`),
+                  id: getTranslation(`batch-translate.dialog.${action}.submit-text`),
                   defaultMessage: 'Confirm',
                 })}
               </Button>
