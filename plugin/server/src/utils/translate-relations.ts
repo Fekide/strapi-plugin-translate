@@ -1,10 +1,11 @@
-'use strict'
+
 
 import { get, cloneDeep, has, compact } from 'lodash'
 import { getConfig } from './get-config'
 import { Modules, UID } from '@strapi/strapi'
 import { Struct, Schema } from '@strapi/strapi'
 import { keys } from './objects'
+import { TranslatePluginOptions } from '@shared/types/plugin-options'
 
 async function getRelevantLocalization(
   contentType: UID.ContentType,
@@ -132,13 +133,13 @@ async function translateRelation(
     relationSchema,
     'pluginOptions.i18n.localized',
     false
-  )
+  ) as boolean
 
   const onTranslate = get(
     attributeSchema,
     'pluginOptions.translate.translate',
     'translate'
-  )
+  ) as TranslatePluginOptions["translate"]
 
   const relationIsBothWays =
     has(attributeSchema, 'inversedBy') || has(attributeSchema, 'mappedBy')
