@@ -1,9 +1,7 @@
 import { Core } from "@strapi/strapi"
-import { TranslateProviderUsageResult } from "../../../shared/types/provider"
+import { ProviderService } from "@shared/services/provider"
 
-export interface ProviderService {
-  usage(): Promise<TranslateProviderUsageResult>
-}
+
 
 export default ({ strapi }: { strapi: Core.Strapi }): ProviderService => ({
   async usage() {

@@ -7,61 +7,21 @@ import groupBy from 'lodash/groupBy'
 import { geti18nService, getService } from '../utils/get-service'
 import {
   getAllTranslatableFields,
-  TranslatableField,
 } from '../utils/translatable-fields'
 import { filterAllDeletedFields } from '../utils/delete-fields'
 import { cleanData } from '../utils/clean-data'
 import { TRANSLATE_PRIORITY_BATCH_TRANSLATION } from '../utils/constants'
 import { updateUids } from '../utils/update-uids'
 import { removeUids } from '../utils/remove-uids'
-import { BatchTranslateManager } from './batch-translate'
-import { Core, UID, Data, Modules  } from '@strapi/strapi'
+import { BatchTranslateManagerImpl } from './batch-translate'
+import { Core, UID } from '@strapi/strapi'
 import { Locale } from '@strapi/i18n/dist/shared/contracts/locales'
 import { TranslateConfig } from 'src/config'
 import { keys } from 'src/utils/objects'
-
-export interface TranslateService {
-  batchTranslateManager: BatchTranslateManager
-  estimateUsage: <TSchemaUID extends UID.ContentType>(params: {
-    data: Modules.Documents.Document<TSchemaUID>
-    fieldsToTranslate: Array<TranslatableField>
-  }) => Promise<number>
-  translate: <TSchemaUID extends UID.ContentType>(params: {
-    data: Modules.Documents.Document<TSchemaUID>
-    sourceLocale: string
-    targetLocale: string
-    fieldsToTranslate: Array<TranslatableField>
-    priority?: number
-  }) => Promise<Modules.Documents.Document<TSchemaUID>>
-  batchTranslate: <TSchemaUID extends UID.ContentType>(params: {
-    contentType: TSchemaUID
-    sourceLocale: string
-    targetLocale: string
-    entityIds?: Data.DocumentID[]
-    autoPublish?: boolean
-  }) => Promise<Modules.Documents.AnyDocument>
-  batchTranslatePauseJob: (id: Data.DocumentID) => Promise<Modules.Documents.AnyDocument>
-  batchTranslateResumeJob: (id: Data.DocumentID) => Promise<Modules.Documents.AnyDocument>
-  batchTranslateCancelJob: (id: Data.DocumentID) => Promise<Modules.Documents.AnyDocument>
-  batchUpdate: (params: {
-    updatedEntryIDs: Data.DocumentID[]
-    sourceLocale: string
-  }) => Promise<{result: 'success'}>
-  contentTypes: () => Promise<{
-    contentTypes: {
-      contentType: UID.ContentType
-      collection: string
-      localeReports: Record<
-        string,
-        { count: number; complete: boolean; job: any }
-      >
-    }[]
-    locales: { code: string; name: string }[]
-  }>
-}
+import { TranslateService } from '@shared/services/translate'
 
 export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
-  batchTranslateManager: new BatchTranslateManager(),
+  batchTranslateManager: new BatchTranslateManagerImpl(),
 
   async estimateUsage({ data, fieldsToTranslate }) {
     const text = fieldsToTranslate

@@ -1,5 +1,6 @@
 import { Converter } from 'showdown'
 import { JSDOM } from 'jsdom'
+import { FormatService } from '@shared/services/format'
 
 const dom = new JSDOM()
 const showdownConverter = new Converter({
@@ -16,11 +17,6 @@ function htmlToMarkdown(singleText: string): string {
     .makeMarkdown(singleText, dom.window.document)
     .replace(/<!-- -->\n/g, '')
     .trim()
-}
-
-export interface FormatService {
-  markdownToHtml(text: string | string[]): string | string[]
-  htmlToMarkdown(text: string | string[]): string | string[]
 }
 
 export default (): FormatService => ({

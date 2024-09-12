@@ -2,10 +2,12 @@
 
 import { Data, Modules } from '@strapi/strapi'
 import { batchContentTypeUid } from '../../utils/constants'
-import { BatchTranslateJob } from './BatchTranslateJob'
+import { BatchTranslateJobExecutor } from './BatchTranslateJobExecutor'
+import { BatchTranslateManager } from '@shared/services/translate'
+import { BatchTranslateJob } from '@shared/types/batch-translate-job'
 
-export class BatchTranslateManager {
-  runningJobs: Map<Data.DocumentID, BatchTranslateJob>
+export class BatchTranslateManagerImpl implements BatchTranslateManager {
+  runningJobs: Map<Data.DocumentID, BatchTranslateJobExecutor>
   constructor() {
     this.runningJobs = new Map()
   }
@@ -40,8 +42,8 @@ export class BatchTranslateManager {
     }
     const entity = await strapi
       .documents(batchContentTypeUid)
-      .create({ data: params })
-    const job = new BatchTranslateJob(entity)
+      .create({ data: params }) as BatchTranslateJob
+    const job = new BatchTranslateJobExecutor(entity)
 
     job
       .start()
@@ -57,7 +59,7 @@ export class BatchTranslateManager {
   async pauseJob(documentId: Data.DocumentID) {
     if (this.runningJobs.has(documentId)) {
       await this.runningJobs.get(documentId).pause()
-      return strapi.documents(batchContentTypeUid).findOne({documentId})
+      return strapi.documents(batchContentTypeUid).findOne({documentId}) as Promise<BatchTranslateJob>
     } else {
       throw new Error('translate.batch-translate.job-not-running')
     }
@@ -65,23 +67,23 @@ export class BatchTranslateManager {
 
   async resumeJob(documentId: Data.DocumentID) {
     if (!this.runningJobs.has(documentId)) {
-      const entity = await strapi.documents(batchContentTypeUid).findOne({documentId})
+      const entity = await strapi.documents(batchContentTypeUid).findOne({documentId}) as BatchTranslateJob
       if (!entity) {
         throw new Error('translate.batch-translate.job-does-not-exist')
       }
       this._resumeJob(entity)
       return {
         ...entity,
-        status: 'running',
+        status: 'running' as const,
       }
     } else {
       throw new Error('translate.batch-translate.job-already-running')
     }
   }
 
-  _resumeJob(entity: Modules.Documents.AnyDocument) {
+  _resumeJob(entity: BatchTranslateJob) {
     if (['running', 'paused'].includes(entity.status)) {
-      const job = new BatchTranslateJob(entity)
+      const job = new BatchTranslateJobExecutor(entity)
 
       const promise = job.start(true)
       strapi.log.debug(JSON.stringify(entity))
@@ -99,7 +101,7 @@ export class BatchTranslateManager {
   async cancelJob(documentId: Data.DocumentID) {
     if (this.runningJobs.has(documentId)) {
       await this.runningJobs.get(documentId).cancel()
-      return strapi.documents(batchContentTypeUid).findOne({documentId})
+      return strapi.documents(batchContentTypeUid).findOne({documentId}) as Promise<BatchTranslateJob>
     } else {
       throw new Error('translate.batch-translate.job-not-running')
     }

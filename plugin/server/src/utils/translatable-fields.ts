@@ -7,12 +7,8 @@ import {
 } from './translated-field-types'
 import { ContentTypeSchema } from '@strapi/types/dist/struct'
 import { Attribute } from '@strapi/types/dist/schema'
-import { FieldFormat } from '../../../shared/types/formats'
+import { TranslatableField } from '@shared/types/utils'
 
-export interface TranslatableField {
-  field: string
-  format: FieldFormat
-}
 
 /**
  * Get the field or fields to translate of a content type

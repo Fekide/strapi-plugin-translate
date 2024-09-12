@@ -1,6 +1,7 @@
 import { UID, Data } from '@strapi/strapi'
 import { errors } from '@strapi/utils'
 import { BatchTranslateJob } from '../types/batch-translate-job'
+import { ReportData } from '@shared/types/report'
 
 
 /**
@@ -155,17 +156,7 @@ export declare namespace ContentTypesTranslationReport {
 
   export type Response =
     | {
-        data: {
-          contentTypes: {
-            contentType: UID.ContentType
-            collection: string
-            localeReports: Record<
-              string,
-              { count: number; complete: boolean; job: any }
-            >
-          }[]
-          locales: { code: string; name: string }[]
-        }
+        data: ReportData
       }
     | {
         data: null

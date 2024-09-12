@@ -1,26 +1,6 @@
+import { UntranslatedService } from '@shared/services/untranslated';
 import { Core, Modules, UID } from '@strapi/strapi'
 import { PopulateRule } from 'src/utils/populate-all';
-
-export interface UntranslatedService {
-  getUntranslatedEntity<TSchemaUID extends UID.ContentType>(
-    {
-      uid,
-      targetLocale,
-      sourceLocale,
-    }: { uid: TSchemaUID; targetLocale: string; sourceLocale: string },
-    { populate }: { populate: PopulateRule }
-  ): Promise<Modules.Documents.Document<TSchemaUID>>
-  getUntranslatedDocumentIDs({
-    uid,
-    targetLocale,
-    sourceLocale,
-  }: {
-    uid: UID.ContentType
-    targetLocale: string
-    sourceLocale: string
-  }): Promise<number[]>
-  isFullyTranslated(uid: UID.ContentType, targetLocale: string): Promise<boolean>
-}
 
 export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
   return {

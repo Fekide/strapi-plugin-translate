@@ -1,7 +1,7 @@
+import { Data } from '@strapi/types'
 import { errors } from '@strapi/utils'
-import { Entity } from '@strapi/strapi/admin'
 
-export interface UpdatedEntry extends Entity {
+export type UpdatedEntry = Data.Entity & {
   contentType: string
   groupID: string
   localesWithUpdates: string[]

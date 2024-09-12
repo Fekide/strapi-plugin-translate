@@ -1,9 +1,9 @@
 import { Core } from '@strapi/strapi'
-import { ChunksService } from 'src/services/chunks'
-import { FormatService } from 'src/services/format'
-import { ProviderService } from 'src/services/provider'
-import { TranslateService } from 'src/services/translate'
-import { UntranslatedService } from 'src/services/untranslated'
+import { ChunksService } from './chunks'
+import { FormatService } from './format'
+import { ProviderService } from './provider'
+import { TranslateService } from './translate'
+import { UntranslatedService } from './untranslated'
 
 export interface ServiceMap {
   'batch-translate-job': Core.CoreAPI.Service.CollectionType

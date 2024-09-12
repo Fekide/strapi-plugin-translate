@@ -13,8 +13,9 @@ import { getAllTranslatableFields } from '../../utils/translatable-fields'
 import { translateRelations } from '../../utils/translate-relations'
 import { updateUids } from '../../utils/update-uids'
 import { differenceBy, intersectionBy } from 'lodash'
+import { BatchTranslateJob } from '@shared/types/batch-translate-job'
 
-export class BatchTranslateJob {
+export class BatchTranslateJobExecutor {
   totalEntities: number
   translatedEntities: number
   intervalId: null
@@ -43,7 +44,7 @@ export class BatchTranslateJob {
     entityIds,
     status,
     autoPublish = false,
-  }: Modules.Documents.AnyDocument) {
+  }: BatchTranslateJob) {
     this.totalEntities = 0
     this.translatedEntities = 0
     this.intervalId = null

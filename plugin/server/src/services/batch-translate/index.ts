@@ -1,3 +1,3 @@
-export { BatchTranslateJob } from './BatchTranslateJob'
-export { BatchTranslateManager } from './BatchTranslateManager'
+export { BatchTranslateJobExecutor } from './BatchTranslateJobExecutor'
+export { BatchTranslateManagerImpl } from './BatchTranslateManager'
 

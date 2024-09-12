@@ -1,4 +1,4 @@
-
+import { ChunksService, SplitFunction } from '@shared/services/chunks'
 import { stringByteLengthEncoded } from '../utils/byte-length'
 
 /**
@@ -6,7 +6,10 @@ import { stringByteLengthEncoded } from '../utils/byte-length'
  * and each chunk being at most a specific byte size.
  *
  */
-function splitTextArray(textArray: string[], { maxLength, maxByteSize }: { maxLength?: number; maxByteSize?: number } | undefined = {}): {chunks: string[][], reduceFunction: (translationResults: string[][]) => string[]} {
+const splitTextArray: SplitFunction = (
+  textArray,
+  { maxLength, maxByteSize }
+) => {
   // Information about how to join chunks back together
   const reduceInformation = []
 
@@ -114,10 +117,6 @@ function splitTextArray(textArray: string[], { maxLength, maxByteSize }: { maxLe
   return { chunks: chunkedText, reduceFunction }
 }
 
-export interface ChunksService {
-  split: typeof splitTextArray
-}
-
-export default () => ({
+export default (): ChunksService => ({
   split: splitTextArray,
 })
