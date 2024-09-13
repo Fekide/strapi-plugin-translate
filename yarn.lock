@@ -5161,7 +5161,7 @@ axios-mock-adapter@^2.0.0:
     fast-deep-equal "^3.1.3"
     is-buffer "^2.0.5"
 
-axios@1.7.4, "axios@>=0.21.2 <1.2.0 || >=1.2.1", axios@^1.6.1, axios@^1.6.4, axios@^1.7.4:
+axios@1.7.4, "axios@>=0.21.2 <1.2.0 || >=1.2.1", axios@^1.6.1, axios@^1.7.4:
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.4.tgz#4c8ded1b43683c8dd362973c393f3ede24052aa2"
   integrity sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==
@@ -6864,13 +6864,13 @@ deep-is@^0.1.3:
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.4.tgz#a6f2dce612fadd2ef1f519b73551f17e85199831"
   integrity sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==
 
-deepl-node@^1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/deepl-node/-/deepl-node-1.11.1.tgz#e4ce8409ea874aa46c435ac80e1fe639b0795123"
-  integrity sha512-Xdy0sDfqGP40nG++u8IipKD8jxlp6ss4V95pITUIPwMej0bbCngdOSwuVtFSFj7PoemOrjLls4YRZL3refCg1g==
+deepl-node@^1.13.1:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/deepl-node/-/deepl-node-1.13.1.tgz#00efe900c64b688f2d5f62ae8563fcbeacb7c18e"
+  integrity sha512-J1Y4+FYNxxTyqKiTM83Vub8Fm6/z6ZlV7yFKJ59Oi5dWXjdILQWd8UR4eiNF+pJtTBH5ObRv1cdUrRyUuN5VDg==
   dependencies:
     "@types/node" ">=12.0"
-    axios "^1.6.4"
+    axios "^1.7.4"
     form-data "^3.0.0"
     loglevel ">=1.6.2"
 
