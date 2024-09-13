@@ -1,4 +1,4 @@
-import { Modules, UID } from '@strapi/strapi'
+import { Data, Modules, UID } from '@strapi/strapi'
 
 export interface UntranslatedService {
   getUntranslatedEntity<TSchemaUID extends UID.ContentType>(
@@ -9,7 +9,7 @@ export interface UntranslatedService {
     uid: UID.ContentType
     targetLocale: string
     sourceLocale: string
-  }): Promise<number[]>
+  }): Promise<Data.DocumentID[]>
   isFullyTranslated(
     uid: UID.ContentType,
     targetLocale: string

@@ -1,5 +1,7 @@
 import { UntranslatedService } from '@shared/services/untranslated';
+import { Locale } from '@shared/types/locale';
 import { Core } from '@strapi/strapi'
+import { geti18nService } from 'src/utils/get-service';
 
 export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
   return {
@@ -78,62 +80,20 @@ export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
      * Get all ids of untranslated source entities based not the parameters
      *
      * @param param0 Parameters for the content type
-     * @returns IDs of all entities of the content type 'uid' that have not yet been translated from 'sourceLocale' to 'targetLocale'
+     * @returns DocumentIDs of all entities of the content type 'uid' that have not yet been translated from 'sourceLocale' to 'targetLocale'
      */
     async getUntranslatedDocumentIDs({ uid, targetLocale, sourceLocale }) {
-      throw new Error("getUntranslatedEntityIDs: to be migrated")
-      const metadata = strapi.db.metadata.get(uid)
-      if (!metadata) {
-        throw new Error('Content Type does not exist')
-      }
-      const tableName = metadata.tableName
-      const joinTable = metadata.attributes?.localizations?.["joinTable"]
-      if (!joinTable) {
-        throw new Error('Content Type not localized')
-      }
-      const notTranslated = await strapi.db
-        .getConnection(tableName)
-        .select(`${tableName}.${joinTable.joinColumn.referencedColumn}`)
-        // Join the other localizations (null allowed)
-        .leftJoin(
-          joinTable.name,
-          `${tableName}.${joinTable.joinColumn.referencedColumn}`,
-          `${joinTable.name}.${joinTable.joinColumn.name}`
-        )
-        .leftJoin(
-          `${tableName} as c2`,
-          `${joinTable.name}.${joinTable.inverseJoinColumn.name}`,
-          `c2.${joinTable.inverseJoinColumn.referencedColumn}`
-        )
-        // The other localizations should not include the target locale
-        .whereNotIn(
-          `${tableName}.${joinTable.joinColumn.referencedColumn}`,
-          strapi.db
-            .getConnection(tableName)
-            .select(`${tableName}.${joinTable.joinColumn.referencedColumn}`)
-            // Join the other localizations (null not allowed)
-            .join(
-              joinTable.name,
-              `${tableName}.${joinTable.joinColumn.referencedColumn}`,
-              `${joinTable.name}.${joinTable.joinColumn.name}`
-            )
-            .join(
-              `${tableName} as c2`,
-              `${joinTable.name}.${joinTable.inverseJoinColumn.name}`,
-              `c2.${joinTable.inverseJoinColumn.referencedColumn}`
-            )
-            // other localization should be the target
-            .where('c2.locale', targetLocale)
-            // start localization should be the source
-            .andWhere(`${tableName}.locale`, sourceLocale)
-        )
-        // Only from the source locale
-        .andWhere(`${tableName}.locale`, sourceLocale)
-      if (!notTranslated || notTranslated.length == 0) {
-        return []
-      }
-      // Return the IDs
-      return notTranslated.map(({ id }) => id)
+      const sourceEntities = await strapi.documents(uid).findMany({
+        locale: sourceLocale,
+        fields: ['documentId'],
+      })
+      const targetEntities = await strapi.documents(uid).findMany({
+        locale: targetLocale,
+        fields: ['documentId'],
+      })
+      const sourceIDs = sourceEntities.map((entity) => entity.documentId)
+      const targetIDs = targetEntities.map((entity) => entity.documentId)
+      return sourceIDs.filter((id) => !targetIDs.includes(id))
     },
 
     /**
@@ -146,54 +106,28 @@ export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
      * @returns if the target locale is fully translated
      */
     async isFullyTranslated(uid, targetLocale) {
-      throw new Error("isFullyTranslated: to be migrated")
-      const metadata = strapi.db.metadata.get(uid)
-      if (!metadata) {
-        throw new Error('Content Type does not exist')
+      const targetEntities = await strapi.documents(uid).findMany({
+        locale: targetLocale,
+        fields: ['documentId'],
+      })
+      const targetIDs = targetEntities.map((entity) => entity.documentId)
+      const locales = await geti18nService("locales").find() as Locale[]
+      const localeCodes = locales.map((locale) => locale.code)
+
+      for (const locale of localeCodes) {
+        if (locale === targetLocale) {
+          continue
+        }
+        const otherEntities = await strapi.documents(uid).findMany({
+          locale,
+          fields: ['documentId'],
+        })
+        const otherIDs = otherEntities.map((entity) => entity.documentId)
+        if (otherIDs.some((documentId) => !targetIDs.includes(documentId))) {
+          return false
+        }
       }
-      const tableName = metadata.tableName
-      const joinTable = metadata.attributes?.localizations?.["joinTable"]
-      if (!joinTable) {
-        throw new Error('Content Type not localized')
-      }
-      const notTranslated = await strapi.db
-        .getConnection(tableName)
-        // Join the other localizations (null allowed)
-        .leftJoin(
-          joinTable.name,
-          `${tableName}.${joinTable.joinColumn.referencedColumn}`,
-          `${joinTable.name}.${joinTable.joinColumn.name}`
-        )
-        .leftJoin(
-          `${tableName} as c2`,
-          `${joinTable.name}.${joinTable.inverseJoinColumn.name}`,
-          `c2.${joinTable.inverseJoinColumn.referencedColumn}`
-        )
-        // The other localizations should not include the target locale
-        .whereNotIn(
-          `${tableName}.${joinTable.joinColumn.referencedColumn}`,
-          strapi.db
-            .getConnection(tableName)
-            .select(`${tableName}.${joinTable.joinColumn.referencedColumn}`)
-            // Join the other localizations (null not allowed)
-            .join(
-              joinTable.name,
-              `${tableName}.${joinTable.joinColumn.referencedColumn}`,
-              `${joinTable.name}.${joinTable.joinColumn.name}`
-            )
-            .join(
-              `${tableName} as c2`,
-              `${joinTable.name}.${joinTable.inverseJoinColumn.name}`,
-              `c2.${joinTable.inverseJoinColumn.referencedColumn}`
-            )
-            // other localization should be the target
-            .where('c2.locale', targetLocale)
-        )
-        // First entity cannot be of the target locale
-        .andWhereNot(`${tableName}.locale`, targetLocale)
-        // One is enough to see if there is at least one missing or not
-        .limit(1)
-      return notTranslated.length === 0
+      return true
     },
   }
 }
