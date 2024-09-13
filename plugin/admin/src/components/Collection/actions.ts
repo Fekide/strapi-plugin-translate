@@ -1,1 +1,1 @@
-export type ActionType = 'translate' | 'cancel' | 'pause' | 'resume'
+export type ActionType = 'translate' | 'cancel' | 'pause' | 'resume' | 'update'
