@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "bottleneck": "^2.19.5",
-    "deepl-node": "^1.11.1"
+    "deepl-node": "^1.13.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.0",
