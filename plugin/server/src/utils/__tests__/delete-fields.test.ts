@@ -46,7 +46,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const newData = _.cloneDeep(data)
@@ -68,7 +68,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'copy' } },
       }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const newData = _.cloneDeep(data)
@@ -90,7 +90,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'delete' } },
       }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const newData = _.cloneDeep(data)
@@ -109,7 +109,7 @@ describe('delete fields', () => {
       }
       const schema: Schema.Attribute.AnyAttribute = { type: 'integer' }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const newData = _.cloneDeep(data)
@@ -132,7 +132,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'delete' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -158,7 +158,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -184,7 +184,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -210,7 +210,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -240,7 +240,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -275,7 +275,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'comp'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -311,7 +311,7 @@ describe('delete fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'dynamic_zone'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'dynamiczone',
         'component',

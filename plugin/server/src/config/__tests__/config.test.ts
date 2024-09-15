@@ -10,13 +10,13 @@ describe('config', () => {
   it('default provider is dummy', () => {
     setup({})
 
-    expect(strapi.config.get<TranslateConfig>('plugin.translate').provider).toEqual('dummy')
+    expect(strapi.config.get<TranslateConfig>('plugin::translate').provider).toEqual('dummy')
   })
 
   it('setting translate relations to false', () => {
     setup({ config: { translateRelations: false } })
 
-    expect(strapi.config.get<TranslateConfig>('plugin.translate').translateRelations).toEqual(
+    expect(strapi.config.get<TranslateConfig>('plugin::translate').translateRelations).toEqual(
       false
     )
   })
@@ -30,7 +30,7 @@ describe('config', () => {
     ]
     setup({ config: { translatedFieldTypes } })
 
-    expect(strapi.config.get<TranslateConfig>('plugin.translate').translatedFieldTypes).toEqual(
+    expect(strapi.config.get<TranslateConfig>('plugin::translate').translatedFieldTypes).toEqual(
       translatedFieldTypes
     )
   })

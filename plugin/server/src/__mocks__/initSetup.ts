@@ -134,7 +134,7 @@ const initSetup = ({
       ...plugins,
       translate: {
         config: function (key, defaultValue) {
-          return mock.config.get(`plugin.translate.${String(key)}`) || defaultValue
+          return mock.config.get(`plugin::translate.${String(key)}`) || defaultValue
         },
         service(name) {
           return this.services[name] as any

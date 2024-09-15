@@ -107,7 +107,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       })
 
       const translatedRelations = await translateRelations(
-        strapi.config.get<TranslateConfig>('plugin.translate').regenerateUids
+        strapi.config.get<TranslateConfig>('plugin::translate').regenerateUids
           ? await updateUids(translatedData, contentType)
           : translatedData,
         contentSchema,

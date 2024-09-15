@@ -128,7 +128,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         })
 
         const uidsUpdated = strapi.config.get<TranslateConfig>(
-          'plugin.translate'
+          'plugin::translate'
         ).regenerateUids
           ? await updateUids(translated, update.contentType)
           : removeUids(translated, update.contentType)

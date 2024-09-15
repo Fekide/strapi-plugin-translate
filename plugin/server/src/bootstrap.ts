@@ -40,7 +40,7 @@ const createProvider = (translateConfig: TranslateConfig) => {
 
 
 const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
-  const translateConfig = strapi.config.get<TranslateConfig>('plugin.translate')
+  const translateConfig = strapi.config.get<TranslateConfig>('plugin::translate')
   strapi.plugin('translate').provider = createProvider(translateConfig)
 
   // Listen for updates to entries, mark them as updated

@@ -48,7 +48,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const translatedField = await getTranslateFields(data, schema, attr)
@@ -69,7 +69,7 @@ describe('translatable fields', () => {
         pluginOptions: { i18n: { localized: true } },
       }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const translatedField = await getTranslateFields(data, schema, attr)
@@ -90,7 +90,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'copy' } },
       }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const translatedField = await getTranslateFields(data, schema, attr)
@@ -111,7 +111,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'delete' } },
       }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const translatedField = await getTranslateFields(data, schema, attr)
@@ -129,7 +129,7 @@ describe('translatable fields', () => {
       }
       const schema: Schema.Attribute.AnyAttribute = { type: 'boolean' }
       const attr = 'field'
-      strapi.config.set('plugin.translate.translatedFieldTypes', ['text'])
+      strapi.config.set('plugin::translate.translatedFieldTypes', ['text'])
 
       // when
       const translatedField = await getTranslateFields(data, schema, attr)
@@ -151,7 +151,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -178,7 +178,7 @@ describe('translatable fields', () => {
         pluginOptions: { i18n: { localized: true } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -205,7 +205,7 @@ describe('translatable fields', () => {
         pluginOptions: { i18n: { localized: true } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -232,7 +232,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -257,7 +257,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -286,7 +286,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'child_component'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -323,7 +323,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'comp'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'component',
       ])
@@ -360,7 +360,7 @@ describe('translatable fields', () => {
         pluginOptions: { translate: { translate: 'translate' } },
       }
       const attr = 'dynamic_zone'
-      strapi.config.set('plugin.translate.translatedFieldTypes', [
+      strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
         'dynamiczone',
         'component',
