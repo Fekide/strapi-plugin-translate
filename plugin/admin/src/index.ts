@@ -1,16 +1,18 @@
-import { getTranslation } from './utils/getTranslation';
-import { PLUGIN_ID } from './pluginId';
-import { Initializer } from './components/Initializer';
-import PluginIcon from './components/PluginIcon';
-import { StrapiApp } from '@strapi/strapi/admin';
-import CMEditViewTranslateLocale from './components/CMEditViewTranslateLocale';
-import mutateCTBContentTypeSchema from './utils/mutateCTBContentTypeSchema';
-import TRANSLATABLE_FIELDS from './utils/translatableFields';
-import { get } from 'lodash';
-import { prefixPluginTranslations } from './utils/prefixPluginTranslations';
+import { getTranslation } from './utils/getTranslation'
+import { PLUGIN_ID } from './pluginId'
+import { Initializer } from './components/Initializer'
+import PluginIcon from './components/PluginIcon'
+import { PluginDefinition, StrapiApp } from '@strapi/strapi/admin'
+import CMEditViewTranslateLocale from './components/CMEditViewTranslateLocale'
+import mutateCTBContentTypeSchema from './utils/mutateCTBContentTypeSchema'
+import TRANSLATABLE_FIELDS from './utils/translatableFields'
+import { get } from 'lodash'
+import { prefixPluginTranslations } from './utils/prefixPluginTranslations'
+import { translateApi } from './services/api'
+import permissions from './permissions'
 
-export default {
-  register(app: StrapiApp) {
+const admin: PluginDefinition = {
+  register(app) {
     app.addMenuLink({
       to: `plugins/${PLUGIN_ID}`,
       icon: PluginIcon,
@@ -18,26 +20,30 @@ export default {
         id: `${PLUGIN_ID}.plugin.name`,
         defaultMessage: PLUGIN_ID,
       },
-      Component: async () => import('./pages/App'),
-      permissions: [
-        { action: 'plugin::translate.batch-translate', subject: null },
-        { action: 'plugin::translate.translate', subject: null },
-        { action: 'plugin::translate.usage', subject: null },
-      ],
-    });
+      Component: () => import('./pages/App'),
+      permissions,
+    })
+    // FIXME: This overwrites the existing reducers with path adminApi
+    // This is the exact same way, the i18n plugin does it, but it is not working
+    // If it is removed, the plugin queries do not work, otherwise all the admin apis do not work
+    app.addReducers({
+      [translateApi.reducerPath]: translateApi.reducer,
+    })
 
     app.registerPlugin({
       id: PLUGIN_ID,
       initializer: Initializer,
       isReady: false,
       name: PLUGIN_ID,
-    });
-  },
-  bootstrap(app: StrapiApp) {
-    app.getPlugin('content-manager').injectComponent('editView', 'informations', {
-      name: 'translate-locale',
-      Component: CMEditViewTranslateLocale,
     })
+  },
+  bootstrap(app) {
+    app
+      .getPlugin('content-manager')
+      .injectComponent('editView', 'informations', {
+        name: 'translate-locale',
+        Component: CMEditViewTranslateLocale,
+      })
 
     const ctbPlugin = app.getPlugin('content-type-builder')
 
@@ -113,7 +119,9 @@ export default {
                     value: 'copy',
                     metadatas: {
                       intlLabel: {
-                        id: getTranslation('content-type-builder.form.value.copy'),
+                        id: getTranslation(
+                          'content-type-builder.form.value.copy'
+                        ),
                         defaultMessage: 'Copy',
                       },
                     },
@@ -123,7 +131,9 @@ export default {
                     value: 'delete',
                     metadatas: {
                       intlLabel: {
-                        id: getTranslation('content-type-builder.form.value.delete'),
+                        id: getTranslation(
+                          'content-type-builder.form.value.delete'
+                        ),
                         defaultMessage: 'Delete',
                       },
                     },
@@ -136,24 +146,28 @@ export default {
       })
     }
   },
-  async registerTrads({ locales }: { locales: string[] }) {
+  async registerTrads({ locales }) {
     const importedTrads = await Promise.all(
       locales.map(async (locale) => {
         try {
-          const { default: data } = await import(`./translations/${locale}.json`);
+          const { default: data } = await import(
+            `./translations/${locale}.json`
+          )
           return {
             data: prefixPluginTranslations(data, PLUGIN_ID),
             locale,
-          };
+          }
         } catch {
           return {
             data: {},
             locale,
-          };
+          }
         }
       })
     )
 
     return Promise.resolve(importedTrads)
-  }
-};
+  },
+}
+
+export default admin
