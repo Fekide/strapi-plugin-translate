@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useFetchClient } from '@strapi/admin/strapi-admin'
-import { PLUGIN_ID } from '../pluginId'
 import { getTranslation } from '../utils/getTranslation'
 import useAlert from './useAlert'
 import { isFetchError } from '@strapi/strapi/admin'
 import { useContentTypesTranslationReportQuery } from '../services/report'
 
 export function useCollection() {
-  // const [collections, setCollections] = useState([])
-  const [locales, setLocales] = useState([])
-  const [refetchIndex, setRefetchIndex] = useState(true)
   const [realTimeReports, setRealTimeReports] = useState(false)
 
   const { handleNotification } = useAlert()
@@ -20,8 +15,6 @@ export function useCollection() {
       id: getTranslation('errors.unknown-error'),
       defaultMessage: 'Unknown error occured',
     })
-  
-  const { get, post } = useFetchClient()
 
   const {
     data: report,
@@ -32,15 +25,20 @@ export function useCollection() {
     { pollingInterval: realTimeReports ? 1000 : 0 }
   )
 
-  if (reportError) {
-    if (isFetchError(reportError)) {
-      handleNotification({
-        type: 'warning',
-        id: reportError.message,
-        defaultMessage: 'Failed to fetch Collections',
-      })
-    } else unkownError()
-  }
+  useEffect(() => {
+    if (reportError) {
+      console.log('report', reportError)
+      if (isFetchError(reportError)) {
+        handleNotification({
+          type: 'warning',
+          id: reportError.message,
+          defaultMessage: 'Failed to fetch Collections',
+        })
+      } else unkownError()
+    } else {
+      console.log('report', report)
+    }
+  }, [reportError, report])
 
   // const fetchCollections = async () => {
   //   try {
@@ -201,6 +199,7 @@ export function useCollection() {
     // cancelTranslation,
     refetchCollection: refetchReport,
     handleNotification,
+    setRealTimeReports,
   }
 }
 

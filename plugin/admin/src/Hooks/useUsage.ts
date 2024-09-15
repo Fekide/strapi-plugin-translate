@@ -1,17 +1,22 @@
 import { useState } from 'react'
 import useAlert from './useAlert'
-import { useLazyEstimateUsageCollectionQuery, useLazyEstimateUsageQuery, useProviderUsageQuery } from '../services/usage'
+import {
+  useLazyEstimateUsageCollectionQuery,
+  useLazyEstimateUsageQuery,
+  useProviderUsageQuery,
+} from '../services/usage'
 import { TranslateProviderUsageResult } from '@shared/types/provider'
 
-
 export function useCollection() {
-  const {data: usage, error, refetch} = useProviderUsageQuery({})
+  const { data: usage, error, refetch, isLoading } = useProviderUsageQuery({})
   const { handleNotification } = useAlert()
 
-  const [estimateUsage, {data: estimateUsageResult}] = useLazyEstimateUsageQuery({})
-  const [estimateUsageForCollection, {data: estimateUsageForCollectionResult}] = useLazyEstimateUsageCollectionQuery({})
-
-
+  const [estimateUsage, { data: estimateUsageResult }] =
+    useLazyEstimateUsageQuery({})
+  const [
+    estimateUsageForCollection,
+    { data: estimateUsageForCollectionResult },
+  ] = useLazyEstimateUsageCollectionQuery({})
 
   // const estimateUsageForCollection = async ({
   //   contentType,
@@ -67,6 +72,7 @@ export function useCollection() {
   return {
     usage: usage?.data,
     error,
+    isLoading,
     refetch,
     handleNotification,
     estimateUsage,

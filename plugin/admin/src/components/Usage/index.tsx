@@ -15,12 +15,22 @@ import useUsage from '../../Hooks/useUsage'
 import { getTranslation } from '../../utils'
 
 const UsageOverview = () => {
-  const { usage, error } = useUsage()
+  const { usage, error, isLoading } = useUsage()
 
   const { formatMessage } = useIntl()
 
-  const content =
-    error || !usage
+  const content = isLoading
+    ? [
+        <Td key="loading">
+          <Typography textColor="neutral800">
+            {formatMessage({
+              id: getTranslation('usage.loading'),
+              defaultMessage: 'Loading Usage data...',
+            })}
+          </Typography>
+        </Td>,
+      ]
+    : error || !usage
       ? [
           <Td key="error">
             <Typography textColor="neutral800">
