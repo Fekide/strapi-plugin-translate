@@ -23,7 +23,7 @@ import { useTranslateBatchMutation } from '../../services/translation'
 import { ContentTypeTranslationReport } from '@shared/types/report'
 import useAlert from '../../Hooks/useAlert'
 import { ActionType } from './actions'
-import useUpdateCollection from 'src/Hooks/useUpdateCollection'
+import useUpdateCollection from '../../Hooks/useUpdateCollection'
 import { BatchUpdateTable } from '../BatchUpdateTable'
 
 type HandleActionProps = {

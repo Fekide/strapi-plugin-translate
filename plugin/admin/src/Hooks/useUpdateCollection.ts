@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react'
-import useAlert from './useAlert'
-import { useTranslateBatchUpdateDismissMutation, useTranslateBatchUpdatesQuery } from 'src/services/update'
-import { useTranslateBatchUpdateMutation } from 'src/services/translation'
+import { useTranslateBatchUpdateDismissMutation, useTranslateBatchUpdatesQuery } from '../services/update'
+import { useTranslateBatchUpdateMutation } from '../services/translation'
 
 export function useUpdateCollection() {
   const { data: updates, error, refetch} = useTranslateBatchUpdatesQuery({})

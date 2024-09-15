@@ -99,7 +99,7 @@ export default [
   },
   {
     method: 'POST',
-    path: '/batch-update',
+    path: '/batch/updates',
     handler: 'translate.translateBatchUpdate',
     config: {
       policies: [
@@ -113,7 +113,7 @@ export default [
   },
   {
     method: 'GET',
-    path: '/batch-update/updates',
+    path: '/batch/updates',
     handler: 'updated-entry.find',
     config: {
       policies: [
@@ -127,7 +127,7 @@ export default [
   },
   {
     method: 'DELETE',
-    path: '/batch-update/dismiss/:id',
+    path: '/batch/updates/dismiss/:id',
     handler: 'updated-entry.delete',
     config: {
       policies: [

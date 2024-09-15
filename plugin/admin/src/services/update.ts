@@ -11,7 +11,7 @@ const batchJobsApi = translateApi.injectEndpoints({
       GetUpdatedEntries.Request['query']
     >({
       query: () => ({
-        url: `/batch/updates`,
+        url: `/translate/batch/updates`,
         method: 'GET',
       }),
     }),
@@ -20,7 +20,7 @@ const batchJobsApi = translateApi.injectEndpoints({
       DeleteUpdatedEntry.Request['query']
     >({
       query: (documentId) => ({
-        url: `/batch/pause/${documentId}`,
+        url: `/translate/batch/dismiss/${documentId}`,
         method: 'POST',
       }),
     }),

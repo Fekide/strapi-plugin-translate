@@ -11,7 +11,7 @@ const translationApi = translateApi.injectEndpoints({
       TranslateEntity.Response,
       TranslateEntity.Request['body']
     >({
-      query: (data) => ({ url: `/translate/translate`, method: 'POST', data }),
+      query: (data) => ({ url: `/translate/entity`, method: 'POST', data }),
     }),
     translateBatch: build.mutation<
       TranslateBatch.Response,
@@ -24,7 +24,7 @@ const translationApi = translateApi.injectEndpoints({
       TranslateBatchUpdate.Request['body']
     >({
       query: (data) => ({
-        url: `/translate/batch/update`,
+        url: `/translate/batch/updates`,
         method: 'POST',
         data,
       }),
