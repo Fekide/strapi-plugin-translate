@@ -1,7 +1,7 @@
 import { UntranslatedService } from '@shared/services/untranslated';
 import { Locale } from '@shared/types/locale';
 import { Core } from '@strapi/strapi'
-import { geti18nService } from 'src/utils/get-service';
+import { geti18nService } from '../utils/get-service';
 
 export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
   return {
