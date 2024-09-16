@@ -32,7 +32,7 @@ export function cleanData<TSchemaUID extends UID.ContentType>(
   data: Modules.Documents.Document<TSchemaUID>,
   schema: ContentTypeSchema | ComponentSchema,
   forFrontend = false
-) {
+): Modules.Documents.Params.Data.PartialInput<TSchemaUID> {
   const resultData = cloneDeep(data)
 
   deleteInvalidFields(resultData, schema)
@@ -53,8 +53,9 @@ export function cleanData<TSchemaUID extends UID.ContentType>(
         forFrontend
       )
     } else if (attributeSchema.type === 'dynamiczone') {
-      resultData[attr] = get(data, attr, []).map((object: Modules.Documents.AnyDocument) =>
-        cleanComponent(object, attributeSchema, forFrontend)
+      resultData[attr] = get(data, attr, []).map(
+        (object: Modules.Documents.AnyDocument) =>
+          cleanComponent(object, attributeSchema, forFrontend)
       )
     } else if (attributeSchema.type === 'relation' && !forFrontend) {
       const relatedEntity = get(data, attr, [])
@@ -66,7 +67,7 @@ export function cleanData<TSchemaUID extends UID.ContentType>(
     }
   })
 
-  return resultData
+  return resultData as unknown as Modules.Documents.Params.Data.PartialInput<TSchemaUID>
 }
 
 function cleanComponent<TSchemaUID extends UID.Component>(

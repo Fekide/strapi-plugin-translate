@@ -1,45 +1,48 @@
 import { has, get, omit } from 'lodash'
 import TRANSLATABLE_FIELDS from './translatableFields'
-import type { Schema } from '@strapi/types'
+import type { Schema } from '@strapi/strapi'
 
 const localizedPath = ['pluginOptions', 'i18n', 'localized']
 const translatePath = ['pluginOptions', 'translate', 'translate']
 
 const addTranslationToFields = (attributes: Schema.ContentType['attributes']) =>
-  Object.keys(attributes).reduce<Schema.ContentType['attributes']>((acc, current) => {
-    const currentAttribute = attributes[current]
+  Object.keys(attributes).reduce<Schema.ContentType['attributes']>(
+    (acc, current) => {
+      const currentAttribute = attributes[current]
 
-    const attributeIsLocalized = get(currentAttribute, localizedPath, true)
+      const attributeIsLocalized = get(currentAttribute, localizedPath, true)
 
-    const attributeDefaultTranslated =
-      currentAttribute.type === 'relation' || attributeIsLocalized
+      const attributeDefaultTranslated =
+        currentAttribute.type === 'relation' || attributeIsLocalized
 
-    if (
-      attributeDefaultTranslated &&
-      TRANSLATABLE_FIELDS.includes(currentAttribute.type)
-    ) {
-      const translate = {
-        translate: get(
-          currentAttribute,
-          translatePath,
-          attributeDefaultTranslated ? 'translate' : 'copy'
-        ),
+      if (
+        attributeDefaultTranslated &&
+        TRANSLATABLE_FIELDS.includes(currentAttribute.type)
+      ) {
+        const translate = {
+          translate: get(
+            currentAttribute,
+            translatePath,
+            attributeDefaultTranslated ? 'translate' : 'copy'
+          ),
+        }
+
+        const pluginOptions = {
+          ...(currentAttribute.pluginOptions ?? {}),
+          translate,
+        }
+
+        acc[current] = { ...currentAttribute, pluginOptions }
+
+        return acc
       }
 
-      const pluginOptions = {
-        ...(currentAttribute.pluginOptions ?? {}),
-        translate,
-      }
-
-      acc[current] = { ...currentAttribute, pluginOptions }
+      acc[current] = currentAttribute
 
       return acc
-    }
-
-    acc[current] = currentAttribute
-
-    return acc
-  }, {})
+    },
+    {}
+  )
 
 type OmitByPath<T extends object, K extends string[]> = Pick<
   T,

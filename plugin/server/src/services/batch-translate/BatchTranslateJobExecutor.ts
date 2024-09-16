@@ -1,5 +1,3 @@
-
-
 import { Data, Modules, Struct, UID } from '@strapi/strapi'
 import { cleanData } from '../../utils/clean-data'
 import {
@@ -114,14 +112,23 @@ export class BatchTranslateJobExecutor {
       const sourceEntities = await strapi
         .documents(this.contentType)
         .findMany({ locale: this.sourceLocale })
-      const translatedEntities = await strapi.documents(this.contentType).findMany({
-        locale: this.targetLocale,
-      })
+      const translatedEntities = await strapi
+        .documents(this.contentType)
+        .findMany({
+          locale: this.targetLocale,
+        })
 
-      this.documentIds = differenceBy(sourceEntities, translatedEntities, 'documentId').map(e => e.documentId)
+      this.documentIds = differenceBy(
+        sourceEntities,
+        translatedEntities,
+        'documentId'
+      ).map((e) => e.documentId)
 
-      this.translatedEntities = intersectionBy(sourceEntities, translatedEntities, 'documentId').length
-
+      this.translatedEntities = intersectionBy(
+        sourceEntities,
+        translatedEntities,
+        'documentId'
+      ).length
     } else {
       // entity Ids were provided to the job, so the job is restricted to handling just those
       this.translatedEntities = await strapi.documents(this.contentType).count({
@@ -240,7 +247,8 @@ export class BatchTranslateJobExecutor {
         )
 
         // Create localized entry
-        await strapi.documents(this.contentType).create({
+        await strapi.documents(this.contentType).update({
+          documentId: entity.documentId,
           data: fullyTranslatedData,
           locale: this.targetLocale,
           status: this.autoPublish ? 'published' : 'draft',

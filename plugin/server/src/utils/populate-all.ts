@@ -8,7 +8,7 @@ export interface PopulateOptions {
   readonly populateRelations?: boolean
 }
 
-export type PopulateRule<TSchemaUID extends UID.Schema = UID.Schema> =
+export type PopulateRule<TSchemaUID extends UID.ContentType = UID.ContentType> =
   Modules.Documents.Params.Populate.Any<TSchemaUID>
 /**
  * Create a populate object to populate all direct data:
@@ -51,15 +51,16 @@ export function populateAll(
       const dynamicZonePopulate = fieldSchema.components.reduce(
         (combined: PopulateRule, component: UID.Component) => {
           const rule = recursiveComponentPopulate(component, {
-                maxDepth: maxDepth - 1,
-                populateMedia,
-              })
+            maxDepth: maxDepth - 1,
+            populateMedia,
+          })
           if (rule) {
-          return merge(combined, {
-            on: {
-              [component]: rule,
-            },
-          })}
+            return merge(combined, {
+              on: {
+                [component]: rule,
+              },
+            })
+          }
           return combined
         },
         {}

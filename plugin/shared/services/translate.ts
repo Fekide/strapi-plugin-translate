@@ -1,4 +1,5 @@
 import { BatchTranslateJob } from '@shared/types/batch-translate-job'
+import { ReportData } from '@shared/types/report'
 import { TranslatableField } from '@shared/types/utils'
 import { Data, Modules, UID } from '@strapi/strapi'
 
@@ -50,15 +51,5 @@ export interface TranslateService {
     updatedEntryIDs: Data.DocumentID[]
     sourceLocale: string
   }) => Promise<{ result: 'success' }>
-  contentTypes: () => Promise<{
-    contentTypes: {
-      contentType: UID.ContentType
-      collection: string
-      localeReports: Record<
-        string,
-        { count: number; complete: boolean; job: any }
-      >
-    }[]
-    locales: { code: string; name: string }[]
-  }>
+  contentTypes: () => Promise<ReportData>
 }

@@ -27,6 +27,12 @@ const usageApi = translateApi.injectEndpoints({
         method: 'POST',
         data,
       }),
+      providesTags: (_result, _error, arg) => [
+        {
+          type: 'TranslateUsageEstimate',
+          id: `${arg.contentType}_${arg.documentId}_${arg.sourceLocale}`,
+        },
+      ],
     }),
     estimateUsageCollection: build.query<
       UsageEstimateCollection.Response,
@@ -37,6 +43,12 @@ const usageApi = translateApi.injectEndpoints({
         method: 'POST',
         data,
       }),
+      providesTags: (_result, _error, arg) => [
+        {
+          type: 'TranslateUsageEstimate',
+          id: `${arg.contentType}_${arg.sourceLocale}_${arg.targetLocale}`,
+        },
+      ],
     }),
   }),
   overrideExisting: false,

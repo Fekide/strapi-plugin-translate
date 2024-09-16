@@ -55,7 +55,9 @@ const CollectionTable = () => {
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [targetLocale, setTargetLocale] = useState<string | null>(null)
-  const [sourceLocale, setSourceLocale] = useState<string | null>(null)
+  const [sourceLocale, setSourceLocale] = useState<string | null>(
+    locales.find((l) => l.isDefault)?.code || null
+  )
   const [autoPublish, setAutoPublish] = useState(false)
   const [collection, setCollection] =
     useState<ContentTypeTranslationReport | null>(null)
@@ -261,7 +263,7 @@ const CollectionTable = () => {
               })}
             </Dialog.Header>
             <Dialog.Body icon={<WarningCircle />}>
-              <Flex width={2}>
+              <Flex gap={2} direction="column" alignItems="normal">
                 <Flex justifyContent="center">
                   <Typography id="confirm-description">
                     {formatMessage({
@@ -272,150 +274,148 @@ const CollectionTable = () => {
                     })}
                   </Typography>
                 </Flex>
-                <Box>
-                  {action === 'translate' && (
-                    <Flex gap={2} direction="row">
-                      <Field.Root>
-                        <Field.Label>
-                          {formatMessage({
-                            id: getTranslation(
-                              'Settings.locales.modal.locales.label'
-                            ),
-                          })}
-                        </Field.Label>
-                        <SingleSelect
-                          onChange={handleSourceLocaleChange}
-                          value={sourceLocale}
-                        >
-                          {locales
-                            .filter((loc) => loc.code !== targetLocale)
-                            .map(({ name, code }) => {
-                              return (
-                                <SingleSelectOption key={code} value={code}>
-                                  {name}
-                                </SingleSelectOption>
-                              )
-                            })}
-                        </SingleSelect>
-                      </Field.Root>
-                      <Field.Root
-                        name="auto-publish"
-                        hint={formatMessage({
+                {action === 'translate' && (
+                  <>
+                    <Field.Root>
+                      <Field.Label>
+                        {formatMessage({
                           id: getTranslation(
-                            'batch-translate.dialog.translate.autoPublish.hint'
+                            'Settings.locales.modal.locales.label'
                           ),
-                          defaultMessage:
-                            'Publish translated entities automatically',
                         })}
+                      </Field.Label>
+                      <SingleSelect
+                        onChange={handleSourceLocaleChange}
+                        value={sourceLocale}
                       >
-                        <Field.Label>
-                          {formatMessage({
-                            id: getTranslation(
-                              'batch-translate.dialog.translate.autoPublish.label'
-                            ),
-                            defaultMessage: 'Auto-Publish',
-                          })}
-                        </Field.Label>
-                        <Toggle
-                          onLabel="True"
-                          offLabel="False"
-                          checked={autoPublish}
-                          onChange={toggleAutoPublish}
-                        />
-                        <Field.Hint />
-                      </Field.Root>
-                      {expectedCost && usage && (
-                        <Typography>
-                          {formatMessage({
-                            id: getTranslation('usage.estimatedUsage'),
-                            defaultMessage:
-                              'This action is expected to increase your API usage by: ',
-                          })}
-                          {expectedCost}
-                        </Typography>
-                      )}
-                      {usage &&
-                        expectedCost &&
-                        expectedCost > usage?.limit - usage?.count && (
-                          <Typography>
-                            {formatMessage({
-                              id: getTranslation(
-                                'usage.estimatedUsageExceedsQuota'
-                              ),
-                              defaultMessage:
-                                'This action is expected to exceed your API Quota',
-                            })}
-                          </Typography>
-                        )}
-                    </Flex>
-                  )}
-                  {action === 'update' && collection && (
-                    <Flex gap={2} direction="row">
-                      <Field.Root>
-                        <Field.Label>
-                          {formatMessage({
-                            id: getTranslation('batch-update.sourceLocale'),
-                          })}
-                        </Field.Label>
-                        <SingleSelect
-                          onChange={(value) =>
-                            typeof value === 'string'
-                              ? setSourceLocale(value)
-                              : console.error('Invalid value')
-                          }
-                          value={sourceLocale}
-                        >
-                          {locales.map(({ name, code }) => {
+                        {locales
+                          .filter((loc) => loc.code !== targetLocale)
+                          .map(({ name, code }) => {
                             return (
                               <SingleSelectOption key={code} value={code}>
                                 {name}
                               </SingleSelectOption>
                             )
                           })}
-                        </SingleSelect>
-                      </Field.Root>
-                      <BatchUpdateTable
-                        updates={updates.filter(
-                          (update) =>
-                            update?.attributes?.contentType ===
-                            collection.contentType
-                        )}
-                        selectedUpdateIDs={selectedUpdateIDs}
-                        setSelectedUpdateIDs={setSelectedUpdateIDs}
+                      </SingleSelect>
+                    </Field.Root>
+                    <Field.Root
+                      name="auto-publish"
+                      hint={formatMessage({
+                        id: getTranslation(
+                          'batch-translate.dialog.translate.autoPublish.hint'
+                        ),
+                        defaultMessage:
+                          'Publish translated entities automatically',
+                      })}
+                    >
+                      <Field.Label>
+                        {formatMessage({
+                          id: getTranslation(
+                            'batch-translate.dialog.translate.autoPublish.label'
+                          ),
+                          defaultMessage: 'Auto-Publish',
+                        })}
+                      </Field.Label>
+                      <Toggle
+                        onLabel="True"
+                        offLabel="False"
+                        checked={autoPublish}
+                        onChange={toggleAutoPublish}
                       />
-                      <Flex justifyContent="space-between">
-                        <Button
-                          onClick={() =>
-                            setSelectedUpdateIDs(
-                              updates.map((update) => update.documentId)
-                            )
-                          }
-                          variant="secondary"
-                        >
+                      <Field.Hint />
+                    </Field.Root>
+                    {expectedCost != null && usage && (
+                      <Typography>
+                        {formatMessage({
+                          id: getTranslation('usage.estimatedUsage'),
+                          defaultMessage:
+                            'This action is expected to increase your API usage by: ',
+                        })}
+                        {expectedCost}
+                      </Typography>
+                    )}
+                    {usage &&
+                      expectedCost != null &&
+                      expectedCost > usage?.limit - usage?.count && (
+                        <Typography>
                           {formatMessage({
-                            id: getTranslation(`batch-update.select-all`),
-                            defaultMessage: 'select all',
+                            id: getTranslation(
+                              'usage.estimatedUsageExceedsQuota'
+                            ),
+                            defaultMessage:
+                              'This action is expected to exceed your API Quota',
                           })}
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            dismissUpdates(selectedUpdateIDs).then(() => {
-                              setSelectedUpdateIDs([])
-                              refetch()
-                            })
-                          }
-                          variant="danger"
-                          disabled={selectedUpdateIDs.length === 0}
-                        >
-                          {formatMessage({
-                            id: getTranslation(`batch-update.dismiss`),
-                            defaultMessage: 'dismiss selected',
-                          })}
-                        </Button>
-                      </Flex>
+                        </Typography>
+                      )}
+                  </>
+                )}
+                {action === 'update' && collection && (
+                  <>
+                    <Field.Root>
+                      <Field.Label>
+                        {formatMessage({
+                          id: getTranslation('batch-update.sourceLocale'),
+                        })}
+                      </Field.Label>
+                      <SingleSelect
+                        onChange={(value) =>
+                          typeof value === 'string'
+                            ? setSourceLocale(value)
+                            : console.error('Invalid value')
+                        }
+                        value={sourceLocale}
+                      >
+                        {locales.map(({ name, code }) => {
+                          return (
+                            <SingleSelectOption key={code} value={code}>
+                              {name}
+                            </SingleSelectOption>
+                          )
+                        })}
+                      </SingleSelect>
+                    </Field.Root>
+                    <BatchUpdateTable
+                      updates={updates.filter(
+                        (update) =>
+                          update?.attributes?.contentType ===
+                          collection.contentType
+                      )}
+                      selectedUpdateIDs={selectedUpdateIDs}
+                      setSelectedUpdateIDs={setSelectedUpdateIDs}
+                    />
+                    <Flex justifyContent="space-between">
+                      <Button
+                        onClick={() =>
+                          setSelectedUpdateIDs(
+                            updates.map((update) => update.documentId)
+                          )
+                        }
+                        variant="secondary"
+                      >
+                        {formatMessage({
+                          id: getTranslation(`batch-update.select-all`),
+                          defaultMessage: 'select all',
+                        })}
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          dismissUpdates(selectedUpdateIDs).then(() => {
+                            setSelectedUpdateIDs([])
+                            refetch()
+                          })
+                        }
+                        variant="danger"
+                        disabled={selectedUpdateIDs.length === 0}
+                      >
+                        {formatMessage({
+                          id: getTranslation(`batch-update.dismiss`),
+                          defaultMessage: 'dismiss selected',
+                        })}
+                      </Button>
                     </Flex>
-                  )}
-                </Box>
+                  </>
+                )}
               </Flex>
             </Dialog.Body>
             <Dialog.Footer>

@@ -8,7 +8,6 @@ import mutateCTBContentTypeSchema from './utils/mutateCTBContentTypeSchema'
 import TRANSLATABLE_FIELDS from './utils/translatableFields'
 import { get } from 'lodash'
 import { prefixPluginTranslations } from './utils/prefixPluginTranslations'
-import { translateApi } from './services/api'
 import permissions from './permissions'
 
 const admin: PluginDefinition = {
@@ -22,12 +21,6 @@ const admin: PluginDefinition = {
       },
       Component: () => import('./pages/App'),
       permissions,
-    })
-    // FIXME: This overwrites the existing reducers with path adminApi
-    // This is the exact same way, the i18n plugin does it, but it is not working
-    // If it is removed, the plugin queries do not work, otherwise all the admin apis do not work
-    app.addReducers({
-      [translateApi.reducerPath]: translateApi.reducer,
     })
 
     app.registerPlugin({

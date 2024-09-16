@@ -20,13 +20,16 @@
   },
   "attributes": {
     "contentType": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "sourceLocale": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "targetLocale": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "entityIds": {
       "type": "json"

@@ -16,6 +16,9 @@ const batchJobsApi = translateApi.injectEndpoints({
         url: `/batch/status/${documentId}`,
         method: 'GET',
       }),
+      providesTags: (_result, _error, arg) => [
+        { type: 'TranslateBatchJobStatus', id: arg.documentId },
+      ],
     }),
     translateBatchJobPause: build.mutation<
       TranslateBatchPauseJob.Response,
@@ -25,6 +28,10 @@ const batchJobsApi = translateApi.injectEndpoints({
         url: `/batch/pause/${documentId}`,
         method: 'POST',
       }),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: 'TranslateBatchJobStatus', id: arg.documentId },
+        'TranslateReport',
+      ],
     }),
     translateBatchJobResume: build.mutation<
       TranslateBatchResumeJob.Response,
@@ -34,6 +41,10 @@ const batchJobsApi = translateApi.injectEndpoints({
         url: `/batch/resume/${documentId}`,
         method: 'POST',
       }),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: 'TranslateBatchJobStatus', id: arg.documentId },
+        'TranslateReport',
+      ],
     }),
     translateBatchJobCancel: build.mutation<
       TranslateBatchCancelJob.Response,
@@ -43,6 +54,10 @@ const batchJobsApi = translateApi.injectEndpoints({
         url: `/batch/cancel/${documentId}`,
         method: 'POST',
       }),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: 'TranslateBatchJobStatus', id: arg.documentId },
+        'TranslateReport',
+      ],
     }),
   }),
 })

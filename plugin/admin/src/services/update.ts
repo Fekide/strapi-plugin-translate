@@ -14,6 +14,7 @@ const batchJobsApi = translateApi.injectEndpoints({
         url: `/translate/batch/updates`,
         method: 'GET',
       }),
+      providesTags: ['TranslateBatchUpdates'],
     }),
     translateBatchUpdateDismiss: build.mutation<
       DeleteUpdatedEntry.Response,
@@ -23,6 +24,7 @@ const batchJobsApi = translateApi.injectEndpoints({
         url: `/translate/batch/dismiss/${documentId}`,
         method: 'POST',
       }),
+      invalidatesTags: ['TranslateBatchUpdates'],
     }),
   }),
 })
