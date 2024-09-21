@@ -23,17 +23,19 @@ export type PopulateRule<TSchemaUID extends UID.ContentType = UID.ContentType> =
  * @returns a populate object with all components, nested components,
  *  dynamic zones and relations
  */
-export function populateAll(
+export function populateAll<
+  TSchemaUID extends UID.ContentType = UID.ContentType,
+>(
   schema: Struct.ContentTypeSchema | Struct.ComponentSchema,
   options?: PopulateOptions
-): PopulateRule {
+): PopulateRule<TSchemaUID> {
   const { maxDepth, populateMedia, populateRelations } = defaults(options, {
     maxDepth: 10,
     populateMedia: false,
     populateRelations: false,
   })
   const attributesSchema = schema['attributes']
-  const populateResult: PopulateRule = {}
+  const populateResult: PopulateRule<TSchemaUID> = {}
 
   keys(attributesSchema).forEach((attr) => {
     const fieldSchema = attributesSchema[attr]

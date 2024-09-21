@@ -215,43 +215,15 @@ export class BatchTranslateJobExecutor {
 
       // Translate the entity
       try {
-        const fieldsToTranslate = await getAllTranslatableFields(
-          entity,
-          this.contentTypeSchema
-        )
-
-        const translated = await getService('translate').translate({
-          data: entity,
+        getService('translate').translateEntity({
+          documentId: entity.documentId,
+          contentType: this.contentType,
           sourceLocale: this.sourceLocale,
           targetLocale: this.targetLocale,
-          fieldsToTranslate,
+          create: true,
+          updateExisting: false,
+          publish: this.autoPublish,
           priority: TRANSLATE_PRIORITY_BATCH_TRANSLATION,
-        })
-
-        const withRelations = await translateRelations(
-          translated,
-          this.contentTypeSchema,
-          this.targetLocale
-        )
-
-        const uidsUpdated = await updateUids(withRelations, this.contentType)
-
-        const withFieldsDeleted = filterAllDeletedFields(
-          uidsUpdated,
-          this.contentTypeSchema
-        )
-
-        const fullyTranslatedData = cleanData(
-          withFieldsDeleted,
-          this.contentTypeSchema
-        )
-
-        // Create localized entry
-        await strapi.documents(this.contentType).update({
-          documentId: entity.documentId,
-          data: fullyTranslatedData,
-          locale: this.targetLocale,
-          status: this.autoPublish ? 'published' : 'draft',
         })
 
         this.translatedEntities++
