@@ -34,6 +34,17 @@ export interface TranslateService {
     fieldsToTranslate: Array<TranslatableField>
     priority?: number
   }) => Promise<Modules.Documents.Document<TSchemaUID>>
+
+  translateEntity: <TSchemaUID extends UID.ContentType>(params: {
+    documentId?: Data.DocumentID | null
+    contentType: TSchemaUID
+    sourceLocale: string
+    targetLocale: string
+    create?: boolean
+    updateExisting?: boolean
+    publish?: boolean
+    priority?: number
+  }) => Promise<Modules.Documents.Document<TSchemaUID>>
   batchTranslate: (
     params: Pick<
       BatchTranslateJob,

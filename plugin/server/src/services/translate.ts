@@ -10,14 +10,19 @@ import { TRANSLATE_PRIORITY_BATCH_TRANSLATION } from '../utils/constants'
 import { updateUids } from '../utils/update-uids'
 import { removeUids } from '../utils/remove-uids'
 import { BatchTranslateManagerImpl } from './batch-translate'
-import { Core, UID } from '@strapi/strapi'
+import { Core, Data, Modules, UID } from '@strapi/strapi'
 import { TranslateConfig } from '../config'
 import { keys } from '../utils/objects'
 import { TranslateService } from '@shared/services/translate'
 import { Locale } from '@shared/types/locale'
 import { SingleLocaleTranslationReport } from '@shared/types/report'
-import { isContentTypeUID } from '../utils/content-type'
+import {
+  isCollectionType,
+  isContentTypeUID,
+  isSingleType,
+} from '../utils/content-type'
 import { BatchTranslateJob } from '@shared/types/batch-translate-job'
+import { populateAll, translateRelations } from 'src/utils'
 
 export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
   batchTranslateManager: new BatchTranslateManagerImpl(),
@@ -69,6 +74,99 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
     return translatedData
   },
 
+  async translateEntity(params) {
+    const contentSchema = strapi.contentTypes[params.contentType]
+
+    const populateRule = populateAll<typeof params.contentType>(contentSchema, {
+      populateMedia: true,
+      populateRelations: true,
+    })
+
+    let fullyPopulatedData: Modules.Documents.Document<
+      typeof params.contentType
+    > = null
+
+    const collectionType = isCollectionType(params.contentType)
+    const singleType = isSingleType(params.contentType)
+
+    if (collectionType) {
+      if (!params.documentId) {
+        throw new Error('Document ID is required for collection type')
+      }
+      fullyPopulatedData = await strapi.documents(params.contentType).findOne({
+        documentId: params.documentId,
+        locale: params.sourceLocale,
+        populate: populateRule,
+      })
+    } else if (singleType) {
+      fullyPopulatedData = await strapi
+        .documents(params.contentType)
+        .findFirst({
+          locale: params.sourceLocale,
+          populate: populateRule,
+        })
+    } else {
+      throw new Error('Content type is neither a collection nor a single type')
+    }
+
+    const targetEntityExists =
+      (await strapi.documents(params.contentType).count({
+        filters: collectionType
+          ? ({ documentId: { $eq: params.documentId } } as any)
+          : undefined,
+        locale: params.targetLocale,
+      })) > 0
+
+    if (params.create && targetEntityExists && !params.updateExisting) {
+      throw new Error('Target entity already exists')
+    }
+
+    const fieldsToTranslate = await getAllTranslatableFields(
+      fullyPopulatedData,
+      contentSchema
+    )
+
+    const translatedData = await getService('translate').translate({
+      data: fullyPopulatedData,
+      sourceLocale: params.sourceLocale,
+      targetLocale: params.targetLocale,
+      fieldsToTranslate,
+      priority: params.priority,
+    })
+
+    const translatedRelations = await translateRelations(
+      strapi.config.get<TranslateConfig>('plugin::translate').regenerateUids
+        ? await updateUids(translatedData, params.contentType)
+        : translatedData,
+      contentSchema,
+      params.targetLocale
+    )
+    const withFieldsDeleted = filterAllDeletedFields(
+      translatedRelations,
+      contentSchema
+    )
+
+    if (params.create) {
+      if (collectionType) {
+        await strapi.documents(params.contentType).update({
+          documentId: params.documentId,
+          data: cleanData(withFieldsDeleted, contentSchema, false),
+          locale: params.targetLocale,
+          status: params.publish ? 'published' : 'draft',
+        })
+      } else if (singleType) {
+        await strapi.documents(params.contentType).create({
+          data: cleanData(withFieldsDeleted, contentSchema, false),
+          locale: params.targetLocale,
+        })
+      }
+    }
+
+    const cleanedData = cleanData(withFieldsDeleted, contentSchema, true)
+
+    return cleanedData
+  },
+
   async batchTranslate(params) {
     return this.batchTranslateManager.submitJob(params)
   },
@@ -109,40 +207,17 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         .map(({ documentId, locale }) => ({ documentId, locale }))
         .filter(({ locale }) => locale !== sourceLocale)
 
-      const contentTypeSchema = strapi.contentTypes[update.contentType]
-      const fieldsToTranslate = await getAllTranslatableFields(
-        sourceEntity,
-        contentTypeSchema
-      )
-
       for (const { locale, documentId } of targets) {
-        const translated = await this.translate({
-          sourceLocale,
-          targetLocale: locale,
+        getService('translate').translateEntity({
+          documentId: documentId,
+          contentType: update.contentType,
+          sourceLocale: update.sourceLocale,
+          targetLocale: update.targetLocale,
+          create: true,
+          updateExisting: true,
+          // FIXME: This should be configurable
+          publish: false,
           priority: TRANSLATE_PRIORITY_BATCH_TRANSLATION,
-          fieldsToTranslate,
-          data: sourceEntity,
-        })
-
-        const uidsUpdated = strapi.config.get<TranslateConfig>(
-          'plugin::translate'
-        ).regenerateUids
-          ? await updateUids(translated, update.contentType)
-          : removeUids(translated, update.contentType)
-
-        const withFieldsDeleted = filterAllDeletedFields(
-          uidsUpdated,
-          strapi.contentTypes[update.contentType]
-        )
-
-        const fullyTranslatedData = cleanData(
-          withFieldsDeleted,
-          contentTypeSchema
-        )
-
-        strapi.documents(update.contentType).update({
-          documentId,
-          data: fullyTranslatedData,
         })
       }
       await strapi

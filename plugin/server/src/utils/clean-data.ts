@@ -1,7 +1,7 @@
 import { get, difference, cloneDeep, has } from 'lodash'
 import { ContentTypeSchema, ComponentSchema } from '@strapi/types/dist/struct'
 import { Attribute } from '@strapi/types/dist/schema'
-import { Modules, UID } from '@strapi/strapi'
+import { Modules, UID, Utils } from '@strapi/strapi'
 
 export function deleteInvalidFields<TSchemaUID extends UID.ContentType>(
   data: Modules.Documents.Document<TSchemaUID>,
@@ -28,11 +28,18 @@ export function deleteInvalidFields<TSchemaUID extends UID.ContentType>(
  * @param {object} schema The schema of the content-type
  * @returns The input data with invalid fields (like id or localizations) removed
  */
-export function cleanData<TSchemaUID extends UID.ContentType>(
+export function cleanData<
+  TSchemaUID extends UID.ContentType,
+  ForFrontend extends boolean = boolean,
+>(
   data: Modules.Documents.Document<TSchemaUID>,
   schema: ContentTypeSchema | ComponentSchema,
-  forFrontend = false
-): Modules.Documents.Params.Data.PartialInput<TSchemaUID> {
+  forFrontend: ForFrontend
+): Utils.If<
+  ForFrontend,
+  Modules.Documents.Document<TSchemaUID>,
+  Modules.Documents.Params.Data.PartialInput<TSchemaUID>
+> {
   const resultData = cloneDeep(data)
 
   deleteInvalidFields(resultData, schema)
@@ -66,8 +73,11 @@ export function cleanData<TSchemaUID extends UID.ContentType>(
       }
     }
   })
-
-  return resultData as unknown as Modules.Documents.Params.Data.PartialInput<TSchemaUID>
+  return resultData as unknown as Utils.If<
+    ForFrontend,
+    Modules.Documents.Document<TSchemaUID>,
+    Modules.Documents.Params.Data.PartialInput<TSchemaUID>
+  >
 }
 
 function cleanComponent<TSchemaUID extends UID.Component>(
