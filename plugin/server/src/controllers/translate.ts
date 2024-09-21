@@ -10,7 +10,7 @@ import { updateUids } from '../utils/update-uids'
 import { z } from 'zod'
 import { TranslateConfig } from '../config'
 import { TranslateEntity } from '../../../shared/contracts/translate'
-import { isContentTypeUID } from '../utils/content-type'
+import { isCollectionType, isContentTypeUID } from '../utils/content-type'
 
 export interface TranslateController extends Core.Controller {
   translateEntity: Core.ControllerHandler<TranslateEntity.Response>
@@ -26,7 +26,7 @@ export interface TranslateController extends Core.Controller {
 }
 
 const translateBodySchema = z.object({
-  documentId: z.string(),
+  documentId: z.string().optional(),
   sourceLocale: z.string(),
   targetLocale: z.string(),
   contentType: z.string(),
@@ -73,6 +73,12 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       return ctx.badRequest({ message: 'request data invalid', error })
     }
 
+    const isCollection = isCollectionType(contentType)
+
+    if (!documentId && isCollection) {
+      return ctx.badRequest({ message: 'documentId is missing, but required for collection types' })
+    }
+
     if (!isContentTypeUID(contentType)) {
       return ctx.notFound('corresponding content type not found')
     }
@@ -84,8 +90,11 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       populateRelations: true,
     })
 
-    const fullyPopulatedData = await strapi.documents(contentType).findOne({
+    const fullyPopulatedData = isCollection ? await strapi.documents(contentType).findOne({
       documentId,
+      locale: sourceLocale,
+      populate: populateRule,
+    }) : await strapi.documents(contentType).findFirst({
       locale: sourceLocale,
       populate: populateRule,
     })

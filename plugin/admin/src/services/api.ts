@@ -1,4 +1,4 @@
-import { adminApi } from '@strapi/admin/strapi-admin'
+import { adminApi } from '@strapi/strapi/admin'
 
 const translateApi = adminApi.enhanceEndpoints({
   addTagTypes: [
@@ -7,6 +7,7 @@ const translateApi = adminApi.enhanceEndpoints({
     'TranslateProviderUsage',
     'TranslateBatchJobStatus',
     'TranslateBatchUpdates',
+    'Locale',
   ],
 })
 
