@@ -11,7 +11,7 @@ export declare namespace TranslateEntity {
   export interface Request {
     query: {}
     body: {
-      documentId: Data.DocumentID
+      documentId?: Data.DocumentID
       sourceLocale: string
       targetLocale: string
       contentType: UID.ContentType

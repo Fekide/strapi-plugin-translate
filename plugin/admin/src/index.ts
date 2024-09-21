@@ -3,12 +3,12 @@ import { PLUGIN_ID } from './pluginId'
 import { Initializer } from './components/Initializer'
 import PluginIcon from './components/PluginIcon'
 import { PluginDefinition, StrapiApp } from '@strapi/strapi/admin'
-import CMEditViewTranslateLocale from './components/CMEditViewTranslateLocale'
 import mutateCTBContentTypeSchema from './utils/mutateCTBContentTypeSchema'
 import TRANSLATABLE_FIELDS from './utils/translatableFields'
 import { get } from 'lodash'
 import { prefixPluginTranslations } from './utils/prefixPluginTranslations'
 import permissions from './permissions'
+import { TranslateFromAnotherLocaleAction } from './components/CMHeaderActions'
 
 const admin: PluginDefinition = {
   register(app) {
@@ -31,12 +31,8 @@ const admin: PluginDefinition = {
     })
   },
   bootstrap(app) {
-    app
-      .getPlugin('content-manager')
-      .injectComponent('editView', 'informations', {
-        name: 'translate-locale',
-        Component: CMEditViewTranslateLocale,
-      })
+    const contentManager = app.getPlugin('content-manager') as any;
+    contentManager.apis.addDocumentHeaderAction([TranslateFromAnotherLocaleAction]);
 
     const ctbPlugin = app.getPlugin('content-type-builder')
 

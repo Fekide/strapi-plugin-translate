@@ -4,6 +4,7 @@
   "compilerOptions": {
     "rootDir": "../",
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "paths": {
       "@shared/*": ["../shared/*"]
     }

@@ -7,7 +7,7 @@ import {
 } from '../services/usage'
 import { TranslateProviderUsageResult } from '@shared/types/provider'
 
-export function useCollection() {
+export function useUsage() {
   const { data: usage, error, refetch, isLoading } = useProviderUsageQuery({})
   const { handleNotification } = useAlert()
 
@@ -82,4 +82,4 @@ export function useCollection() {
   }
 }
 
-export default useCollection
+export default useUsage
