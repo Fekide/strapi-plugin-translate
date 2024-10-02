@@ -47,7 +47,7 @@ module.exports = {
     return {
       /**
        * @param {{
-       *  text:string|string[],
+       *  text:string|string[]|any[],
        *  sourceLocale: string,
        *  targetLocale: string,
        *  priority: number,
@@ -68,11 +68,14 @@ module.exports = {
 
         const tagHandling = format === 'plain' ? undefined : 'html'
 
-        let textArray = Array.isArray(text) ? text : [text]
-
-        if (format === 'markdown') {
-          textArray = formatService.markdownToHtml(textArray)
+        let input = text
+        if (format === 'jsonb') {
+          input = await formatService.blockToHtml(input)
+        } else if (format === 'markdown') {
+          input = formatService.markdownToHtml(input)
         }
+
+        let textArray = Array.isArray(input) ? input : [input]
 
         const { chunks, reduceFunction } = chunksService.split(textArray, {
           maxLength: DEEPL_API_MAX_TEXTS,
@@ -98,7 +101,10 @@ module.exports = {
             })
           )
         )
-
+        
+        if (format === 'jsonb') {
+          return formatService.htmlToBlock(result)
+        }
         if (format === 'markdown') {
           return formatService.htmlToMarkdown(result)
         }

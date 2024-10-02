@@ -49,7 +49,7 @@ module.exports = {
     return {
       /**
        * @param {{
-       *  text:string|string[],
+       *  text:string|string[]|any[],
        *  sourceLocale: string,
        *  targetLocale: string,
        *  priority: number,
@@ -73,20 +73,19 @@ module.exports = {
         const chunksService = getService('chunks')
         const formatService = getService('format')
 
-        let textArray = Array.isArray(text) ? text : [text]
-
-        if (format === 'markdown') {
-          textArray = formatService.markdownToHtml(textArray)
+        let input = text
+        if (format === 'jsonb') {
+          input = await formatService.blockToHtml(input)
+        } else if (format === 'markdown') {
+          input = formatService.markdownToHtml(input)
         }
+
+        const textArray = Array.isArray(input) ? input : [input]
 
         const { chunks, reduceFunction } = chunksService.split(textArray, {
           maxLength: maxTexts === -1 ? Number.MAX_VALUE : maxTexts,
           maxByteSize: maxCharacters === -1 ? Number.MAX_VALUE : maxCharacters,
         })
-
-        if (format === 'markdown') {
-          textArray = formatService.markdownToHtml(textArray)
-        }
 
         const result = reduceFunction(
           await Promise.all(
@@ -108,6 +107,9 @@ module.exports = {
           )
         )
 
+        if (format === 'jsonb') {
+          return formatService.htmlToBlock(result)
+        }
         if (format === 'markdown') {
           return formatService.htmlToMarkdown(result)
         }
