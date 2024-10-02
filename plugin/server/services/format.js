@@ -2,6 +2,8 @@
 
 const showdown = require('showdown')
 const jsdom = require('jsdom')
+const cacheManager = require('cache-manager')
+const { TRANSLATE_BLOCKS_IMAGE_CACHE_TTL } = require('../utils/constants')
 const renderBlock = require('blocks-html-renderer').renderBlock
 
 
@@ -11,7 +13,9 @@ const showdownConverter = new showdown.Converter({
   strikethrough: true,
 })
 
-const blocksImageCache = new Map()
+const blocksImageCache = cacheManager.createCache({
+  ttl: TRANSLATE_BLOCKS_IMAGE_CACHE_TTL
+})
 
 function markdownToHtml(singleText) {
   return showdownConverter.makeHtml(singleText)
@@ -28,10 +32,10 @@ function htmlToMarkdown(singleText) {
  * 
  * @param {Array} blocks 
  */
-function cacheImages(blocks) {
+async function cacheImages(blocks) {
   for (const block of blocks.flat(2)) {
     if (block.type === 'image') {
-      blocksImageCache.set(block.image.url, block.image)
+      await blocksImageCache.set(block.image.url, block.image)
     }
   }
 }
@@ -111,7 +115,7 @@ function convertInlineElementToBlocks(element) {
 }
 
 
-function convertHtmlToBlock(html) {
+async function convertHtmlToBlock(html) {
   const root = dom.window.document.createElement('div')
   root.innerHTML = html
 
@@ -163,7 +167,8 @@ function convertHtmlToBlock(html) {
       })
     }
     if (child.tagName === "IMG") {
-      const image = blocksImageCache.has(child.src) ? blocksImageCache.get(child.src) : {
+      const cachedImage = await blocksImageCache.get(child.src)
+      const image = cachedImage != null ? cachedImage : {
         url: child.src,
         alt: child.alt,
       }
@@ -197,11 +202,11 @@ module.exports = () => ({
     }
     return htmlToMarkdown(text)
   },
-  blockToHtml(block) {
+  async blockToHtml(block) {
     if (!Array.isArray(block)) {
       throw new Error('blockToHtml expects an array of blocks or a single block. Got ' + typeof block)
     }
-    cacheImages(block)
+    await cacheImages(block)
     if (block.length > 0 ) {
       if (!block[0].type) {
         return block.map(renderBlock)
@@ -209,9 +214,9 @@ module.exports = () => ({
       return renderBlock(block)
     }
   },
-  htmlToBlock(html) {
+  async htmlToBlock(html) {
     if (Array.isArray(html)) {
-      return html.map(convertHtmlToBlock)
+      return Promise.all(html.map(convertHtmlToBlock))
     }
     return convertHtmlToBlock(html)
   },
