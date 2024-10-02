@@ -70,7 +70,7 @@ module.exports = {
 
         let input = text
         if (format === 'jsonb') {
-          input = formatService.blockToHtml(input)
+          input = await formatService.blockToHtml(input)
         } else if (format === 'markdown') {
           input = formatService.markdownToHtml(input)
         }

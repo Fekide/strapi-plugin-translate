@@ -108,12 +108,11 @@ describe('format', () => {
       formatService.htmlToMarkdown(formatService.markdownToHtml(markdown))
     ).toEqual(markdown)
   })
-  test('block to html and back', () => {
+  test('block to html and back', async () => {
     const formatService = strapi.service('plugin::translate.format')
-    const html = formatService.blockToHtml(block)
-    console.log('html', html)
-    expect(
+    const html = await formatService.blockToHtml(block)
+    await expect(
       formatService.htmlToBlock(html)
-    ).toEqual(block)
+    ).resolves.toEqual(block)
   })
 })
