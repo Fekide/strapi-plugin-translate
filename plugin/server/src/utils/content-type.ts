@@ -5,9 +5,9 @@ export function isContentTypeUID(uid: string): uid is UID.ContentType {
 }
 
 export function isCollectionType(uid: string): boolean {
-  return strapi.contentTypes[uid].kind === 'collectionType'
+  return strapi.contentTypes[uid]?.kind === 'collectionType'
 }
 
 export function isSingleType(uid: string): boolean {
-  return strapi.contentTypes[uid].kind === 'singleType'
+  return strapi.contentTypes[uid]?.kind === 'singleType'
 }

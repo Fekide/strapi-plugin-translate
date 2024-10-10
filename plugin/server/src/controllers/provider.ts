@@ -2,7 +2,7 @@ import { Core } from '@strapi/strapi'
 import { getService } from '../utils/get-service'
 import { TranslateProviderUsage } from '../../../shared/contracts/provider'
 
-export interface ProviderController {
+export interface ProviderController extends Core.Controller {
   usage: Core.ControllerHandler<TranslateProviderUsage.Response>
 }
 

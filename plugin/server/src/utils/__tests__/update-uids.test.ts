@@ -10,11 +10,11 @@ const defaultUid = 'unique-uid'
 
 const contentManagerPluginMock = {
   services: {
-    uid: () => ({
+    uid: {
       generateUIDField() {
         return defaultUid
       },
-    }),
+    },
   },
 }
 
@@ -23,16 +23,17 @@ afterEach(() => {
 })
 
 describe('update uids', () => {
-  beforeEach(() =>
-    setup({
-      plugins: {
-        'content-manager': contentManagerPluginMock,
-      },
-      contentTypes: {
-        'api::simple.simple': simpleContentType,
-        'api::simple.simple-with-uid': createContentTypeWithUid(true),
-      },
-    })
+  beforeEach(
+    async () =>
+      await setup({
+        plugins: {
+          'content-manager': contentManagerPluginMock,
+        },
+        contentTypes: {
+          'api::simple.simple': simpleContentType,
+          'api::simple.simple-with-uid': createContentTypeWithUid(true),
+        },
+      })
   )
   it('simple content type without uid not changed', async () => {
     // given
@@ -61,6 +62,10 @@ describe('update uids', () => {
     const updatedUids = await updateUids(data, 'api::simple.simple-with-uid')
 
     // then
-    expect(updatedUids).toEqual({ uid: defaultUid })
+    expect(updatedUids).toEqual({
+      documentId: 'a',
+      id: 1,
+      uid: defaultUid,
+    })
   })
 })

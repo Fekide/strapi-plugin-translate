@@ -35,7 +35,7 @@ export function createNestedComponent(translate = 'translate') {
           },
         },
         type: 'component',
-        component: 'nestedComponent',
+        component: 'nested.component',
       },
     },
   }

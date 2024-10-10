@@ -10,27 +10,20 @@ import { TranslateController } from '../translate'
 
 import { simpleContentType } from '../../__mocks__/contentTypes'
 import createContext from '../../__mocks__/createContext'
-import initSetup, { SetupProps } from '../../__mocks__/initSetup'
-
-const setup = function (params: SetupProps) {
-  Object.defineProperty(global, 'strapi', {
-    value: initSetup(params),
-    writable: true,
-  })
-}
+import setup, { SetupProps } from '../../__mocks__/initSetup'
 
 jest.mock('../../utils/translatable-fields')
 jest.mock('../../utils/translate-relations')
 
 describe('translate controller', () => {
   const mockTranslateService = jest.fn()
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.mock('../../services/translate', () => {
       return () => ({
         translate: mockTranslateService,
       })
     })
-    setup({
+    await setup({
       contentTypes: {
         'api::first.first': simpleContentType,
       },
@@ -44,15 +37,15 @@ describe('translate controller', () => {
 
   it('should call translate service', async () => {
     // given
-    const id = 1
+    const documentId = 'a'
     const sourceLocale = 'en'
     const targetLocale = 'de'
-    const contentTypeUid = 'api::first.first'
+    const contentType = 'api::first.first'
     const ctx = createContext({
-      id,
+      documentId,
       sourceLocale,
       targetLocale,
-      contentTypeUid,
+      contentType,
     })
 
     // when
@@ -71,13 +64,13 @@ describe('translate controller', () => {
 
   it('bad request if source locale is missing', async () => {
     // given
-    const id = 1
+    const documentId = 'a'
     const sourceLocale = 'en'
-    const contentTypeUid = 'api::first.first'
+    const contentType = 'api::first.first'
     const ctx = createContext({
-      id,
+      documentId,
       sourceLocale,
-      contentTypeUid,
+      contentType,
     })
 
     // when
@@ -96,13 +89,13 @@ describe('translate controller', () => {
 
   it('bad request if target locale is missing', async () => {
     // given
-    const id = 1
+    const documentId = 'a'
     const targetLocale = 'de'
-    const contentTypeUid = 'api::first.first'
+    const contentType = 'api::first.first'
     const ctx = createContext({
-      id,
+      documentId,
       targetLocale,
-      contentTypeUid,
+      contentType,
     })
 
     // when
@@ -121,15 +114,15 @@ describe('translate controller', () => {
 
   it('not found if content type does not exist', async () => {
     // given
-    const id = 1
+    const documentId = 'a'
     const sourceLocale = 'en'
     const targetLocale = 'de'
-    const contentTypeUid = 'api::unknown.unknown'
+    const contentType = 'api::unknown.unknown'
     const ctx = createContext({
-      id,
+      documentId,
       sourceLocale,
       targetLocale,
-      contentTypeUid,
+      contentType,
     })
 
     // when
@@ -148,15 +141,15 @@ describe('translate controller', () => {
 
   it('id has to be a number or string', async () => {
     // given
-    const id = null
+    const documentId = null
     const sourceLocale = 'en'
     const targetLocale = 'de'
-    const contentTypeUid = 'api::unknown.unknown'
+    const contentType = 'api::unknown.unknown'
     const ctx = createContext({
-      id,
+      documentId,
       sourceLocale,
       targetLocale,
-      contentTypeUid,
+      contentType,
     })
 
     // when

@@ -5,8 +5,8 @@ import { stringByteLengthEncoded } from '../../utils/byte-length'
 import setup from '../../__mocks__/initSetup'
 import { getService } from '../../utils'
 
-beforeEach(() => {
-  setup({})
+beforeEach(async () => {
+  await setup({})
 })
 
 afterEach(() => {

@@ -8,8 +8,12 @@ export interface PopulateOptions {
   readonly populateRelations?: boolean
 }
 
+function isEmptyObject(obj: Object): obj is {} {
+  return Object.keys(obj).length === 0
+}
+
 export type PopulateRule<TSchemaUID extends UID.ContentType = UID.ContentType> =
-  Modules.Documents.Params.Populate.Any<TSchemaUID>
+  Modules.Documents.Params.Populate.Any<TSchemaUID> | undefined
 /**
  * Create a populate object to populate all direct data:
  * - all components, dynamic zones and nested components
@@ -35,7 +39,7 @@ export function populateAll<
     populateRelations: false,
   })
   const attributesSchema = schema['attributes']
-  const populateResult: PopulateRule<TSchemaUID> = {}
+  const populateResult: PopulateRule<TSchemaUID> | {} = {}
 
   keys(attributesSchema).forEach((attr) => {
     const fieldSchema = attributesSchema[attr]
@@ -44,10 +48,8 @@ export function populateAll<
         maxDepth: maxDepth - 1,
         populateMedia,
       })
-      if (rule) {
-        populateResult[attr] = {
-          populate: rule,
-        }
+      populateResult[attr] = {
+        populate: rule ? rule : true,
       }
     } else if (fieldSchema.type === 'dynamiczone') {
       const dynamicZonePopulate = fieldSchema.components.reduce(
@@ -68,7 +70,9 @@ export function populateAll<
         {}
       )
       populateResult[attr] = {
-        populate: dynamicZonePopulate,
+        populate: isEmptyObject(dynamicZonePopulate)
+          ? true
+          : dynamicZonePopulate,
       }
     } else if (['relation', 'media'].includes(fieldSchema.type)) {
       if (
@@ -87,7 +91,7 @@ export function populateAll<
       }
     }
   })
-  if (keys(populateResult).length == 0) {
+  if (isEmptyObject(populateResult)) {
     return undefined
   }
   return populateResult
@@ -104,10 +108,10 @@ export function populateAll<
 function recursiveComponentPopulate(
   component: UID.Component,
   options: PopulateOptions
-): PopulateRule | false {
+): PopulateRule | true {
   const componentSchema = strapi.components[component]
   if (options.maxDepth == 0) {
-    return false
+    return true
   }
   return populateAll(componentSchema, options)
 }
