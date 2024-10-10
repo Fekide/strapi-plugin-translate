@@ -16,8 +16,8 @@ afterEach(() => {
 
 describe('provider service', () => {
   describe('translate', () => {
-    beforeEach(() =>
-      setup({
+    beforeEach(async () =>
+      await setup({
         provider: {
           provider: 'dummy',
           name: 'Dummy',

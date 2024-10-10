@@ -22,54 +22,58 @@ afterEach(() => {
 })
 
 describe('populate all', () => {
-  beforeEach(() =>
-    setup({
-      components: {
-        simple: simpleComponent,
-        'two-field': twoFieldComponent,
-        nestedComponent,
-        'with-relation': createComponentWithRelation(
-          'oneToOne',
-          'api::simple.simple'
-        ),
-      },
-      contentTypes: {
-        'api::simple.simple': simpleContentType,
-        'api::media.media': mediaContentType,
-        'api::simple.localized': createSimpleContentType(
-          true,
-          'api::simple.localized'
-        ),
-        'api::complex.relation': createRelationContentType(
-          'oneToOne',
-          {},
-          false,
-          'api::simple.simple'
-        ),
-        'api::complex.relation-multiple': createRelationContentType(
-          'oneToMany',
-          {},
-          false,
-          'api::simple.simple'
-        ),
-        'api::complex.component': createContentTypeWithComponent('simple', {}),
-        'api::complex.component-repeatable': createContentTypeWithComponent(
-          'simple',
-          { repeatable: true }
-        ),
-        'api::complex.dynamiczone': createContentTypeWithDynamicZone(
-          ['simple', 'two-field'],
-          { translated: false }
-        ),
-        'api::complex.dynamiczone-relation': createContentTypeWithDynamicZone(
-          ['simple', 'with-relation'],
-          { translated: false }
-        ),
-      },
-    })
+  beforeEach(
+    async () =>
+      await setup({
+        components: {
+          simple: simpleComponent,
+          'two-field': twoFieldComponent,
+          'nested.component': nestedComponent,
+          'with-relation': createComponentWithRelation(
+            'oneToOne',
+            'api::simple.simple'
+          ),
+        },
+        contentTypes: {
+          'api::simple.simple': simpleContentType,
+          'api::media.media': mediaContentType,
+          'api::simple.localized': createSimpleContentType(
+            true,
+            'api::simple.localized'
+          ),
+          'api::complex.relation': createRelationContentType(
+            'oneToOne',
+            {},
+            false,
+            'api::simple.simple'
+          ),
+          'api::complex.relation-multiple': createRelationContentType(
+            'oneToMany',
+            {},
+            false,
+            'api::simple.simple'
+          ),
+          'api::complex.component': createContentTypeWithComponent(
+            'simple',
+            {}
+          ),
+          'api::complex.component-repeatable': createContentTypeWithComponent(
+            'simple',
+            { repeatable: true }
+          ),
+          'api::complex.dynamiczone': createContentTypeWithDynamicZone(
+            ['simple', 'two-field'],
+            { translated: false }
+          ),
+          'api::complex.dynamiczone-relation': createContentTypeWithDynamicZone(
+            ['simple', 'with-relation'],
+            { translated: false }
+          ),
+        },
+      })
   )
 
-  it('simple content type returns just true', () => {
+  it('simple content type returns just undefined', () => {
     // given
     const schema = strapi.contentTypes['api::simple.simple']
 
@@ -77,10 +81,10 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual(true)
+    expect(population).toBeUndefined()
   })
 
-  it('simple content type localized returns localizations', () => {
+  it('simple content type localized returns undefined', () => {
     // given
     const schema = strapi.contentTypes['api::simple.localized']
 
@@ -88,7 +92,7 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ localizations: { select: ['id'] } })
+    expect(population).toBeUndefined()
   })
 
   it('content type with relation populate only id', () => {
@@ -99,7 +103,7 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ related: { select: ['id'] } })
+    expect(population).toEqual({ related: { fields: ['id'] } })
   })
 
   it('content type with multiple relations populate only id', () => {
@@ -110,7 +114,7 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ related: { select: ['id'] } })
+    expect(population).toEqual({ related: { fields: ['id'] } })
   })
 
   it('content type with component populate all', () => {
@@ -155,13 +159,15 @@ describe('populate all', () => {
 
     // then
     expect(population).toEqual({
-      dynamic_zone: { populate: { related: { select: ['id'] } } },
+      dynamic_zone: {
+        populate: { on: { 'with-relation': { related: { fields: ['id'] } } } },
+      },
     })
   })
 
   it('nested component has max depth', () => {
     // given
-    const schema = strapi.components['nestedComponent']
+    const schema = strapi.components['nested.component']
 
     // when
     const population = populateAll(schema, { maxDepth: 2 })
@@ -194,7 +200,7 @@ describe('populate all', () => {
 
     // then
     expect(population).toEqual({
-      media: { select: ['id'] },
+      media: { fields: ['id'] },
     })
   })
 

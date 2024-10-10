@@ -22,7 +22,7 @@ import {
   isSingleType,
 } from '../utils/content-type'
 import { BatchTranslateJob } from '@shared/types/batch-translate-job'
-import { populateAll, translateRelations } from 'src/utils'
+import { populateAll, translateRelations } from '../utils'
 
 export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
   batchTranslateManager: new BatchTranslateManagerImpl(),

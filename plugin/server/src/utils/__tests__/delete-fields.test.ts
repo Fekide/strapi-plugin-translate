@@ -22,8 +22,8 @@ afterEach(() => {
 
 describe('delete fields', () => {
   describe('single delete fields', () => {
-    beforeEach(() =>
-      setup({
+    beforeEach(async () =>
+      await setup({
         components: {
           'simple.component': simpleComponent,
           'twofield.component': twoFieldComponent,
@@ -97,7 +97,9 @@ describe('delete fields', () => {
       filterDeletedFields(newData, schema, attr)
 
       // then
-      expect(newData).toEqual({})
+      expect(newData).toEqual({
+        documentId: 'a',
+        id: 1,})
     })
 
     it('other field ignored', async () => {
@@ -142,7 +144,9 @@ describe('delete fields', () => {
       filterDeletedFields(newData, schema, attr)
 
       // then
-      expect(newData).toEqual({})
+      expect(newData).toEqual({
+        documentId: 'a',
+        id: 1,})
     })
 
     it('component with translated field ignored', async () => {
@@ -220,7 +224,9 @@ describe('delete fields', () => {
       filterDeletedFields(newData, schema, attr)
 
       // then
-      expect(newData).toEqual({ child_component: {} })
+      expect(newData).toEqual({ 
+        documentId: 'a',
+        id: 1,child_component: {} })
     })
 
     it('repeated component field with deleted field has fields deleted', async () => {
@@ -250,7 +256,9 @@ describe('delete fields', () => {
       filterDeletedFields(newData, schema, attr)
 
       // then
-      expect(newData).toEqual({ child_component: [{}, {}] })
+      expect(newData).toEqual({ 
+        documentId: 'a',
+        id: 1,child_component: [{}, {}] })
     })
 
     it('nested component with deleted fields has fields deleted', async () => {
@@ -286,6 +294,8 @@ describe('delete fields', () => {
 
       // then
       expect(newData).toEqual({
+        documentId: 'a',
+        id: 1,
         comp: { text: 'some text' },
       })
     })
@@ -323,6 +333,8 @@ describe('delete fields', () => {
 
       // then
       expect(newData).toEqual({
+        documentId: 'a',
+        id: 1,
         dynamic_zone: [
           { __component: 'simple.componentdelete' },
           {
@@ -337,8 +349,8 @@ describe('delete fields', () => {
   })
 
   describe('filter all deleted fields', () => {
-    beforeEach(() =>
-      setup({
+    beforeEach(async () =>
+      await setup({
         components: {
           'simple.component': simpleComponent,
           'twofield.component': twoFieldComponent,
@@ -442,6 +454,8 @@ describe('delete fields', () => {
 
       // then
       expect(newData).toEqual({
+        documentId: 'a',
+        id: 1,
         title: 'some title',
         slug: 'some-title',
         not_translated_field: 'not translated',
