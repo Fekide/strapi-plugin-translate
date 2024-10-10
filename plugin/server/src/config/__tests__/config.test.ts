@@ -8,30 +8,30 @@ afterEach(() => {
 })
 
 describe('config', () => {
-  it('default provider is dummy', () => {
-    setup({})
+  it('default provider is dummy', async () => {
+    await setup({})
 
-    expect(strapi.config.get<TranslateConfig>('plugin::translate').provider).toEqual('dummy')
+    expect(strapi.config.get<TranslateConfig>('plugin.translate').provider).toEqual('dummy')
   })
 
-  it('setting translate relations to false', () => {
-    setup({ config: { translateRelations: false } })
+  it('setting translate relations to false', async () => {
+    await setup({ config: { translateRelations: false } })
 
-    expect(strapi.config.get<TranslateConfig>('plugin::translate').translateRelations).toEqual(
+    expect(strapi.config.get<TranslateConfig>('plugin.translate').translateRelations).toEqual(
       false
     )
   })
 
-  it('changing translated field types', () => {
+  it('changing translated field types', async () => {
     const translatedFieldTypes: Array<TranslatedFieldType> = [
       'string',
       { type: 'text', format: 'plain' },
       { type: 'richtext', format: 'markdown' },
       { type: 'ckeditor', format: 'html' },
     ]
-    setup({ config: { translatedFieldTypes } })
+    await setup({ config: { translatedFieldTypes } })
 
-    expect(strapi.config.get<TranslateConfig>('plugin::translate').translatedFieldTypes).toEqual(
+    expect(strapi.config.get<TranslateConfig>('plugin.translate').translatedFieldTypes).toEqual(
       translatedFieldTypes
     )
   })
@@ -39,7 +39,7 @@ describe('config', () => {
   it('fails with translated field types not array', () => {
     const translatedFieldTypes = 'string' as any
 
-    expect(() => setup({ config: { translatedFieldTypes } })).toThrow(
+    expect(() => setup({ config: { translatedFieldTypes } })).rejects.toThrow(
       'translatedFieldTypes has to be an array'
     )
   })
@@ -47,7 +47,7 @@ describe('config', () => {
   it('fails with translateRelations not a boolean', () => {
     const translateRelations = 'false' as any
 
-    expect(() => setup({ config: { translateRelations } })).toThrow(
+    expect(() => setup({ config: { translateRelations } })).rejects.toThrow(
       'translateRelations has to be a boolean'
     )
   })
@@ -55,7 +55,7 @@ describe('config', () => {
   it('fails with providerOptions not object or undefined', () => {
     const providerOptions = 'Test' as any
 
-    expect(() => setup({ config: { providerOptions } })).toThrow(
+    expect(() => setup({ config: { providerOptions } })).rejects.toThrow(
       'providerOptions has to be an object if it is defined'
     )
   })
@@ -63,7 +63,7 @@ describe('config', () => {
   it('fails with translated fields not being in correct schema', () => {
     const translatedFieldTypes = [{ field: 'richtext' }] as any
 
-    expect(() => setup({ config: { translatedFieldTypes } })).toThrow(
+    expect(() => setup({ config: { translatedFieldTypes } })).rejects.toThrow(
       'incorrect schema for translated fields'
     )
   })
@@ -71,7 +71,7 @@ describe('config', () => {
   it('fails with translated fields of unhandled field type', () => {
     const translatedFieldTypes = [{ type: 'richtext', format: 'xml' }] as any
 
-    expect(() => setup({ config: { translatedFieldTypes } })).toThrow(
+    expect(() => setup({ config: { translatedFieldTypes } })).rejects.toThrow(
       'unhandled format xml for translated field richtext'
     )
   })

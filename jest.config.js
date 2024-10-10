@@ -1,5 +1,9 @@
+'use strict';
+
 module.exports = {
-  coverageDirectory: './coverage/',
-  collectCoverage: true,
-  testMatch: ['**/__tests__/?(*.)+(spec|test).js'],
-}
+  projects: [
+    '<rootDir>/plugin/jest.config.js',
+    '<rootDir>/providers/*/jest.config.js',
+    // '<rootDir>/.github/actions/*/jest.config.js',
+  ],
+};

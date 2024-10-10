@@ -26,12 +26,12 @@ afterEach(() => {
 })
 
 describe('clean data', () => {
-  beforeEach(() =>
-    setup({
+  beforeEach(async () =>
+    await setup({
       components: {
         simple: simpleComponent,
         'two-field': twoFieldComponent,
-        nestedComponent,
+        'nested.component': nestedComponent,
         'with-relation': createComponentWithRelation(
           'oneToOne',
           'api::simple.simple'
@@ -74,7 +74,7 @@ describe('clean data', () => {
     const schema = strapi.contentTypes['api::simple.simple']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({ title: 'some text' })
@@ -90,7 +90,7 @@ describe('clean data', () => {
     const schema = strapi.contentTypes['api::complex.relation']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({ related: 1 })
@@ -106,7 +106,7 @@ describe('clean data', () => {
     const schema = strapi.contentTypes['api::complex.relation']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({ related: null })
@@ -125,7 +125,7 @@ describe('clean data', () => {
     const schema = strapi.contentTypes['api::complex.relation-multiple']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({ related: [1, 2] })
@@ -141,7 +141,7 @@ describe('clean data', () => {
     const schema = strapi.components['simple']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({ text: 'test' })
@@ -153,7 +153,7 @@ describe('clean data', () => {
     const schema = strapi.components['simple']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual(data)
@@ -171,10 +171,10 @@ describe('clean data', () => {
         nested: undefined,
       },
     }
-    const schema = strapi.components['nestedComponent']
+    const schema = strapi.components['nested.component']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({
@@ -199,7 +199,7 @@ describe('clean data', () => {
     const schema = strapi.contentTypes['api::complex.component']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({
@@ -228,7 +228,7 @@ describe('clean data', () => {
     const schema = strapi.contentTypes['api::complex.component-repeatable']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({
@@ -253,7 +253,7 @@ describe('clean data', () => {
     const schema = strapi.contentTypes['api::complex.component']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({
@@ -283,7 +283,7 @@ describe('clean data', () => {
     const schema = strapi.contentTypes['api::complex.dynamiczone']
 
     // when
-    const cleanedData = cleanData(data, schema)
+    const cleanedData = cleanData(data, schema, false)
 
     // then
     expect(cleanedData).toEqual({

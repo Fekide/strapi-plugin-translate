@@ -1,5 +1,5 @@
-import { Struct, UID} from "@strapi/strapi"
-import {  } from "zod"
+import { Struct, UID } from '@strapi/strapi'
+import {} from 'zod'
 
 export const simpleContentType = createSimpleContentType(false)
 
@@ -12,6 +12,9 @@ export function createSimpleContentType(
     modelType: 'contentType',
     uid,
     globalId: 'Complex',
+    options: {
+      draftAndPublish: true,
+    },
     info: {
       displayName: 'Complex',
       pluralName: 'Complexes',
@@ -20,7 +23,7 @@ export function createSimpleContentType(
     modelName: 'complex',
     pluginOptions: {
       i18n: {
-        localized: true,
+        localized: !!localized,
       },
     },
     kind: 'collectionType',
@@ -29,22 +32,13 @@ export function createSimpleContentType(
         type: 'string',
         pluginOptions: {
           i18n: {
-            localized: true,
+            localized: !!localized,
           },
           translate: {
             translate,
           },
         },
       },
-      ...(localized
-        ? {
-            localizations: {
-              type: 'relation',
-              relation: 'oneToMany',
-              target: uid,
-            },
-          }
-        : {}),
     },
   }
 }
@@ -53,6 +47,9 @@ export const mediaContentType: Struct.ContentTypeSchema = {
   modelType: 'contentType',
   uid: 'api::complex.complex',
   globalId: 'Complex',
+  options: {
+    draftAndPublish: true,
+  },
   info: {
     displayName: 'Complex',
     pluralName: 'Complexes',
@@ -94,6 +91,9 @@ export function createRelationContentType(
     modelType: 'contentType',
     uid,
     globalId: 'Complex',
+    options: {
+      draftAndPublish: true,
+    },
     info: {
       displayName: 'Complex',
       pluralName: 'Complexes',
@@ -131,11 +131,17 @@ export function createRelationContentType(
   }
 }
 
-export function createContentTypeWithUid(translated: boolean, uid: UID.ContentType = 'api::simple.simple'): Struct.ContentTypeSchema {
+export function createContentTypeWithUid(
+  translated: boolean,
+  uid: UID.ContentType = 'api::simple.simple'
+): Struct.ContentTypeSchema {
   return {
     modelType: 'contentType',
     uid,
     globalId: 'Complex',
+    options: {
+      draftAndPublish: true,
+    },
     info: {
       displayName: 'Complex',
       pluralName: 'Complexes',
@@ -178,6 +184,9 @@ export function createContentTypeWithComponent(
     modelType: 'contentType',
     uid: 'api::complex.complex',
     globalId: 'Complex',
+    options: {
+      draftAndPublish: true,
+    },
     info: {
       displayName: 'Complex',
       pluralName: 'Complexes',
@@ -208,11 +217,17 @@ export function createContentTypeWithComponent(
   }
 }
 
-export function createContentTypeWithDynamicZone(components, { translated = true }): Struct.ContentTypeSchema {
+export function createContentTypeWithDynamicZone(
+  components,
+  { translated = true }
+): Struct.ContentTypeSchema {
   return {
     modelType: 'contentType',
     uid: 'api::complex.complex',
     globalId: 'Complex',
+    options: {
+      draftAndPublish: true,
+    },
     info: {
       displayName: 'Complex',
       pluralName: 'Complexes',
@@ -243,6 +258,9 @@ export const complexContentType: Struct.ContentTypeSchema = {
   modelType: 'contentType',
   uid: 'api::complex.complex',
   globalId: 'Complex',
+  options: {
+    draftAndPublish: true,
+  },
   info: {
     displayName: 'Complex',
     pluralName: 'Complexes',
@@ -350,10 +368,13 @@ export const complexContentType: Struct.ContentTypeSchema = {
   },
 }
 
-export const complexContentTypeDelete: Struct.ContentTypeSchema  = {
+export const complexContentTypeDelete: Struct.ContentTypeSchema = {
   modelType: 'contentType',
   uid: 'api::complex.complex',
   globalId: 'Complex',
+  options: {
+    draftAndPublish: true,
+  },
   info: {
     displayName: 'Complex',
     pluralName: 'Complexes',

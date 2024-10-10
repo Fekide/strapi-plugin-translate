@@ -1,9 +1,8 @@
-import { TranslateConfig } from "../config"
+import { getConfig } from "./get-config"
 
 
 function getFieldTypeConfig(type: string) {
-  const { translatedFieldTypes } =
-    strapi.config.get<TranslateConfig>('plugin::translate')
+  const { translatedFieldTypes } = getConfig()
 
   return translatedFieldTypes
     .map((t) =>

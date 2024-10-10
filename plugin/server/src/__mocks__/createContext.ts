@@ -3,7 +3,10 @@ import { Context } from 'koa'
 
 export default (body: unknown, query?: unknown): Context => {
   return {
-    body,
+    body: {},
+    request: {
+      body,
+    },
     query,
     badRequest: jest.fn(),
     notFound: jest.fn(),

@@ -1,6 +1,7 @@
-const defaults = require('../../jest.config')
+'use strict'
 
 module.exports = {
-  ...defaults,
-  collectCoverageFrom: ['./lib/**/*.js'],
+  preset: '../../jest-preset.js',
+  displayName: 'Plugin',
+  collectCoverageFrom: ['./lib/**/*.ts'],
 }

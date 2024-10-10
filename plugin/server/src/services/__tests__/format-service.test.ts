@@ -64,8 +64,8 @@ console.log(
 </ul>
 <p>End of Document</p>`
 
-beforeEach(() => {
-  setup({})
+beforeEach(async () => {
+  await setup({})
 })
 
 afterEach(() => {

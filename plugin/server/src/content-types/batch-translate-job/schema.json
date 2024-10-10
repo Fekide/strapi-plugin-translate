@@ -4,7 +4,9 @@
   "info": {
     "singularName": "batch-translate-job",
     "pluralName": "batch-translate-jobs",
-    "displayName": "Translate Batch Translate Job"
+    "displayName": "Translate Batch Translate Job",
+    "name": "batch-translate-job",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false,

@@ -1,13 +1,16 @@
 import { Core, UID } from '@strapi/strapi'
 import { get, set, isEmpty, defaults } from 'lodash'
-import {jest} from '@jest/globals'
+import { jest } from '@jest/globals'
 
 import dummyProvider from '../utils/dummy-provider'
 import configModule, { TranslateConfig } from '../config'
 import { TranslateProvider } from '../../../shared/types/provider'
+import providerController from '../controllers/provider'
+import translateController from '../controllers/translate'
+import batchTranslateJob from '../content-types/batch-translate-job'
 
 function draftAndPublishEnabled(uid: UID.ContentType) {
-  return strapi.contentTypes[uid].options.draftAndPublish === true
+  return strapi.contentTypes[uid].options?.draftAndPublish === true
 }
 
 export interface SetupProps {
@@ -21,7 +24,7 @@ export interface SetupProps {
   provider?: TranslateProvider
 }
 
-const initSetup = ({
+const initSetup = async ({
   config = {},
   toStore = false,
   database = {},
@@ -32,7 +35,7 @@ const initSetup = ({
   plugins = {},
   // db = {},
   provider = dummyProvider,
-}: SetupProps): Core.Strapi => {
+}: SetupProps): Promise<Core.Strapi> => {
   // const dbConfig = toStore
   //   ? {
   //       plugin: {
@@ -43,9 +46,9 @@ const initSetup = ({
   //     }
   //   : {}
 
-  defaults(config, configModule.default())
-  configModule.validator(config)
-  let mock: Core.Strapi
+  let validatedConfig = defaults(config, configModule.default())
+  configModule.validator(validatedConfig)
+  let mock: Partial<Core.Strapi>
 
   function store(storeProps) {
     const { type, name } = storeProps // { type: 'plugin', name: 'comments' }
@@ -82,10 +85,20 @@ const initSetup = ({
     return store(props).delete(props)
   }
 
-  const documents: Core.Strapi["documents"] = function documents(uid: UID.ContentType ) {
+  const documents: Core.Strapi['documents'] = function documents(
+    uid: UID.ContentType
+  ) {
     return {
       findOne: (params) =>
-        mock.db.query(uid).findOne({ where: { documentId: { $eq: params.documentId } }, ...params }),
+        mock.db
+          .query(uid)
+          .findOne({
+            where: {
+              documentId: { $eq: params.documentId },
+              locale: { $eq: params.locale },
+            },
+            ...params,
+          }),
       findFirst: (params) => mock.db.query(uid).findMany(params)[0],
       findMany: (params) =>
         mock.db.query(uid).findMany({ ...params, where: params.filters }),
@@ -94,15 +107,20 @@ const initSetup = ({
       delete: (params) => mock.db.query(uid).delete(params),
       clone: (params) => mock.db.query(uid).delete(params),
       count: (params) => mock.db.query(uid).delete(params),
-      publish: draftAndPublishEnabled(uid) ? (params) => mock.db.query(uid).update(params) : undefined, 
-      unpublish: draftAndPublishEnabled(uid) ?(params) => mock.db.query(uid).update(params) : undefined,
-      discardDraft: draftAndPublishEnabled(uid) ? (params) => mock.db.query(uid).delete(params) : undefined,
+      publish: draftAndPublishEnabled(uid)
+        ? (params) => mock.db.query(uid).update(params)
+        : undefined,
+      unpublish: draftAndPublishEnabled(uid)
+        ? (params) => mock.db.query(uid).update(params)
+        : undefined,
+      discardDraft: draftAndPublishEnabled(uid)
+        ? (params) => mock.db.query(uid).delete(params)
+        : undefined,
     }
   } as any
 
-  documents.utils= {transformData: jest.fn(() => Promise.resolve(null))}
-  documents.use= jest.fn(() => mock.documents)
-  
+  documents.utils = { transformData: jest.fn(() => Promise.resolve(null)) }
+  documents.use = jest.fn(() => mock.documents)
 
   mock = {
     db: {
@@ -112,7 +130,17 @@ const initSetup = ({
         return {
           findOne: async ({ where }) =>
             new Promise((resolve) =>
-              resolve(values.find((obj) => obj.id == where.id.$eq))
+              resolve(
+                values.find((obj) => {
+                  const docIdCondition = where.documentId
+                    ? obj.documentId === where.documentId?.$eq
+                    : true
+                  const localeCondition = where.locale
+                    ? obj.locale === where.locale?.$eq
+                    : obj.locale === 'en' // default locale
+                  return docIdCondition && localeCondition
+                })
+              )
             ),
           findMany: async () => new Promise((resolve) => resolve(values)),
           findWithCount: async () =>
@@ -123,7 +151,7 @@ const initSetup = ({
           delete: async (value) => new Promise((resolve) => resolve(value)),
         } as any
       },
-    }as any,
+    } as any,
     components,
     contentTypes,
     plugin: function (name) {
@@ -134,7 +162,9 @@ const initSetup = ({
       ...plugins,
       translate: {
         config: function (key, defaultValue) {
-          return mock.config.get(`plugin::translate.${String(key)}`) || defaultValue
+          return (
+            mock.config.get(`plugin.translate.${String(key)}`) || defaultValue
+          )
         },
         service(name) {
           return this.services[name] as any
@@ -161,18 +191,23 @@ const initSetup = ({
           },
         },
         controllers: {
-          provider: require('../server/controllers/provider'),
-          translate: require('../server/controllers/translate'),
+          provider: providerController(),
+          translate: {},
         },
         contentTypes: {
-          'batch-translate-job': require('../server/content-types/batch-translate-job/schema.json'),
+          'batch-translate-job': batchTranslateJob as any,
         },
         provider: provider.init({}),
         bootstrap: async function () {
-          this.services.provider = (await import('../services/provider')).default({ strapi: mock })
-          this.services.translate = (await import('../services/translate')).default({ strapi: mock })
+          this.services.provider = (
+            await import('../services/provider')
+          ).default({ strapi: mock as Core.Strapi })
+          this.services.translate = (
+            await import('../services/translate')
+          ).default({ strapi: mock as Core.Strapi })
           this.services.format = (await import('../services/format')).default()
           this.services.chunks = (await import('../services/chunks')).default()
+          this.controllers.translate = translateController({ strapi: mock as Core.Strapi })
         },
         destroy: jest.fn(() => Promise.resolve()),
         middlewares: {},
@@ -198,20 +233,23 @@ const initSetup = ({
           },
         },
       } as any,
+
     },
     config: {
       has: function (prop = '') {
         return !!get(this.plugins, prop.replace('plugin.', ''))
       },
       get: function (prop = '', defaultValue) {
-        return get(this.plugins, String(prop).replace('plugin.', '')) || defaultValue
+        return (
+          get(this.plugins, String(prop).replace('plugin.', '')) || defaultValue
+        )
       },
       set: function (prop = '', value) {
         return set(this.plugins, prop.replace('plugin.', ''), value)
       },
       plugins: {
         translate: {
-          ...config,
+          ...validatedConfig,
           provider: provider?.provider,
         },
       },
@@ -221,7 +259,9 @@ const initSetup = ({
       findOne: (uid, id, params) =>
         mock.db.query(uid).findOne({ where: { id: { $eq: id } }, ...params }),
       findMany: (uid, params) =>
-        mock.db.query(uid).findMany({ ...params, where: params.filters }) as any,
+        mock.db
+          .query(uid)
+          .findMany({ ...params, where: params.filters }) as any,
       create: (uid, params) => mock.db.query(uid).create(params),
       update: (uid, id, params) => mock.db.query(uid).update(params),
       delete: (uid, id, params) => mock.db.query(uid).delete(params),
@@ -233,11 +273,14 @@ const initSetup = ({
         return this.plugins[plugin].services[service]
       }
       return {
-        findOne: (id, params) => this.documents(uid).findOne({documentId: id, ...params}),
+        findOne: (id, params) =>
+          this.documents(uid).findOne({ documentId: id, ...params }),
         find: (params) => this.documents(uid).findMany(params),
         create: (params) => this.documents(uid).create(params),
-        update: (id, params) => this.documents(uid).update({documentId: id, ...params}),
-        delete: (id, params) => this.documents(uid).delete({documentId: id, ...params}),
+        update: (id, params) =>
+          this.documents(uid).update({ documentId: id, ...params }),
+        delete: (id, params) =>
+          this.documents(uid).delete({ documentId: id, ...params }),
       }
     },
     log: {
@@ -246,6 +289,10 @@ const initSetup = ({
       warn: jest.fn() as any,
       error: jest.fn() as any,
     } as any,
+    bootstrap: async () => {
+      await mock.plugins.translate.bootstrap({ strapi: mock as Core.Strapi })
+      return mock as Core.Strapi
+    },
   }
 
   if (!isEmpty(database)) {
@@ -255,12 +302,12 @@ const initSetup = ({
     })
   }
 
-  return mock as Core.Strapi
+  return mock.bootstrap()
 }
 
-const setup = function (params: SetupProps) {
+const setup = async function (params: SetupProps) {
   Object.defineProperty(global, 'strapi', {
-    value: initSetup(params),
+    value: await initSetup(params),
     writable: true,
   })
 }

@@ -64,22 +64,27 @@ const usageEstimateCollectionBodySchema = z.object({
 export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
   async translateEntity(ctx) {
     const {
-      data: { documentId, sourceLocale, targetLocale, contentType },
+      data,
       error,
       success,
     } = translateBodySchema.safeParse(ctx.request.body)
 
     if (!success) {
+      console.log('error', error)
       return ctx.badRequest({ message: 'request data invalid', error })
     }
+
+    const { documentId, sourceLocale, targetLocale, contentType } = data
 
     const isCollection = isCollectionType(contentType)
 
     if (!documentId && isCollection) {
+      console.log('documentId is missing, but required for collection types')
       return ctx.badRequest({ message: 'documentId is missing, but required for collection types' })
     }
 
     if (!isContentTypeUID(contentType)) {
+      console.log('corresponding content type not found')
       return ctx.notFound('corresponding content type not found')
     }
 

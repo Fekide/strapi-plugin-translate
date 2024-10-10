@@ -12,7 +12,7 @@ import {
 } from '../../__mocks__/components'
 import {
   complexContentType,
-  simpleContentType,
+  createSimpleContentType,
 } from '../../__mocks__/contentTypes'
 import setup from '../../__mocks__/initSetup'
 import { Schema, Utils } from '@strapi/strapi'
@@ -23,8 +23,8 @@ afterEach(() => {
 
 describe('translatable fields', () => {
   describe('get translate fields', () => {
-    beforeEach(() =>
-      setup({
+    beforeEach(async () =>
+      await setup({
         components: {
           'simple.component': simpleComponent,
           'twofield.component': twoFieldComponent,
@@ -379,11 +379,11 @@ describe('translatable fields', () => {
   })
 
   describe('get all translatable fields', () => {
-    beforeEach(() =>
-      setup({
+    beforeEach(async () =>
+      await setup({
         components: {
-          simpleComponent,
-          twoFieldComponent,
+          'simple.component': simpleComponent,
+          'twofield.component': twoFieldComponent,
         },
       })
     )
@@ -395,7 +395,7 @@ describe('translatable fields', () => {
         id: 1,
         title: 'some title',
       }
-      const schema = simpleContentType
+      const schema = createSimpleContentType(true)
 
       // when
       const translatedField = await getAllTranslatableFields(data, schema)
