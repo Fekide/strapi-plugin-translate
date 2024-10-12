@@ -163,7 +163,7 @@ const initSetup = async ({
       translate: {
         config: function (key, defaultValue) {
           return (
-            mock.config.get(`plugin.translate.${String(key)}`) || defaultValue
+            mock.config.get(`plugin::translate.${String(key)}`) || defaultValue
           )
         },
         service(name) {
