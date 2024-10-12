@@ -14,7 +14,7 @@ import {
   useForm,
   unstable_useDocumentLayout as useDocumentLayout,
 } from '@strapi/strapi/admin'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { getTranslation } from '../utils'
 import {
@@ -37,6 +37,39 @@ interface I18nBaseQuery {
   }
 }
 
+const LocaleSelection: React.FC<{
+  value: string | null
+  options: { value: string; label: string }[]
+  onChange: (locale: string) => void
+}> = ({ value, onChange, options }) => {
+  const { formatMessage } = useIntl()
+  return (
+    <Field.Root width="100%">
+      <Field.Label>
+        {formatMessage({
+          id: getTranslation('Settings.locales.modal.locales.label'),
+          defaultMessage: 'Locale',
+        })}
+      </Field.Label>
+      <SingleSelect
+        value={value}
+        placeholder={formatMessage({
+          id: getTranslation('CMEditViewCopyLocale.dialog.field.placeholder'),
+          defaultMessage: 'Select one locale...',
+        })}
+        // @ts-expect-error – the DS will handle numbers, but we're not allowing the API.
+        onChange={onChange}
+      >
+        {options.map((locale) => (
+          <SingleSelectOption key={locale.value} value={locale.value}>
+            {locale.label}
+          </SingleSelectOption>
+        ))}
+      </SingleSelect>
+    </Field.Root>
+  )
+}
+
 export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
   documentId,
   meta,
@@ -47,9 +80,6 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
   const { formatMessage } = useIntl()
   const [{ query }] = useQueryParams<I18nBaseQuery>()
   const currentDesiredLocale = query.plugins?.i18n?.locale
-  const [localeSelected, setLocaleSelected] = React.useState<string | null>(
-    null
-  )
   const setValues = useForm('TranslateFromAnotherLocale', (state) => state.setValues)
   const [translateEntity] = useTranslateEntityMutation()
   const { schema, components } = useDocument({
@@ -59,17 +89,31 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
     params: { locale: currentDesiredLocale },
   })
   const { edit: editLayout } = useDocumentLayout(model)
-  const { data: locales = [] } = useGetI18NLocalesQuery()
-
-  const [expectedCost, setExpectedCost] = useState<number | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const { estimateUsage, usage } = useUsage()
+  const { data: locales } = useGetI18NLocalesQuery()
 
   const availableLocales = Array.isArray(locales)
     ? locales.filter((locale) =>
         meta?.availableLocales.some((l) => l.locale === locale.code)
       )
     : []
+
+  
+  const [localeSelected, setLocaleSelected] = useState<string | null>(
+    null
+  )
+
+  useEffect(() => {
+    const defaultLocale = availableLocales.find(
+      (locale) => locale.isDefault
+    )?.code
+    if (defaultLocale && !localeSelected) {
+      setLocaleSelected(defaultLocale)
+    }
+  }, [availableLocales, localeSelected])
+
+  const [expectedCost, setExpectedCost] = useState<number | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
+  const { estimateUsage, usage } = useUsage()
 
   const handleLocaleChange = (value: string) => {
     setLocaleSelected(value)
@@ -175,31 +219,15 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
                     'Your current content will be erased and filled by the translated content of the selected locale:',
                 })}
               </Typography>
-              <Field.Root width="100%">
-                <Field.Label>
-                  {formatMessage({
-                    id: getTranslation('Settings.locales.modal.locales.label'),
-                    defaultMessage: 'Locale',
-                  })}
-                </Field.Label>
-                <SingleSelect
-                  value={localeSelected}
-                  placeholder={formatMessage({
-                    id: getTranslation(
-                      'CMEditViewCopyLocale.dialog.field.placeholder'
-                    ),
-                    defaultMessage: 'Select one locale...',
-                  })}
-                  // @ts-expect-error – the DS will handle numbers, but we're not allowing the API.
-                  onChange={handleLocaleChange}
-                >
-                  {availableLocales.map((locale) => (
-                    <SingleSelectOption key={locale.code} value={locale.code}>
-                      {locale.name}
-                    </SingleSelectOption>
-                  ))}
-                </SingleSelect>
-              </Field.Root>
+
+              <LocaleSelection
+                value={localeSelected}
+                onChange={handleLocaleChange}
+                options={availableLocales.map((locale) => ({
+                  label: locale.name,
+                  value: locale.code,
+                }))}
+              />
               {expectedCost && usage != null && (
                 <Typography>
                   {formatMessage({
