@@ -11,10 +11,6 @@ const usageApi = translateApi.injectEndpoints({
       TranslateProviderUsage.Response,
       TranslateProviderUsage.Request['body']
     >({
-      transformResponse: (response, meta, arg) => {
-        console.log({ response, meta, arg })
-        return response as TranslateProviderUsage.Response
-      },
       providesTags: ['TranslateProviderUsage'],
       query: () => ({ url: `/translate/usage`, method: 'GET' }),
     }),
@@ -59,8 +55,6 @@ const {
   useLazyEstimateUsageQuery,
   useLazyEstimateUsageCollectionQuery,
 } = usageApi
-
-console.log('usageApi.endpoints', usageApi.endpoints)
 
 export {
   useProviderUsageQuery,
