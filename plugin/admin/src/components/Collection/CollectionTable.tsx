@@ -58,6 +58,14 @@ const CollectionTable = () => {
   const [sourceLocale, setSourceLocale] = useState<string | null>(
     locales.find((l) => l.isDefault)?.code || null
   )
+  useEffect(() => {
+    const defaultLocale = locales.find(
+      (locale) => locale.isDefault
+    )?.code
+    if (defaultLocale && !sourceLocale) {
+      setSourceLocale(defaultLocale)
+    }
+  }, [locales, sourceLocale])
   const [autoPublish, setAutoPublish] = useState(false)
   const [collection, setCollection] =
     useState<ContentTypeTranslationReport | null>(null)
