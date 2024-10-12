@@ -37,8 +37,6 @@ function parseRelation(
   data: Schema.Attribute.Value<Schema.Attribute.AnyAttribute>,
   relationEditLayout: any
 ) {
-  console.log('data', data)
-  console.log('relationEditLayout', relationEditLayout)
   if (!relationEditLayout) {
     // In this case, strapi is <4.5
     return data
@@ -61,7 +59,6 @@ export default function parseRelations(
   schema: { contentType: Schema.ContentType; components: Schema.Components; editLayout: EditLayout },
   component: UID.Component | null = null
 ) {
-  console.log('editLayout', schema.editLayout)
   const result: any = cloneDeep(data)
 
   const currentSchema = component
