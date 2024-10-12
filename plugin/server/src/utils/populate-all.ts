@@ -48,9 +48,7 @@ export function populateAll<
         maxDepth: maxDepth - 1,
         populateMedia,
       })
-      populateResult[attr] = {
-        populate: rule ? rule : true,
-      }
+      populateResult[attr] = rule ? { populate: rule } : true
     } else if (fieldSchema.type === 'dynamiczone') {
       const dynamicZonePopulate = fieldSchema.components.reduce(
         (combined: PopulateRule, component: UID.Component) => {
@@ -69,11 +67,11 @@ export function populateAll<
         },
         {}
       )
-      populateResult[attr] = {
-        populate: isEmptyObject(dynamicZonePopulate)
-          ? true
-          : dynamicZonePopulate,
-      }
+      populateResult[attr] = isEmptyObject(dynamicZonePopulate)
+        ? true
+        : {
+            populate: dynamicZonePopulate,
+          }
     } else if (['relation', 'media'].includes(fieldSchema.type)) {
       if (
         (fieldSchema.type === 'media' && populateMedia) ||
