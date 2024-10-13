@@ -4,24 +4,29 @@ describe('batch update', () => {
   })
 
   it('should add an update entry when a translated entity is updated', () => {
-    cy.intercept('/translate/batch-translate').as('batchTranslateExecution')
-    cy.intercept('/translate/batch-translate/content-types/').as(
-      'batchTranslateContentTypes'
-    )
-
     // Login and translate first category
     cy.login()
-    cy.visit(
-      '/admin/content-manager/collection-types/api::category.category/create?plugins[i18n][locale]=de&plugins[i18n][relatedEntityId]=1'
-    )
-    cy.get('#name').type('translation')
-    cy.get('button[type=submit]').focus()
-    cy.get('button[type=submit]').click()
+    cy.get('nav').contains('Content Manager').click()
 
-    // Edit the category
-    cy.get('#name').type('edited')
-    cy.get('button[type=submit]').focus()
-    cy.get('button[type=submit]').click()
+    cy.get('nav[aria-label="Content Manager"]').contains('Category').click()
+
+    cy.contains('tech').click()
+
+    // Go to page for creating German locale
+    cy.get('div[aria-label=Locales]').click()
+    cy.contains('German (de)').click()
+
+    // First translation
+    cy.get('input[name=name]').type('translation')
+    // Save
+    cy.contains('button', 'Save').click()
+    cy.contains('Saved document').should('be.visible')
+
+    // Update the translation
+    cy.get('input[name=name]').type('edited')
+    // Save
+    cy.contains('button', 'Save').click()
+    cy.contains('Saved document').should('be.visible')
 
     // Verify
     cy.visit('/admin/plugins/translate')
