@@ -4,7 +4,7 @@ describe('direct translation', () => {
   })
 
   it('single article', () => {
-    cy.intercept('/translate/translate').as('translateExecution')
+    cy.intercept('/translate/entity').as('translateExecution')
 
     // Login and Navigate to article
     cy.login()
@@ -12,27 +12,13 @@ describe('direct translation', () => {
     cy.contains('A bug is becoming a meme on the internet').click()
 
     // Go to page for creating German locale
-    cy.contains('label', 'Locales')
-      .invoke('attr', 'for')
-      .then((id) => {
-        cy.get(`[id='${id}']`)
-      })
-      .click()
+    cy.get('div[aria-label=Locales]').click()
     cy.contains('German (de)').click()
 
     // Translate from English
     cy.contains('Translate from another locale').click()
     cy.contains('button', 'Yes, fill in').click()
     cy.wait('@translateExecution')
-
-    // Update UID
-    cy.contains('label', 'slug')
-      .invoke('attr', 'for')
-      .then((id) => {
-        cy.get(`[id='${id}']`)
-      })
-      .clear()
-      .type('a-bug-is-becoming-a-meme-on-the-internet-1')
 
     // Save and Publish
     cy.contains('button', 'Save').click()
