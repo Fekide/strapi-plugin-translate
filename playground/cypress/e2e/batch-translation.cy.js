@@ -4,16 +4,14 @@ describe('batch translation', () => {
   })
 
   it('should translate all articles', () => {
-    cy.intercept('/translate/batch-translate').as('batchTranslateExecution')
-    cy.intercept('/translate/batch-translate/content-types/').as(
-      'batchTranslateContentTypes'
-    )
+    cy.intercept('/translate/batch').as('batchTranslateExecution')
+    cy.intercept('/translate/report').as('translateReport')
 
     // Login and Navigate to Translate Page
     cy.login()
     cy.get('nav').contains('Translate').click()
 
-    cy.wait('@batchTranslateContentTypes')
+    cy.wait('@translateReport')
 
     // Start batch translation
 
@@ -21,20 +19,17 @@ describe('batch translation', () => {
     cy.get('button[data-cy="api::article.article.de.translate"]').click()
 
     // Complete dialog
-    cy.get('div[role=dialog]')
-      .contains('label', 'Locales')
-      .invoke('attr', 'for')
-      .then((id) => {
-        cy.get(`[id='${id}']`)
-      })
-      .click()
+    cy.get('div[role=alertdialog] div[role=combobox]')
+      .filter(':contains("English (en)")')
+      .should('be.visible')
 
-    cy.get('div[role=option]').filter(':contains("English (en)")').click()
-    cy.get('div[role=dialog] button').filter(':contains("Translate")').click()
+    cy.get('div[role=alertdialog] button')
+      .filter(':contains("Translate")')
+      .click()
 
     // Verify translation finished
 
-    cy.wait('@batchTranslateContentTypes')
+    cy.wait('@translateReport')
 
     cy.get('[data-cy="api::article.article.de"]')
       .contains('Job finished')
@@ -45,16 +40,14 @@ describe('batch translation', () => {
   })
 
   it('should translate and publish all articles', () => {
-    cy.intercept('/translate/batch-translate').as('batchTranslateExecution')
-    cy.intercept('/translate/batch-translate/content-types/').as(
-      'batchTranslateContentTypes'
-    )
+    cy.intercept('/translate/batch').as('batchTranslateExecution')
+    cy.intercept('/translate/report').as('translateReport')
 
     // Login and Navigate to Translate Page
     cy.login()
     cy.get('nav').contains('Translate').click()
 
-    cy.wait('@batchTranslateContentTypes')
+    cy.wait('@translateReport')
 
     // Start batch translation
 
@@ -62,27 +55,17 @@ describe('batch translation', () => {
     cy.get('button[data-cy="api::article.article.de.translate"]').click()
 
     // Complete dialog
-    cy.get('div[role=dialog]')
-      .contains('label', 'Locales')
-      .invoke('attr', 'for')
-      .then((id) => {
-        cy.get(`[id='${id}']`)
-      })
+    cy.get('div[role=alertdialog] div[role=combobox]')
+      .filter(':contains("English (en)")')
+      .should('be.visible')
+    cy.get('input[name=auto-publish]').click()
+    cy.get('div[role=alertdialog] button')
+      .filter(':contains("Translate")')
       .click()
-    cy.get('div[role=option]').filter(':contains("English (en)")').click()
-    cy.get('div[role=dialog]')
-      .contains('label', 'Auto-Publish')
-      .invoke('attr', 'for')
-      .then((id) => {
-        cy.get(`[id='${id}']`)
-      })
-      .parent()
-      .click()
-    cy.get('div[role=dialog] button').filter(':contains("Translate")').click()
 
     // Verify translation finished
 
-    cy.wait('@batchTranslateContentTypes')
+    cy.wait('@translateReport')
 
     cy.get('[data-cy="api::article.article.de"]')
       .contains('Job finished')
