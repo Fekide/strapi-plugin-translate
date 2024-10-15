@@ -187,12 +187,18 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
         .findOne({ documentId: updateID })
 
       if (!update || !isContentTypeUID(update.contentType)) continue
-      const mainID = update.groupID.split('-')[0]
+
+      let isOldId = false
+      let mainID = update.groupID
+      if ((update.groupID as string).includes('-')) {
+        isOldId = true
+        mainID = update.groupID.split('-')[0]
+      }
 
       const normalizedEntities = await strapi
         .documents(update.contentType)
         .findMany({
-          documentId: mainID,
+          ...(isOldId ? { id: mainID } : { documentId: mainID }),
           locale: '*',
         })
 
