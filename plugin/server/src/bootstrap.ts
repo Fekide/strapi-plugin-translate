@@ -1,12 +1,12 @@
-import type { Core } from '@strapi/strapi';
+import type { Core } from '@strapi/strapi'
 
-import {toLower} from 'lodash';
+import { toLower } from 'lodash'
 
-import { actions } from './services/permissions/actions';
-import { getService } from './utils/get-service';
-import { TranslateConfig } from './config';
-import { TranslateProvider } from '../../shared/types/provider';
-import dummyProvider from './utils/dummy-provider';
+import { actions } from './services/permissions/actions'
+import { getService } from './utils/get-service'
+import { TranslateConfig } from './config'
+import { TranslateProvider } from '../../shared/types/provider'
+import dummyProvider from './utils/dummy-provider'
 
 const createProvider = (translateConfig: TranslateConfig) => {
   const providerName = toLower(translateConfig.provider)
@@ -15,7 +15,7 @@ const createProvider = (translateConfig: TranslateConfig) => {
   if (providerName === 'dummy') {
     provider = dummyProvider
   } else {
-    let modulePath : string
+    let modulePath: string
     try {
       modulePath = require.resolve(`strapi-provider-translate-${providerName}`)
     } catch (error) {
@@ -33,14 +33,12 @@ const createProvider = (translateConfig: TranslateConfig) => {
     }
   }
 
-  return provider.init(
-    translateConfig.providerOptions
-  )
+  return provider.init(translateConfig.providerOptions)
 }
 
-
 const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
-  const translateConfig = strapi.config.get<TranslateConfig>('plugin::translate')
+  const translateConfig =
+    strapi.config.get<TranslateConfig>('plugin::translate')
   strapi.plugin('translate').provider = createProvider(translateConfig)
 
   // Listen for updates to entries, mark them as updated
@@ -52,25 +50,26 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
         !translateConfig.ignoreUpdatedContentTypes.includes(event.model.uid) &&
         // entity must have localizations
         event.result?.locale &&
-        Array.isArray(event.result.localizations) &&
+        Array.isArray(event.result?.localizations) &&
         event.result.localizations.length > 0 &&
         // update must include relevant fields
         Object.keys(event.params.data).some(
           (key) => !['localizations', 'updatedAt', 'updatedBy'].includes(key)
         )
       ) {
-        const groupID = [
-          event.result.id,
-          ...event.result.localizations.map(({ id }) => id),
-        ]
-          .sort()
-          .join('-')
-        getService('updated-entry').create({
-          data: {
-            contentType: event.model.uid,
-            groupID,
-            localesWithUpdates: [event.result.locale],
-          },
+        console.log('Marking entry as updated ' + event.result.documentId)
+        console.log(event.result.localizations)
+        setTimeout(() => {
+          strapi
+            .documents('plugin::translate.updated-entry')
+            .create({
+              data: {
+                contentType: event.model.uid,
+                groupID: event.result.documentId,
+                localesWithUpdates: [event.result.locale],
+              },
+            })
+            .catch(console.error)
         })
       }
     },
@@ -78,6 +77,6 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
 
   await strapi.admin.services.permission.actionProvider.registerMany(actions)
   await getService('translate').batchTranslateManager.bootstrap()
-};
+}
 
-export default bootstrap;
+export default bootstrap
