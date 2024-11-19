@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { TranslateConfig } from '../config'
 import { TranslateEntity } from '../../../shared/contracts/translate'
 import { isCollectionType, isContentTypeUID } from '../utils/content-type'
+import { handleContextError } from '../utils/handle-error'
 
 export interface TranslateController extends Core.Controller {
   translateEntity: Core.ControllerHandler<TranslateEntity.Response>
@@ -63,11 +64,9 @@ const usageEstimateCollectionBodySchema = z.object({
 
 export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
   async translateEntity(ctx) {
-    const {
-      data,
-      error,
-      success,
-    } = translateBodySchema.safeParse(ctx.request.body)
+    const { data, error, success } = translateBodySchema.safeParse(
+      ctx.request.body
+    )
 
     if (!success) {
       console.log('error', error)
@@ -80,7 +79,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
 
     if (!documentId && isCollection) {
       console.log('documentId is missing, but required for collection types')
-      return ctx.badRequest({ message: 'documentId is missing, but required for collection types' })
+      return ctx.badRequest({
+        message: 'documentId is missing, but required for collection types',
+      })
     }
 
     if (!isContentTypeUID(contentType)) {
@@ -95,14 +96,16 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       populateRelations: true,
     })
 
-    const fullyPopulatedData = isCollection ? await strapi.documents(contentType).findOne({
-      documentId,
-      locale: sourceLocale,
-      populate: populateRule,
-    }) : await strapi.documents(contentType).findFirst({
-      locale: sourceLocale,
-      populate: populateRule,
-    })
+    const fullyPopulatedData = isCollection
+      ? await strapi.documents(contentType).findOne({
+          documentId,
+          locale: sourceLocale,
+          populate: populateRule,
+        })
+      : await strapi.documents(contentType).findFirst({
+          locale: sourceLocale,
+          populate: populateRule,
+        })
 
     const fieldsToTranslate = await getAllTranslatableFields(
       fullyPopulatedData,
@@ -130,75 +133,9 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       )
       const cleanedData = cleanData(withFieldsDeleted, contentSchema, true)
 
-      // cleanedData.localizations.push({ id })
-
       return { data: cleanedData }
     } catch (error) {
-      strapi.log.error('Translating entity failed: ' + error.message)
-      if (error.response?.status !== undefined) {
-        switch (error.response.status) {
-          case 400:
-            return ctx.badRequest({
-              message: 'translate.error.badRequest',
-              error: {
-                message: error.message,
-              },
-            })
-          case 403:
-            return ctx.forbidden({
-              message: 'translate.error.forbidden',
-              error: {
-                message: error.message,
-              },
-            })
-          case 404:
-            return ctx.notFound({
-              message: 'translate.error.notFound',
-              error: {
-                message: error.message,
-              },
-            })
-          case 413:
-            return ctx.payloadTooLarge({
-              message: 'translate.error.payloadTooLarge',
-              error: {
-                message: error.message,
-              },
-            })
-          case 414:
-            return ctx.uriTooLong({
-              message: 'translate.error.uriTooLong',
-              error: {
-                message: error.message,
-              },
-            })
-          case 429:
-            return ctx.tooManyRequests({
-              message: 'translate.error.tooManyRequests',
-              error: {
-                message: error.message,
-              },
-            })
-          case 456:
-            return ctx.paymentRequired({
-              message: 'translate.error.paymentRequired',
-              error: {
-                message: error.message,
-              },
-            })
-          default:
-            return ctx.internalServerError(error.message)
-        }
-      } else if (error.message) {
-        return ctx.internalServerError({
-          message: 'CMEditViewTranslateLocale.translate-failure',
-          error: { message: error.message },
-        })
-      } else {
-        return ctx.internalServerError(
-          'CMEditViewTranslateLocale.translate-failure'
-        )
-      }
+      return handleContextError(ctx, error, 'TranslateEntity.error')
     }
   },
   async translateBatch(ctx) {
@@ -328,15 +265,15 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
     }
   },
   async translateBatchUpdate(ctx) {
-    const {
-      data: { sourceLocale, updatedEntryIDs },
-      error,
-      success,
-    } = batchUpdateBodySchema.safeParse(ctx.request.body)
+    const { data, error, success } = batchUpdateBodySchema.safeParse(
+      ctx.request.body
+    )
 
     if (!success) {
       return ctx.badRequest({ message: 'request data invalid', error })
     }
+
+    const { updatedEntryIDs, sourceLocale } = data
 
     ctx.body = {
       data: await getService('translate').batchUpdate({
