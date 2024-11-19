@@ -8,7 +8,6 @@ import { filterAllDeletedFields } from '../utils/delete-fields'
 import { cleanData } from '../utils/clean-data'
 import { TRANSLATE_PRIORITY_BATCH_TRANSLATION } from '../utils/constants'
 import { updateUids } from '../utils/update-uids'
-import { removeUids } from '../utils/remove-uids'
 import { BatchTranslateManagerImpl } from './batch-translate'
 import { Core, Data, Modules, UID } from '@strapi/strapi'
 import { TranslateConfig } from '../config'
@@ -147,17 +146,24 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
     )
 
     if (params.create) {
+      const cleanedData = cleanData<typeof params.contentType>(
+        withFieldsDeleted,
+        contentSchema,
+        false
+      )
+
       if (collectionType) {
         await strapi.documents(params.contentType).update({
           documentId: params.documentId,
-          data: cleanData(withFieldsDeleted, contentSchema, false),
+          data: cleanedData,
           locale: params.targetLocale,
           status: params.publish ? 'published' : 'draft',
         })
       } else if (singleType) {
         await strapi.documents(params.contentType).create({
-          data: cleanData(withFieldsDeleted, contentSchema, false),
+          data: cleanedData,
           locale: params.targetLocale,
+          status: params.publish ? 'published' : 'draft',
         })
       }
     }

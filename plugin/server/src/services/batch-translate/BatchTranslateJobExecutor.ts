@@ -215,7 +215,7 @@ export class BatchTranslateJobExecutor {
 
       // Translate the entity
       try {
-        getService('translate').translateEntity({
+        await getService('translate').translateEntity({
           documentId: entity.documentId,
           contentType: this.contentType,
           sourceLocale: this.sourceLocale,
@@ -241,7 +241,9 @@ export class BatchTranslateJobExecutor {
           },
         })
         clearInterval(this.intervalId)
-        throw new Error('Translation of an entity failed')
+        throw new Error(
+          `Translation of entity ${entity.documentId} from ${this.sourceLocale} to ${this.targetLocale} failed`
+        )
       }
       await this.updateProgress()
     }
