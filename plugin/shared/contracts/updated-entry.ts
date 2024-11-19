@@ -8,7 +8,7 @@ export type UpdatedEntry = Data.Entity & {
 }
 
 /**
- * GET /translate/batch-update/updates - Get all updated-entries
+ * GET /translate/batch/updates - Get all updated-entries
  */
 export declare namespace GetUpdatedEntries {
   export interface Request {
@@ -25,7 +25,7 @@ export declare namespace GetUpdatedEntries {
 }
 
 /**
- * DEL /translate/batch-update/dismiss/:id - Delete a single updated-entry
+ * DEL /translate/batch/updates/:id - Delete a single updated-entry
  */
 export declare namespace DeleteUpdatedEntry {
   export interface Request {

@@ -127,7 +127,7 @@ export default [
   },
   {
     method: 'DELETE',
-    path: '/batch/updates/dismiss/:id',
+    path: '/batch/updates/:id',
     handler: 'updated-entry.delete',
     config: {
       policies: [
