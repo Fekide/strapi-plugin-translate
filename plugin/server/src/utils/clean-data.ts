@@ -1,4 +1,4 @@
-import { get, difference, cloneDeep, has } from 'lodash'
+import { get, difference, cloneDeep, has, without } from 'lodash'
 import { ContentTypeSchema, ComponentSchema } from '@strapi/types/dist/struct'
 import { Attribute } from '@strapi/types/dist/schema'
 import { Modules, UID, Utils } from '@strapi/strapi'
@@ -8,12 +8,15 @@ export function deleteInvalidFields<TSchemaUID extends UID.ContentType>(
   schema: ContentTypeSchema | ComponentSchema
 ) {
   if (!data) {
-    return data
+    return
   }
   const attributesSchema = get(schema, 'attributes', [])
   const invalidFields = difference(
     Object.keys(data),
-    Object.keys(attributesSchema)
+    without(
+      Object.keys(attributesSchema).concat(['documentId']),
+      'localizations'
+    )
   )
   invalidFields.forEach((field) => {
     if (field !== '__component') {
@@ -49,27 +52,34 @@ export function cleanData<
   Object.keys(attributesSchema).forEach((attr) => {
     const attributeSchema = attributesSchema[attr]
 
-    if (!has(data, attr)) {
+    if (!has(resultData, attr)) {
       return
     }
 
     if (attributeSchema.type === 'component') {
       resultData[attr] = cleanComponent(
-        get(data, attr, undefined),
+        get(resultData, attr, undefined),
         attributeSchema,
         forFrontend
       )
     } else if (attributeSchema.type === 'dynamiczone') {
-      resultData[attr] = get(data, attr, []).map(
+      resultData[attr] = get(resultData, attr, []).map(
         (object: Modules.Documents.AnyDocument) =>
           cleanComponent(object, attributeSchema, forFrontend)
       )
     } else if (attributeSchema.type === 'relation' && !forFrontend) {
-      const relatedEntity = get(data, attr, [])
+      const relatedEntity = get(resultData, attr, [])
       if (Array.isArray(relatedEntity)) {
         resultData[attr] = relatedEntity.map((e) => e.id)
       } else if (relatedEntity) {
         resultData[attr] = relatedEntity.id
+      }
+    } else if (attributeSchema.type === 'media' && !forFrontend) {
+      const mediaFiles = get(resultData, attr, [])
+      if (Array.isArray(mediaFiles)) {
+        resultData[attr] = mediaFiles.map((e) => e.id)
+      } else if (mediaFiles) {
+        resultData[attr] = mediaFiles.id
       }
     }
   })
