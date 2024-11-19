@@ -3,7 +3,6 @@ import { errors } from '@strapi/utils'
 import { BatchTranslateJob } from '../types/batch-translate-job'
 import { ReportData } from '@shared/types/report'
 
-
 /**
  * POST /translate/entity - Translate a single entity
  */
@@ -54,10 +53,8 @@ export declare namespace TranslateBatch {
  */
 export declare namespace TranslateBatchPauseJob {
   export interface Request {
-    query: {documentId: Data.DocumentID}
-    body: {
-      
-    }
+    query: { documentId: Data.DocumentID }
+    body: {}
   }
 
   export type Response =
@@ -73,10 +70,8 @@ export declare namespace TranslateBatchPauseJob {
  */
 export declare namespace TranslateBatchResumeJob {
   export interface Request {
-    query: {documentId: Data.DocumentID}
-    body: {
-      
-    }
+    query: { documentId: Data.DocumentID }
+    body: {}
   }
 
   export type Response =
@@ -92,10 +87,8 @@ export declare namespace TranslateBatchResumeJob {
  */
 export declare namespace TranslateBatchCancelJob {
   export interface Request {
-    query: {documentId: Data.DocumentID}
-    body: {
-      
-    }
+    query: { documentId: Data.DocumentID }
+    body: {}
   }
 
   export type Response =
@@ -111,10 +104,8 @@ export declare namespace TranslateBatchCancelJob {
  */
 export declare namespace TranslateBatchJobStatus {
   export interface Request {
-    query: {documentId: Data.DocumentID}
-    body: {
-      
-    }
+    query: { documentId: Data.DocumentID }
+    body: {}
   }
 
   export type Response =
@@ -126,14 +117,14 @@ export declare namespace TranslateBatchJobStatus {
 }
 
 /**
- * POST /translate/batch-update - Update the translations of a batch of entities
+ * POST /translate/batch/updates - Update the translations of a batch of entities
  */
 export declare namespace TranslateBatchUpdate {
   export interface Request {
     query: {}
     body: {
       sourceLocale: string
-      updatedEntryIds: Data.DocumentID[]
+      updatedEntryIDs: Data.DocumentID[]
     }
   }
 
