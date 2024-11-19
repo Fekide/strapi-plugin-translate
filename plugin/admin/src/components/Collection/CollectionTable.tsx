@@ -1,7 +1,7 @@
 import React, { memo, useState, useEffect } from 'react'
 import { Field, Table, Tbody } from '@strapi/design-system'
 import { Box } from '@strapi/design-system'
-import { Dialog } from '@strapi/design-system'
+import { Modal } from '@strapi/design-system'
 import { useIntl } from 'react-intl'
 import { Flex } from '@strapi/design-system'
 import { Typography } from '@strapi/design-system'
@@ -108,7 +108,10 @@ const CollectionTable = () => {
     setAction(action)
     handleToggleDialog()
   }
-  const handleToggleDialog = () => {
+  const handleToggleDialog = (newValue?: boolean) => {
+    if (newValue !== undefined) {
+      setDialogOpen(newValue)
+    } else
     setDialogOpen((prev) => !prev)
   }
 
@@ -215,7 +218,7 @@ const CollectionTable = () => {
           }
 
           await startUpdate({
-            updatedEntryIds: selectedUpdateIDs,
+            updatedEntryIDs: selectedUpdateIDs,
             sourceLocale,
           })
           break
@@ -262,15 +265,15 @@ const CollectionTable = () => {
         </Tbody>
       </Table>
       {dialogOpen && (
-        <Dialog.Root open={dialogOpen}>
-          <Dialog.Content>
-            <Dialog.Header>
+        <Modal.Root open={dialogOpen} onOpenChange={handleToggleDialog}>
+          <Modal.Content >
+            <Modal.Header>
               {formatMessage({
                 id: getTranslation(`batch-translate.dialog.${action}.title`),
                 defaultMessage: 'Confirmation',
               })}
-            </Dialog.Header>
-            <Dialog.Body icon={<WarningCircle />}>
+            </Modal.Header>
+            <Modal.Body>
               <Flex gap={2} direction="column" alignItems="normal">
                 <Flex justifyContent="center">
                   <Typography id="confirm-description">
@@ -386,7 +389,7 @@ const CollectionTable = () => {
                     <BatchUpdateTable
                       updates={updates.filter(
                         (update) =>
-                          update?.attributes?.contentType ===
+                          update?.contentType ===
                           collection.contentType
                       )}
                       selectedUpdateIDs={selectedUpdateIDs}
@@ -425,17 +428,16 @@ const CollectionTable = () => {
                   </>
                 )}
               </Flex>
-            </Dialog.Body>
-            <Dialog.Footer>
-              <Dialog.Cancel>
-                <Button onClick={handleToggleDialog} variant="tertiary">
+            </Modal.Body>
+            <Modal.Footer>
+              <Modal.Close>
+                <Button onClick={() => handleToggleDialog()} variant="tertiary">
                   {formatMessage({
                     id: 'popUpWarning.button.cancel',
                     defaultMessage: 'No, cancel',
                   })}
                 </Button>
-              </Dialog.Cancel>
-              <Dialog.Action>
+              </Modal.Close>
                 <Button
                   variant="success"
                   onClick={handleConfirm}
@@ -448,10 +450,9 @@ const CollectionTable = () => {
                     defaultMessage: 'Confirm',
                   })}
                 </Button>
-              </Dialog.Action>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Root>
+            </Modal.Footer>
+          </Modal.Content>
+        </Modal.Root>
       )}
     </div>
   )

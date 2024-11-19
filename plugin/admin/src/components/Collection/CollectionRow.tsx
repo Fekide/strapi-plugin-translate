@@ -85,7 +85,7 @@ const CollectionRow = ({ entry, locales, onAction, updateCount, index }: Collect
                           defaultMessage: 'Unknown error',
                         })
                       }
-                    >
+                    ><div>
                       <Badge
                         marginLeft={1}
                         textColor="neutral100"
@@ -98,6 +98,7 @@ const CollectionRow = ({ entry, locales, onAction, updateCount, index }: Collect
                           defaultMessage: `Job ${job.status}`,
                         })}
                       </Badge>
+                      </div>
                     </Tooltip>
                   ))}
               </Flex>

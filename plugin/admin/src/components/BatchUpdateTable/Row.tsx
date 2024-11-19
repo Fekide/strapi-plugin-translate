@@ -28,13 +28,13 @@ const BatchUpdateRow = ({
   return (
     <Tr aria-rowindex={index}>
       <Td>
-        <Typography>{entry.attributes.groupID.split('-').join(',')}</Typography>
+        <Typography>{entry.groupID}</Typography>
       </Td>
 
       <Td>
         <Checkbox
           checked={selectedIDs.includes(entry.documentId)}
-          onChange={() =>
+          onCheckedChange={() =>
             setSelectedIDs((selectedIDs) =>
               selectedIDs.includes(entry.documentId)
                 ? selectedIDs.filter((id_) => id_ !== entry.documentId)
@@ -52,7 +52,7 @@ const BatchUpdateRow = ({
       {locales.map(({ code }) => (
         <Td key={code}>
           <Typography>
-            {entry.attributes.localesWithUpdates.includes(code)
+            {entry.localesWithUpdates.includes(code)
               ? formatMessage({
                   id: getTranslation(`batch-update.was-updated`),
                   defaultMessage: 'was updated',

@@ -21,6 +21,8 @@ const BatchUpdateTable = ({
   const { formatMessage } = useIntl()
   const { locales } = useCollection()
 
+  console.log('BatchUpdateTable', updates)
+
   return (
     <Table rowCount={updates.length + 1} colCount={locales.length + 2}>
       <Thead>
