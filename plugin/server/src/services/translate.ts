@@ -194,37 +194,41 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
 
       if (!update || !isContentTypeUID(update.contentType)) continue
 
-      let isOldId = false
-      let mainID = update.groupID
-      if ((update.groupID as string).includes('-')) {
-        isOldId = true
-        mainID = update.groupID.split('-')[0]
-      }
-
-      const normalizedEntities = await strapi
-        .documents(update.contentType)
-        .findMany({
-          ...(isOldId ? { id: mainID } : { documentId: mainID }),
+      let documentId = update.groupID
+      if (typeof update.groupID === 'string' && update.groupID.includes('-')) {
+        let firstId = update.groupID.split('-')[0]
+        const entities = await strapi.documents(update.contentType).findMany({
+          filters: { id: { $eq: firstId } },
+          fields: ['documentId'],
           locale: '*',
         })
+        if (entities.length === 0) {
+          throw new Error('No entity found with id ' + firstId)
+        }
+        documentId = entities[0].documentId
+      }
+      const entities = await strapi.documents(update.contentType).findMany({
+        filters: { documentId: { $eq: documentId } },
+        fields: ['locale'],
+        locale: '*',
+      })
+      const targetLocales: string[] = entities
+        .map((entity) => entity.locale)
+        .filter((locale) => locale !== sourceLocale)
 
-      const sourceEntity = normalizedEntities.find(
+      const sourceEntity = entities.find(
         ({ locale }) => locale === sourceLocale
       )
 
       if (!sourceEntity)
         throw new Error('No entity found with locale ' + sourceLocale)
 
-      const targets = normalizedEntities
-        .map(({ documentId, locale }) => ({ documentId, locale }))
-        .filter(({ locale }) => locale !== sourceLocale)
-
-      for (const { locale, documentId } of targets) {
-        getService('translate').translateEntity({
+      for (const targetLocale of targetLocales) {
+        await getService('translate').translateEntity({
           documentId: documentId,
           contentType: update.contentType,
-          sourceLocale: update.sourceLocale,
-          targetLocale: update.targetLocale,
+          sourceLocale,
+          targetLocale,
           create: true,
           updateExisting: true,
           // FIXME: This should be configurable
@@ -235,8 +239,8 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
       await strapi
         .documents('plugin::translate.updated-entry')
         .delete({ documentId: updateID })
-      return { result: 'success' }
     }
+    return { result: 'success' }
   },
   async contentTypes() {
     const localizedContentTypes: UID.ContentType[] = keys(
