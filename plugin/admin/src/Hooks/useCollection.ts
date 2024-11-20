@@ -27,7 +27,6 @@ export function useCollection() {
 
   useEffect(() => {
     if (reportError) {
-      console.log('report', reportError)
       if (isFetchError(reportError)) {
         handleNotification({
           type: 'warning',
@@ -35,10 +34,8 @@ export function useCollection() {
           defaultMessage: 'Failed to fetch Collections',
         })
       } else unkownError()
-    } else {
-      console.log('report', report)
     }
-  }, [reportError, report])
+  }, [reportError])
 
   // If a job in the report is in progress, set realTimeReports to true
   useEffect(() => {

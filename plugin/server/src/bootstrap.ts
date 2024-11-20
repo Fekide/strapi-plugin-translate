@@ -57,8 +57,6 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
           (key) => !['localizations', 'updatedAt', 'updatedBy'].includes(key)
         )
       ) {
-        console.log('Marking entry as updated ' + event.result.documentId)
-        console.log(event.result.localizations)
         setTimeout(() => {
           strapi
             .documents('plugin::translate.updated-entry')
