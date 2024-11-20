@@ -35,7 +35,7 @@
     "start-server-and-test": "^2.0.3"
   },
   "engines": {
-    "node": ">=14.19.1 <=20.x.x",
+    "node": ">=14 <=20",
     "npm": ">=6.0.0"
   },
   "strapi": {

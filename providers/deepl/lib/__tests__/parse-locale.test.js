@@ -1,7 +1,9 @@
 'use strict'
 
-const locales = require('@strapi/plugin-i18n/server/constants/iso-locales.json')
+const i18n = require('@strapi/plugin-i18n/strapi-server')
 const { parseLocale } = require('../parse-locale')
+
+const locales = i18n().services["iso-locales"]().getIsoLocales()
 
 function supportedLocale({ code, name }) {
   // Swiss German is not supported
