@@ -23,6 +23,8 @@ jobs:
         run: cp -r playground e2e
       - name: Configure strapi version for e2e test
         run: VERSION=${{ matrix.strapi }} envsubst < e2e/templates/template.package.json > e2e/package.json
+      - name: Setup e2e folder to be a seperate workspace
+        run: touch e2e/yarn.lock
       - name: Install e2e dependencies
         run: yarn
         working-directory: e2e
