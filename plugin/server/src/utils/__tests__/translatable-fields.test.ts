@@ -16,6 +16,7 @@ import {
 } from '../../__mocks__/contentTypes'
 import setup from '../../__mocks__/initSetup'
 import { Schema, Utils } from '@strapi/strapi'
+import { getConfig } from '../get-config'
 
 afterEach(() => {
   Object.defineProperty(global, 'strapi', {})
@@ -23,17 +24,18 @@ afterEach(() => {
 
 describe('translatable fields', () => {
   describe('get translate fields', () => {
-    beforeEach(async () =>
-      await setup({
-        components: {
-          'simple.component': simpleComponent,
-          'twofield.component': twoFieldComponent,
-          'nested.component': nestedComponent,
-          'simple.componentcopy': createSimpleComponent('copy'),
-          'simple.componentdelete': createSimpleComponent('delete'),
-          'simple.componentunset': createSimpleComponent(null),
-        },
-      })
+    beforeEach(
+      async () =>
+        await setup({
+          components: {
+            'simple.component': simpleComponent,
+            'twofield.component': twoFieldComponent,
+            'nested.component': nestedComponent,
+            'simple.componentcopy': createSimpleComponent('copy'),
+            'simple.componentdelete': createSimpleComponent('delete'),
+            'simple.componentunset': createSimpleComponent(null),
+          },
+        })
     )
 
     it('text field translated', async () => {
@@ -152,7 +154,7 @@ describe('translatable fields', () => {
       }
       const attr = 'child_component'
       strapi.config.set('plugin::translate.translatedFieldTypes', [
-        'text',
+        { type: 'richtext', format: 'markdown' },
         'component',
       ])
 
@@ -179,7 +181,7 @@ describe('translatable fields', () => {
       }
       const attr = 'child_component'
       strapi.config.set('plugin::translate.translatedFieldTypes', [
-        'text',
+        { type: 'richtext', format: 'markdown' },
         'component',
       ])
 
@@ -206,7 +208,7 @@ describe('translatable fields', () => {
       }
       const attr = 'child_component'
       strapi.config.set('plugin::translate.translatedFieldTypes', [
-        'text',
+        { type: 'richtext', format: 'markdown' },
         'component',
       ])
 
@@ -287,7 +289,7 @@ describe('translatable fields', () => {
       }
       const attr = 'child_component'
       strapi.config.set('plugin::translate.translatedFieldTypes', [
-        'text',
+        { type: 'richtext', format: 'markdown' },
         'component',
       ])
 
@@ -362,6 +364,7 @@ describe('translatable fields', () => {
       const attr = 'dynamic_zone'
       strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
+        { type: 'richtext', format: 'markdown' },
         'dynamiczone',
         'component',
       ])
@@ -379,13 +382,14 @@ describe('translatable fields', () => {
   })
 
   describe('get all translatable fields', () => {
-    beforeEach(async () =>
-      await setup({
-        components: {
-          'simple.component': simpleComponent,
-          'twofield.component': twoFieldComponent,
-        },
-      })
+    beforeEach(
+      async () =>
+        await setup({
+          components: {
+            'simple.component': simpleComponent,
+            'twofield.component': twoFieldComponent,
+          },
+        })
     )
 
     it('simple content type translated', async () => {
