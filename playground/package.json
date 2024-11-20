@@ -24,8 +24,8 @@
     "dotenv": "^16.4.1",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^6.0.0",
     "strapi-plugin-translate": "link:.yalc/strapi-plugin-translate",
     "styled-components": "^6.0.0"

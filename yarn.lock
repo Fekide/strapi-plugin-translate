@@ -20475,8 +20475,8 @@ __metadata:
     dotenv: ^16.4.1
     lodash: ^4.17.21
     mime-types: ^2.1.35
-    react: ^18.0.0
-    react-dom: ^18.0.0
+    react: ^18.2.0
+    react-dom: ^18.2.0
     react-router-dom: ^6.0.0
     start-server-and-test: ^2.0.3
     strapi-plugin-translate: "link:.yalc/strapi-plugin-translate"
@@ -21142,7 +21142,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.0.0, react-dom@npm:^18.3.1":
+"react-dom@npm:^18.2.0, react-dom@npm:^18.3.1":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -21571,7 +21571,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.0.0, react@npm:^18.3.1":
+"react@npm:^18.2.0, react@npm:^18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
