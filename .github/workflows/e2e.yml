@@ -17,6 +17,8 @@ jobs:
           cache: 'yarn'
       - name: Install workspace dependencies
         run: yarn
+      - name: Build strapi-plugin-translate
+        run: yarn workspace strapi-plugin-translate build
       - name: Pack strapi-plugin-translate
         run: yarn workspace strapi-plugin-translate pack -o strapi-plugin-translate.tgz
       - name: Copy playground to e2e folder
@@ -24,7 +26,7 @@ jobs:
       - name: Configure strapi version for e2e test
         run: VERSION=${{ matrix.strapi }} envsubst < e2e/templates/template.package.json > e2e/package.json
       - name: Install e2e dependencies
-        run: yarn
+        run: yarn install --no-immutable
         working-directory: e2e
       - name: Add local strapi-plugin-translate
         run: yarn add ../plugin/strapi-plugin-translate.tgz
