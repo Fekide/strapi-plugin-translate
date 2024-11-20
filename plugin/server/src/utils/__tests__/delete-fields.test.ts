@@ -22,16 +22,17 @@ afterEach(() => {
 
 describe('delete fields', () => {
   describe('single delete fields', () => {
-    beforeEach(async () =>
-      await setup({
-        components: {
-          'simple.component': simpleComponent,
-          'twofield.component': twoFieldComponent,
-          'nested.componentdelete': createNestedComponent('delete'),
-          'simple.componentcopy': createSimpleComponent('copy'),
-          'simple.componentdelete': createSimpleComponent('delete'),
-        },
-      })
+    beforeEach(
+      async () =>
+        await setup({
+          components: {
+            'simple.component': simpleComponent,
+            'twofield.component': twoFieldComponent,
+            'nested.componentdelete': createNestedComponent('delete'),
+            'simple.componentcopy': createSimpleComponent('copy'),
+            'simple.componentdelete': createSimpleComponent('delete'),
+          },
+        })
     )
 
     it('translated field ignored', async () => {
@@ -99,7 +100,8 @@ describe('delete fields', () => {
       // then
       expect(newData).toEqual({
         documentId: 'a',
-        id: 1,})
+        id: 1,
+      })
     })
 
     it('other field ignored', async () => {
@@ -146,7 +148,8 @@ describe('delete fields', () => {
       // then
       expect(newData).toEqual({
         documentId: 'a',
-        id: 1,})
+        id: 1,
+      })
     })
 
     it('component with translated field ignored', async () => {
@@ -216,6 +219,7 @@ describe('delete fields', () => {
       const attr = 'child_component'
       strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
+        { type: 'richtext', format: 'markdown' },
         'component',
       ])
 
@@ -224,9 +228,11 @@ describe('delete fields', () => {
       filterDeletedFields(newData, schema, attr)
 
       // then
-      expect(newData).toEqual({ 
+      expect(newData).toEqual({
         documentId: 'a',
-        id: 1,child_component: {} })
+        id: 1,
+        child_component: {},
+      })
     })
 
     it('repeated component field with deleted field has fields deleted', async () => {
@@ -248,6 +254,7 @@ describe('delete fields', () => {
       const attr = 'child_component'
       strapi.config.set('plugin::translate.translatedFieldTypes', [
         'text',
+        { type: 'richtext', format: 'markdown' },
         'component',
       ])
 
@@ -256,9 +263,11 @@ describe('delete fields', () => {
       filterDeletedFields(newData, schema, attr)
 
       // then
-      expect(newData).toEqual({ 
+      expect(newData).toEqual({
         documentId: 'a',
-        id: 1,child_component: [{}, {}] })
+        id: 1,
+        child_component: [{}, {}],
+      })
     })
 
     it('nested component with deleted fields has fields deleted', async () => {
@@ -322,7 +331,7 @@ describe('delete fields', () => {
       }
       const attr = 'dynamic_zone'
       strapi.config.set('plugin::translate.translatedFieldTypes', [
-        'text',
+        { type: 'richtext', format: 'markdown' },
         'dynamiczone',
         'component',
       ])
@@ -349,13 +358,14 @@ describe('delete fields', () => {
   })
 
   describe('filter all deleted fields', () => {
-    beforeEach(async () =>
-      await setup({
-        components: {
-          'simple.component': simpleComponent,
-          'twofield.component': twoFieldComponent,
-        },
-      })
+    beforeEach(
+      async () =>
+        await setup({
+          components: {
+            'simple.component': simpleComponent,
+            'twofield.component': twoFieldComponent,
+          },
+        })
     )
 
     it('simple content type translated ignored', async () => {

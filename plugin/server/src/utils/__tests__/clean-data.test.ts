@@ -20,42 +20,46 @@ afterEach(() => {
 })
 
 describe('clean data', () => {
-  beforeEach(async () =>
-    await setup({
-      components: {
-        simple: simpleComponent,
-        'two-field': twoFieldComponent,
-        'nested.component': nestedComponent,
-        'with-relation': createComponentWithRelation(
-          'oneToOne',
-          'api::simple.simple'
-        ),
-      },
-      contentTypes: {
-        'api::simple.simple': simpleContentType,
-        'api::complex.relation': createRelationContentType(
-          'oneToOne',
-          {},
-          true,
-          'api::simple.simple'
-        ),
-        'api::complex.relation-multiple': createRelationContentType(
-          'oneToMany',
-          {},
-          true,
-          'api::simple.simple'
-        ),
-        'api::complex.component': createContentTypeWithComponent('simple', {}),
-        'api::complex.component-repeatable': createContentTypeWithComponent(
-          'simple',
-          { repeatable: true }
-        ),
-        'api::complex.dynamiczone': createContentTypeWithDynamicZone(
-          ['simple', 'two-field'],
-          {}
-        ),
-      },
-    })
+  beforeEach(
+    async () =>
+      await setup({
+        components: {
+          simple: simpleComponent,
+          'two-field': twoFieldComponent,
+          'nested.component': nestedComponent,
+          'with-relation': createComponentWithRelation(
+            'oneToOne',
+            'api::simple.simple'
+          ),
+        },
+        contentTypes: {
+          'api::simple.simple': simpleContentType,
+          'api::complex.relation': createRelationContentType(
+            'oneToOne',
+            {},
+            true,
+            'api::simple.simple'
+          ),
+          'api::complex.relation-multiple': createRelationContentType(
+            'oneToMany',
+            {},
+            true,
+            'api::simple.simple'
+          ),
+          'api::complex.component': createContentTypeWithComponent(
+            'simple',
+            {}
+          ),
+          'api::complex.component-repeatable': createContentTypeWithComponent(
+            'simple',
+            { repeatable: true }
+          ),
+          'api::complex.dynamiczone': createContentTypeWithDynamicZone(
+            ['simple', 'two-field'],
+            {}
+          ),
+        },
+      })
   )
   it('simple content type other field removed', () => {
     // given
@@ -71,7 +75,10 @@ describe('clean data', () => {
     const cleanedData = cleanData(data, schema, false)
 
     // then
-    expect(cleanedData).toEqual({ title: 'some text' })
+    expect(cleanedData).toEqual({
+      documentId: 'a',
+      title: 'some text',
+    })
   })
 
   it('content type relation transformed to id', () => {
@@ -87,7 +94,10 @@ describe('clean data', () => {
     const cleanedData = cleanData(data, schema, false)
 
     // then
-    expect(cleanedData).toEqual({ related: 1 })
+    expect(cleanedData).toEqual({
+      documentId: 'a',
+      related: 1,
+    })
   })
 
   it('content type relation null kept', () => {
@@ -103,7 +113,10 @@ describe('clean data', () => {
     const cleanedData = cleanData(data, schema, false)
 
     // then
-    expect(cleanedData).toEqual({ related: null })
+    expect(cleanedData).toEqual({
+      documentId: 'a',
+      related: null,
+    })
   })
 
   it('content type multiple relation transformed to id', () => {
@@ -122,7 +135,10 @@ describe('clean data', () => {
     const cleanedData = cleanData(data, schema, false)
 
     // then
-    expect(cleanedData).toEqual({ related: [1, 2] })
+    expect(cleanedData).toEqual({
+      documentId: 'a',
+      related: [1, 2],
+    })
   })
 
   it('component other field removed', () => {
@@ -138,7 +154,10 @@ describe('clean data', () => {
     const cleanedData = cleanData(data, schema, false)
 
     // then
-    expect(cleanedData).toEqual({ text: 'test' })
+    expect(cleanedData).toEqual({
+      documentId: 'a',
+      text: 'test',
+    })
   })
 
   it('component null returned', () => {
@@ -172,6 +191,7 @@ describe('clean data', () => {
 
     // then
     expect(cleanedData).toEqual({
+      documentId: 'a',
       text: 'test',
       nested: {
         text: 'test',
@@ -197,6 +217,7 @@ describe('clean data', () => {
 
     // then
     expect(cleanedData).toEqual({
+      documentId: 'a',
       component: {
         text: 'test',
       },
@@ -226,6 +247,7 @@ describe('clean data', () => {
 
     // then
     expect(cleanedData).toEqual({
+      documentId: 'a',
       component: [
         {
           text: 'test',
@@ -251,6 +273,7 @@ describe('clean data', () => {
 
     // then
     expect(cleanedData).toEqual({
+      documentId: 'a',
       component: null,
     })
   })
@@ -281,6 +304,7 @@ describe('clean data', () => {
 
     // then
     expect(cleanedData).toEqual({
+      documentId: 'a',
       dynamic_zone: [
         {
           __component: 'simple',

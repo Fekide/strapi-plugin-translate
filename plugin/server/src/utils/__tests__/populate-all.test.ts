@@ -125,7 +125,7 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ component: { populate: true } })
+    expect(population).toEqual({ component: true })
   })
 
   it('content type with repeatable component populate all', () => {
@@ -136,7 +136,7 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ component: { populate: true } })
+    expect(population).toEqual({ component: true })
   })
 
   it('content type with dynamic zone populate all', () => {
@@ -147,7 +147,7 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ dynamic_zone: { populate: true } })
+    expect(population).toEqual({ dynamic_zone: true })
   })
 
   it('content type with dynamic zone with component relation populate id', () => {
