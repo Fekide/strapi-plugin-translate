@@ -17,6 +17,8 @@ jobs:
           cache: 'yarn'
       - name: Install workspace dependencies
         run: yarn
+      - name: Build strapi-plugin-translate
+        run: yarn workspace strapi-plugin-translate build
       - name: Pack strapi-plugin-translate
         run: yarn workspace strapi-plugin-translate pack -o strapi-plugin-translate.tgz
       - name: Copy playground to e2e folder
