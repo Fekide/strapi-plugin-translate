@@ -28,7 +28,7 @@ jobs:
       - name: Setup e2e folder to be a seperate workspace
         run: touch e2e/yarn.lock
       - name: Install e2e dependencies
-        run: yarn
+        run: yarn install --no-immutable
         working-directory: e2e
       - name: Add local strapi-plugin-translate
         run: yarn add ../plugin/strapi-plugin-translate.tgz
