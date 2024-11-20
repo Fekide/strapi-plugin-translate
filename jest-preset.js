@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = {
   // setupFilesAfterEnv: [__dirname + '/tests/setup/unit.setup.js'],
@@ -23,4 +23,4 @@ module.exports = {
     '<rootDir>/providers/*/jest.config.js',
     // '<rootDir>/.github/actions/*/jest.config.js',
   ],
-};
+}

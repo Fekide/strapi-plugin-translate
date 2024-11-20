@@ -132,6 +132,7 @@ dist
 .vscode
 
 build/
+reports/
 
 
 **/cypress/videos
