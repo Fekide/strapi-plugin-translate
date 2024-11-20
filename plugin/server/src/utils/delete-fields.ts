@@ -62,10 +62,12 @@ export function filterDeletedFields<TSchemaUID extends UID.ContentType>(
           data[attributeName] = componenData
         }
       } else if (attribute.type == 'dynamiczone') {
-        data[attributeName] = data[attributeName].map((object: Modules.Documents.AnyDocument) => {
-          recursiveComponentDeleteFields(attribute, object)
-          return object
-        })
+        data[attributeName] = data[attributeName].map(
+          (object: Modules.Documents.AnyDocument) => {
+            recursiveComponentDeleteFields(attribute, object)
+            return object
+          }
+        )
       }
     } else if (onTranslate === 'delete') {
       unset(data, attributeName)
@@ -78,8 +80,9 @@ export function filterDeletedFields<TSchemaUID extends UID.ContentType>(
  * @param {object} componentReference The schema of the component in the content-type or component (to know if it is repeated or not)
  * @param {object} data The data of the component
  */
-export function recursiveComponentDeleteFields<TSchemaUID extends UID.
-Component>(
+export function recursiveComponentDeleteFields<
+  TSchemaUID extends UID.Component,
+>(
   componentReference: Attribute.Component | Attribute.DynamicZone,
   data: Modules.Documents.Document<TSchemaUID>
 ) {

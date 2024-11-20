@@ -134,8 +134,7 @@ const CollectionTable = () => {
   }
 
   const handleConfirm = async () => {
-    console.log('Confirm')
-    try {
+        try {
       switch (action) {
         case 'translate':
           setLoading(true)

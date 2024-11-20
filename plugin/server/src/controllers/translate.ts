@@ -69,7 +69,6 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
     )
 
     if (!success) {
-      console.log('error', error)
       return ctx.badRequest({ message: 'request data invalid', error })
     }
 
@@ -78,14 +77,12 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
     const isCollection = isCollectionType(contentType)
 
     if (!documentId && isCollection) {
-      console.log('documentId is missing, but required for collection types')
       return ctx.badRequest({
         message: 'documentId is missing, but required for collection types',
       })
     }
 
     if (!isContentTypeUID(contentType)) {
-      console.log('corresponding content type not found')
       return ctx.notFound('corresponding content type not found')
     }
 
@@ -328,7 +325,6 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       usageEstimateCollectionBodySchema.safeParse(ctx.request.body)
 
     if (!success) {
-      console.log('error', error)
       return ctx.badRequest({ message: 'request data invalid', error })
     }
     const { contentType, sourceLocale, targetLocale } = data
