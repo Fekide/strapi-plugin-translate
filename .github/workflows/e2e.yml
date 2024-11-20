@@ -18,7 +18,7 @@ jobs:
       - name: Install workspace dependencies
         run: yarn
       - name: Pack strapi-plugin-translate
-        run: yarn workspace strapi-plugin-translate pack -f strapi-plugin-translate.tgz
+        run: yarn workspace strapi-plugin-translate pack -o strapi-plugin-translate.tgz
       - name: Copy playground to e2e folder
         run: cp -r playground e2e
       - name: Configure strapi version for e2e test
