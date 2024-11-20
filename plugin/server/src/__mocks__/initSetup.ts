@@ -90,15 +90,13 @@ const initSetup = async ({
   ) {
     return {
       findOne: (params) =>
-        mock.db
-          .query(uid)
-          .findOne({
-            where: {
-              documentId: { $eq: params.documentId },
-              locale: { $eq: params.locale },
-            },
-            ...params,
-          }),
+        mock.db.query(uid).findOne({
+          where: {
+            documentId: { $eq: params.documentId },
+            locale: { $eq: params.locale },
+          },
+          ...params,
+        }),
       findFirst: (params) => mock.db.query(uid).findMany(params)[0],
       findMany: (params) =>
         mock.db.query(uid).findMany({ ...params, where: params.filters }),
@@ -207,7 +205,9 @@ const initSetup = async ({
           ).default({ strapi: mock as Core.Strapi })
           this.services.format = (await import('../services/format')).default()
           this.services.chunks = (await import('../services/chunks')).default()
-          this.controllers.translate = translateController({ strapi: mock as Core.Strapi })
+          this.controllers.translate = translateController({
+            strapi: mock as Core.Strapi,
+          })
         },
         destroy: jest.fn(() => Promise.resolve()),
         middlewares: {},
@@ -233,19 +233,19 @@ const initSetup = async ({
           },
         },
       } as any,
-
     },
     config: {
       has: function (prop = '') {
-        return !!get(this.plugins, prop.replace('plugin.', ''))
+        return !!get(this.plugins, prop.replace('plugin::', ''))
       },
       get: function (prop = '', defaultValue) {
         return (
-          get(this.plugins, String(prop).replace('plugin.', '')) || defaultValue
+          get(this.plugins, String(prop).replace('plugin::', '')) ||
+          defaultValue
         )
       },
       set: function (prop = '', value) {
-        return set(this.plugins, prop.replace('plugin.', ''), value)
+        return set(this.plugins, prop.replace('plugin::', ''), value)
       },
       plugins: {
         translate: {
