@@ -25,6 +25,10 @@
       "import": "./dist/server/index.mjs",
       "require": "./dist/server/index.js",
       "default": "./dist/server/index.js"
+    },
+    "./shared": {
+      "types": "./dist/shared/src/index.d.ts",
+      "source": "./shared/src/index.ts"
     }
   },
   "files": [
