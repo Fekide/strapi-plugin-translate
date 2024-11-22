@@ -16,7 +16,11 @@
       "type": "string"
     },
     "picture": {
-      "allowedTypes": ["images", "files", "videos"],
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
       "type": "media",
       "multiple": false
     },

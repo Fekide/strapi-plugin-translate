@@ -118,7 +118,7 @@ describe('direct translation', () => {
     cy.contains('span', 'tech').should('be.visible')
   })
 
-  it('single type with components', () => {
+  it('single type with components and dynamic zone', () => {
     cy.intercept('/translate/translate').as('translateExecution')
     cy.intercept('/content-manager/uid/check-availability').as('regenerateUID')
 
@@ -159,6 +159,16 @@ describe('direct translation', () => {
       })
       .get('img')
       .should('be.visible')
+
+    cy.contains('"subtitle"').should('be.visible')
+
+    cy.contains(
+      'This is a blog post about the latest news in the world. Stay tuned!'
+    ).should('be.visible')
+    cy.contains('We will talk about the latest tech news, stay tuned!').should(
+      'be.visible'
+    )
+
     cy.contains('button', 'Save').should('be.disabled')
   })
 
