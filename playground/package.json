@@ -18,9 +18,9 @@
     "test": "echo no unittests"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "4.25.10",
-    "@strapi/plugin-users-permissions": "4.25.10",
-    "@strapi/strapi": "4.25.10",
+    "@strapi/plugin-i18n": "4.25.13",
+    "@strapi/plugin-users-permissions": "5.4.1",
+    "@strapi/strapi": "5.4.1",
     "better-sqlite3": "9.4.0",
     "dotenv": "^16.4.1",
     "lodash": "^4.17.21",
