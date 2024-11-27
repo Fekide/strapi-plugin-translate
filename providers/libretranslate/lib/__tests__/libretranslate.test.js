@@ -82,6 +82,9 @@ describe('libretranslate provider', () => {
   }
   beforeAll(() => {
     server = getServer()
+    server.use(
+      http.get(`${BASE_URL}/languages`, () => HttpResponse.json(enabledLocales))
+    )
 
     Object.defineProperty(global, 'strapi', {
       value: require('../../__mocks__/initStrapi')({}),
@@ -115,10 +118,12 @@ describe('libretranslate provider', () => {
         http.post(
           `${BASE_URL}/translate`,
           buildTranslateHandler({ maxTexts: 50, maxChars: 10000 })
-        ),
-        http.get(`${BASE_URL}/languages`, async (req, res, ctx) => {
-          return res(ctx.json(enabledLocales))
-        })
+        )
+      )
+      server.use(
+        http.get(`${BASE_URL}/languages`, async () =>
+          HttpResponse.json(enabledLocales)
+        )
       )
       ltProvider = provider.init({
         apiUrl: BASE_URL,

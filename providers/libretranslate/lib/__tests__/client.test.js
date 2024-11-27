@@ -69,13 +69,19 @@ describe('libretranslate client', () => {
     beforeEach(() => {
       server.use(http.post(`${VALID_URL}/translate`, translateHandler))
       server.use(http.get(`${VALID_URL}/languages`, languagesHandler))
-      server.use(http.get(`${INVALID_URL}/languages`, () => new HttpResponse()))
     })
 
     it('sets LocaleInformation default values', () => {
-      const client = new Client(INVALID_URL)
+      server.use(
+        http.get(`${INVALID_URL}/languages`, async () => {
+          await new Promise((r) => setTimeout(r, 500))
 
+          return new HttpResponse(null, { status: 500 })
+        })
+      )
+      const client = new Client(INVALID_URL)
       expect(client.localeInformation).toBeDefined()
+      expect(client.localeInformation.length).toBe(30)
     })
 
     it('sets LocaleInformation according to server response', async () => {
