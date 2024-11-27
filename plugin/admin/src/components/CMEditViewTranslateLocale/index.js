@@ -52,6 +52,7 @@ import { getTrad } from '../../utils'
 import permissions from '../../permissions'
 import useUsage from '../../Hooks/useUsage'
 import parseRelations from './utils/parse-relations'
+import flattenEntity from './utils/flattenEntity'
 
 const StyledTypography = styled(Typography)`
   svg {
@@ -89,8 +90,6 @@ const CMEditViewTranslateLocale = () => {
   if (!hasI18nEnabled || !localizations.length) {
     return null
   }
-
-  console.log(readPermissions)
 
   return (
     <CheckPermissions permissions={permissions.translate}>
@@ -185,22 +184,23 @@ const Content = ({
         'createdAt',
         'updatedAt',
       ].forEach((key) => {
-        _.omit(parsedData, key)
+        _.unset(parsedData, key)
 
         if (!initialData[key]) return
         parsedData[key] = initialData[key]
       })
 
-      for (const key in parsedData) {
-        if (Object.hasOwnProperty.call(parsedData, key)) {
-          let value = parsedData[key]
-          const attribute = allLayoutData.contentType.attributes[key]
+      const flattenedData = flattenEntity(parsedData, allLayoutData)
 
-          if (attribute) {
-            if (attribute.type === 'json') {
-              value = JSON.stringify(value, undefined, 2)
+      for (const key in flattenedData) {
+        if (Object.hasOwnProperty.call(flattenedData, key)) {
+          let { value, type } = flattenedData[key]
+
+          if (type) {
+            if (type === 'json') {
+              value = JSON.stringify(value)
             }
-            onChange({ target: { name: key, value, type: attribute.type } })
+            onChange({ target: { name: key, value, type } })
           }
         }
       }
