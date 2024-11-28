@@ -8,7 +8,7 @@ import { TranslateConfig } from './config'
 import { TranslateProvider } from '../../shared/types/provider'
 import dummyProvider from './utils/dummy-provider'
 
-const createProvider = (translateConfig: TranslateConfig) => {
+const createProvider = async (translateConfig: TranslateConfig) => {
   const providerName = toLower(translateConfig.provider)
   let provider: TranslateProvider
 
@@ -29,17 +29,20 @@ const createProvider = (translateConfig: TranslateConfig) => {
     try {
       provider = require(modulePath)
     } catch (err) {
-      throw new Error(`Could not load translate provider "${providerName}".`)
+      console.error(err)
+      throw new Error(
+        `Could not load translate provider "${providerName}": ${err instanceof Error ? err.message : err}`
+      )
     }
   }
 
   return provider.init(translateConfig.providerOptions)
 }
 
-const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
+const bootstrap: Core.Plugin['bootstrap'] = async ({ strapi }) => {
   const translateConfig =
     strapi.config.get<TranslateConfig>('plugin::translate')
-  strapi.plugin('translate').provider = createProvider(translateConfig)
+  strapi.plugin('translate').provider = await createProvider(translateConfig)
 
   // Listen for updates to entries, mark them as updated
   strapi.db.lifecycles.subscribe({

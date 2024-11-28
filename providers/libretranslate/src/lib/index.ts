@@ -1,14 +1,14 @@
-'use strict'
-const Bottleneck = require('bottleneck/es5')
+import Bottleneck from 'bottleneck'
 
-const { LT_PRIORITY_DEFAULT } = require('./constants')
-const { Client } = require('./client')
-const { getService } = require('./get-service')
+import { LT_PRIORITY_DEFAULT } from './constants'
+import { Client } from './client'
+import { getService } from './get-service'
+import { TranslateProvider } from 'strapi-plugin-translate/shared'
 
 /**
  * Module dependencies
  */
-module.exports = {
+export default {
   provider: 'libretranslate',
   name: 'LibreTranslate',
 
@@ -41,22 +41,20 @@ module.exports = {
       maxConcurrent: 1,
     })
 
-    const rateLimitedTranslate = limiter.wrap(client.translateText.bind(client))
+    type translateText = typeof client.translateText
+
+    const rateLimitedTranslate = limiter.wrap<
+      string | string[],
+      Parameters<translateText>[0],
+      Parameters<translateText>[1],
+      Parameters<translateText>[2],
+      Parameters<translateText>[3]
+    >(client.translateText.bind(client))
 
     const maxTexts =
       Number(process.env.LT_API_MAX_TEXTS) || providerOptions.apiMaxTexts || -1
 
     return {
-      /**
-       * @param {{
-       *  text:string|string[]|any[],
-       *  sourceLocale: string,
-       *  targetLocale: string,
-       *  priority: number,
-       *  format?: 'plain'|'markdown'|'html'
-       * }} options all translate options
-       * @returns {string[]} the input text(s) translated
-       */
       async translate({ text, priority, sourceLocale, targetLocale, format }) {
         if (!text) {
           return []
@@ -73,10 +71,21 @@ module.exports = {
         const chunksService = getService('chunks')
         const formatService = getService('format')
 
-        let input = text
-        if (format === 'jsonb') {
-          input = await formatService.blockToHtml(input)
-        } else if (format === 'markdown') {
+        let input: string | string[]
+        if (typeof text === 'string' || typeof text[0] === 'string') {
+          input = text as string | string[]
+        } else {
+          if (format === 'jsonb') {
+            input = await formatService.blockToHtml(
+              text as Parameters<typeof formatService.blockToHtml>[0]
+            )
+          } else {
+            throw new Error(
+              `Unsupported format ${format} with non text/text-array input ${typeof text} `
+            )
+          }
+        }
+        if (format === 'markdown') {
           input = formatService.markdownToHtml(input)
         }
 
@@ -100,9 +109,11 @@ module.exports = {
                 texts,
                 source,
                 target,
-                ['html', 'markdown'].includes(format) ? 'html' : 'text'
+                ['html', 'markdown', 'jsonb'].includes(format || '')
+                  ? 'html'
+                  : 'text'
               )
-              return result
+              return Array.isArray(result) ? result : [result]
             })
           )
         )
@@ -116,10 +127,6 @@ module.exports = {
 
         return result
       },
-      async usage() {
-        // afaik LibreTranslate has no concept of usage, apart from rate limiting
-        return undefined
-      },
     }
   },
-}
+} satisfies TranslateProvider

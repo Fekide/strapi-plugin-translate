@@ -1,4 +1,4 @@
-import { Core, UID } from '@strapi/strapi'
+import { Core } from '@strapi/strapi'
 import { getService } from '../utils/get-service'
 import { getAllTranslatableFields } from '../utils/translatable-fields'
 import { translateRelations } from '../utils/translate-relations'

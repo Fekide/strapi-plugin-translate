@@ -1,9 +1,15 @@
-'use strict'
-const { faker } = require('@faker-js/faker')
-const { http, HttpResponse } = require('msw')
+import { faker } from '@faker-js/faker'
+import { http, HttpResponse, HttpResponseResolver, PathParams } from 'msw'
 
-const provider = require('..')
-const { getServer } = require('../../__mocks__/server')
+import provider from '..'
+import { getServer } from '../../__mocks__/server'
+import { TranslateRequest, TranslateResponse } from '../client'
+import { SetupServer } from 'msw/node'
+import {
+  InitializedProvider,
+  TranslateProviderTranslationArguments,
+} from 'strapi-plugin-translate/shared'
+import setup from '../../__mocks__/initStrapi'
 
 const BASE_URL = 'https://lt.example.org'
 
@@ -36,20 +42,26 @@ const enabledLocales = [
 ]
 
 describe('libretranslate provider', () => {
-  let server
+  let server: SetupServer
 
-  function buildTranslateHandler({ maxChars, maxTexts }) {
+  function buildTranslateHandler({
+    maxChars,
+    maxTexts,
+  }: {
+    maxChars: number
+    maxTexts: number
+  }): HttpResponseResolver<PathParams, TranslateRequest, TranslateResponse> {
     maxChars = maxChars || -1
     maxTexts = maxTexts || -1
     return async ({ request }) => {
       const json = await request.json()
       if (
         maxTexts !== -1 &&
-        Array.isArray(json.q) &&
+        Array.isArray(json?.q) &&
         json.q.length > maxTexts
       ) {
         console.warn('Too many Texts', json.q.length)
-        return new HttpResponse(null, { status: 400 })
+        return HttpResponse.json({ error: 'Too many Texts' }, { status: 400 })
       }
 
       if (maxChars !== -1) {
@@ -58,21 +70,33 @@ describe('libretranslate provider', () => {
           json.q.reduce((prev, curr) => prev + curr.length, 0) > maxChars
         ) {
           console.warn('Batch translation, too many characters')
-          return new HttpResponse(null, { status: 400 })
+          return HttpResponse.json(
+            { error: 'Too many characters' },
+            { status: 400 }
+          )
         } else if (json.q.length > maxChars) {
           console.warn('Single translation, too many characters')
-          return new HttpResponse(null, { status: 400 })
+          return HttpResponse.json(
+            { error: 'Too many characters' },
+            { status: 400 }
+          )
         }
       }
 
       let targetLang = json.target
       if (!targetLang) {
-        return new HttpResponse(null, { status: 400 })
+        return HttpResponse.json(
+          { error: 'Target language missing' },
+          { status: 400 }
+        )
       }
 
       let sourceLang = json.source
       if (!sourceLang) {
-        return new HttpResponse(null, { status: 400 })
+        return HttpResponse.json(
+          { error: 'Source language missing' },
+          { status: 400 }
+        )
       }
 
       return HttpResponse.json({
@@ -80,16 +104,13 @@ describe('libretranslate provider', () => {
       })
     }
   }
-  beforeAll(() => {
+  beforeAll(async () => {
     server = getServer()
     server.use(
       http.get(`${BASE_URL}/languages`, () => HttpResponse.json(enabledLocales))
     )
 
-    Object.defineProperty(global, 'strapi', {
-      value: require('../../__mocks__/initStrapi')({}),
-      writable: true,
-    })
+    await setup()
   })
 
   afterEach(async () => {
@@ -100,30 +121,28 @@ describe('libretranslate provider', () => {
     server.close()
   })
   describe('usage', () => {
-    let ltProvider
+    let ltProvider: InitializedProvider
 
     beforeAll(() => {
       ltProvider = provider.init({ apiUrl: BASE_URL })
     })
 
-    it('returns undefined', async () => {
-      await expect(ltProvider.usage()).resolves.not.toBeDefined()
+    it('is undefined', () => {
+      expect(ltProvider.usage).not.toBeDefined()
     })
   })
 
   describe('translate', () => {
-    let ltProvider
+    let ltProvider: InitializedProvider
     beforeEach(() => {
       server.use(
         http.post(
           `${BASE_URL}/translate`,
           buildTranslateHandler({ maxTexts: 50, maxChars: 10000 })
-        )
-      )
-      server.use(
-        http.get(`${BASE_URL}/languages`, async () =>
-          HttpResponse.json(enabledLocales)
-        )
+        ),
+        http.get(`${BASE_URL}/languages`, async () => {
+          return HttpResponse.json(enabledLocales)
+        })
       )
       ltProvider = provider.init({
         apiUrl: BASE_URL,
@@ -163,7 +182,7 @@ describe('libretranslate provider', () => {
 
       async function markdownTexts() {
         // given
-        const params = {
+        const params: TranslateProviderTranslationArguments = {
           sourceLocale: 'en',
           targetLocale: 'de',
           text: ['# Heading\n\nSome text', '## Subheading\n\nSome more text'],
@@ -181,7 +200,7 @@ describe('libretranslate provider', () => {
         const params = {
           sourceLocale: 'en',
           targetLocale: 'de',
-        }
+        } as any
         // when
         const result = await ltProvider.translate(params)
 
@@ -291,22 +310,28 @@ describe('libretranslate provider', () => {
           apiMaxTexts: 1,
         })
 
-        let firstRequest
-        let lastRequest
+        let firstRequest: Date | undefined = undefined
+        let lastRequest: Date | undefined = undefined
 
         server.use(
-          http.post(`${BASE_URL}/translate`, async ({ request }) => {
-            const json = await request.json()
-            if (!firstRequest) firstRequest = new Date()
-            lastRequest = new Date()
+          http.post<PathParams, TranslateRequest, TranslateResponse>(
+            `${BASE_URL}/translate`,
+            async ({ request }) => {
+              const json = await request.json()
+              if (!firstRequest) firstRequest = new Date()
+              lastRequest = new Date()
 
-            return HttpResponse.json({
-              translatedText: json.q,
-            })
-          })
+              return HttpResponse.json({
+                translatedText: json.q,
+              })
+            }
+          )
         )
 
         await forNTexts(5)
+        if (!lastRequest || !firstRequest) {
+          fail('last or first request not initialized')
+        }
         expect(lastRequest - firstRequest).toBeGreaterThanOrEqual(3900)
       })
     })
@@ -317,20 +342,19 @@ describe('libretranslate provider', () => {
         const params = {
           text: 'Some text',
           sourceLocale: 'en',
-        }
+        } as any
         await expect(
           // when
           async () => ltProvider.translate(params)
           // then
         ).rejects.toThrow('source and target locale must be defined')
       })
-
       it('with missing source language', async () => {
         // given
         const params = {
           targetLocale: 'de',
           text: 'Some text',
-        }
+        } as any
         await expect(
           // when
           async () => ltProvider.translate(params)

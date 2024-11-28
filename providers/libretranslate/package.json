@@ -32,12 +32,23 @@
     }
   ],
   "contributors": [],
-  "main": "./lib",
-  "directories": {
-    "lib": "./lib"
+  "type": "commonjs",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/src/lib/index.d.ts",
+      "source": "./src/lib/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
   },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "jest"
+    "build": "pack-up build"
   },
   "dependencies": {
     "axios": ">=0.21.2 <1.2.0 || >=1.2.1",
@@ -45,9 +56,13 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.0",
-    "@strapi/plugin-i18n": "^4.15.0",
+    "@strapi/i18n": "^5.4.2",
+    "@strapi/pack-up": "^5.0.2",
+    "@strapi/typescript-utils": "^5.4.2",
+    "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
-    "msw": "^2.1.5"
+    "msw": "^2.1.5",
+    "typescript": "^5.7.2"
   },
   "peerDependencies": {
     "lodash": "*",

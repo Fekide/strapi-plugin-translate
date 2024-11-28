@@ -1,8 +1,8 @@
-import type { Core } from '@strapi/strapi';
-import { getService } from './utils/get-service';
+import type { Core } from '@strapi/strapi'
+import { getService } from './utils/get-service'
 
-const destroy = ({ strapi }: { strapi: Core.Strapi }) => {
+const destroy: Core.Plugin['destroy'] = () => {
   return getService('translate').batchTranslateManager.destroy()
-};
+}
 
-export default destroy;
+export default destroy

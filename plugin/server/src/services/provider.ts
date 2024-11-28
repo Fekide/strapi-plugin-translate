@@ -1,7 +1,5 @@
-import { Core } from "@strapi/strapi"
-import { ProviderService } from "@shared/services/provider"
-
-
+import { Core } from '@strapi/strapi'
+import { ProviderService } from '@shared/services/provider'
 
 export default ({ strapi }: { strapi: Core.Strapi }): ProviderService => ({
   async usage() {
