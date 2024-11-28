@@ -103,12 +103,12 @@ module.exports = ({
           'batch-translate-job': () => {
             const uid = 'plugin::translate.batch-translate-job'
             return {
-              findOne: this.db.query(uid).findOne,
-              find: this.db.query(uid).findMany,
-              count: this.db.query(uid).count,
-              create: this.db.query(uid).create,
-              update: this.db.query(uid).update,
-              delete: this.db.query(uid).delete,
+              findOne: mock.db.query(uid).findOne,
+              find: mock.db.query(uid).findMany,
+              count: mock.db.query(uid).count,
+              create: mock.db.query(uid).create,
+              update: mock.db.query(uid).update,
+              delete: mock.db.query(uid).delete,
             }
           },
         },
