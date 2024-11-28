@@ -28,7 +28,10 @@
     },
     "./shared": {
       "types": "./dist/shared/src/index.d.ts",
-      "source": "./shared/src/index.ts"
+      "source": "./shared/src/index.ts",
+      "import": "./dist/shared/index.mjs",
+      "require": "./dist/shared/index.js",
+      "default": "./dist/shared/index.js"
     }
   },
   "files": [
@@ -53,14 +56,17 @@
     "jsdom": "^25.0.0",
     "react-intl": "^6.6.8",
     "showdown": "^2.1.0",
+    "strapi-plugin-translate": "workspace:*",
+    "strapi-provider-translate-deepl": "workspace:*",
+    "strapi-provider-translate-libretranslate": "workspace:*",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.0",
-    "@strapi/i18n": "^5.4.0",
+    "@strapi/i18n": "^5.4.2",
     "@strapi/sdk-plugin": "^5.2.5",
-    "@strapi/strapi": "^5.4.0",
-    "@strapi/typescript-utils": "^5.4.0",
+    "@strapi/strapi": "^5.4.2",
+    "@strapi/typescript-utils": "^5.4.2",
     "@types/jsdom": "^21.1.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

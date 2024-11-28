@@ -1,20 +1,22 @@
 /**
  * Application methods
  */
-import bootstrap from './bootstrap';
-import register from './register';
-import destroy from './destroy';
+import bootstrap from './bootstrap'
+import register from './register'
+import destroy from './destroy'
 
 /**
  * Plugin server methods
  */
-import config from './config';
-import contentTypes from './content-types';
-import controllers from './controllers';
-import middlewares from './middlewares';
-import policies from './policies';
-import routes from './routes';
-import services from './services';
+import config from './config'
+import contentTypes from './content-types'
+import controllers from './controllers'
+import middlewares from './middlewares'
+import policies from './policies'
+import routes from './routes'
+import services from './services'
+
+export * from './utils'
 
 export default () => ({
   register,
@@ -27,4 +29,4 @@ export default () => ({
   policies,
   routes,
   services,
-});
+})

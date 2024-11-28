@@ -18,8 +18,8 @@
     "test": "echo no unittests"
   },
   "dependencies": {
-    "@strapi/plugin-users-permissions": "5.4.0",
-    "@strapi/strapi": "5.4.0",
+    "@strapi/plugin-users-permissions": "5.4.2",
+    "@strapi/strapi": "5.4.2",
     "better-sqlite3": "9.4.0",
     "dotenv": "^16.4.1",
     "lodash": "^4.17.21",
@@ -27,7 +27,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.0.0",
-    "strapi-plugin-translate": "link:.yalc/strapi-plugin-translate",
     "styled-components": "^6.0.0"
   },
   "devDependencies": {

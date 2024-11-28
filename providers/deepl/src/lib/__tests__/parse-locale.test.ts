@@ -1,11 +1,9 @@
-'use strict'
+import i18n from '@strapi/i18n/strapi-server'
+import { parseLocale } from '../parse-locale'
 
-const i18n = require('@strapi/plugin-i18n/strapi-server')
-const { parseLocale } = require('../parse-locale')
+const locales = i18n().services['iso-locales']().getIsoLocales()
 
-const locales = i18n().services["iso-locales"]().getIsoLocales()
-
-function supportedLocale({ code, name }) {
+function supportedLocale({ code, name }: { code: string; name: string }) {
   // Swiss German is not supported
   if (code.includes('gsw')) return false
   return [

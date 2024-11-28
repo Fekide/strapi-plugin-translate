@@ -1,6 +1,4 @@
-'use strict'
-
-const defaults = require('lodash/defaults')
+import defaults from 'lodash/defaults'
 
 const defaultLocaleMap = {
   PT: 'PT-PT',
@@ -14,14 +12,18 @@ const defaultLocaleMap = {
   TCH: 'EN-US',
 }
 
-function stripAndUpper(locale) {
+function stripAndUpper(locale: string) {
   const unstripped = locale.toUpperCase()
   const stripped = unstripped.split('-')[0]
 
   return { unstripped, stripped }
 }
 
-function parseLocale(strapiLocale, localeMap = {}, direction = 'target') {
+export function parseLocale(
+  strapiLocale: string,
+  localeMap: Record<string, string> = {},
+  direction: 'target' | 'source' = 'target'
+) {
   const { unstripped, stripped } = stripAndUpper(strapiLocale)
 
   defaults(localeMap, defaultLocaleMap)
@@ -79,8 +81,4 @@ function parseLocale(strapiLocale, localeMap = {}, direction = 'target') {
     return stripAndUpper(possiblyUnstrippedResult).stripped
   }
   return possiblyUnstrippedResult
-}
-
-module.exports = {
-  parseLocale,
 }

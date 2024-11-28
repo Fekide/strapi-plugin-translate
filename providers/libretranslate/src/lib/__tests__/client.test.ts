@@ -1,9 +1,17 @@
 'use strict'
-const { URLSearchParams } = require('url')
-const { http, HttpResponse } = require('msw')
+import { URLSearchParams } from 'url'
+import {
+  DefaultBodyType,
+  http,
+  HttpResponse,
+  HttpResponseResolver,
+  PathParams,
+} from 'msw'
 
-const { getServer } = require('../../__mocks__/server')
-const { Client } = require('../client/index')
+import { getServer } from '../../__mocks__/server'
+import { Client } from '../client/index'
+import { SetupServer } from 'msw/node'
+import setup from '../../__mocks__/initStrapi'
 
 const VALID_URL = 'https://valid.url'
 const INVALID_URL = 'https://not-valid'
@@ -37,24 +45,21 @@ const enabledLocales = [
 ]
 
 describe('libretranslate client', () => {
-  let server
+  let server: SetupServer
 
-  const translateHandler = async ({ request }) => {
+  const translateHandler: HttpResponseResolver = async ({ request }) => {
     const body = await request.text()
     const params = new URLSearchParams(body)
     let text = params.getAll('text')
     return HttpResponse.json({ translatedText: text })
   }
-  const languagesHandler = async () => {
+  const languagesHandler: HttpResponseResolver = async () => {
     return HttpResponse.json(enabledLocales)
   }
-  beforeAll(() => {
+  beforeAll(async () => {
     server = getServer()
 
-    Object.defineProperty(global, 'strapi', {
-      value: require('../../__mocks__/initStrapi')({}),
-      writable: true,
-    })
+    await setup()
   })
 
   afterEach(async () => {
@@ -89,7 +94,7 @@ describe('libretranslate client', () => {
   })
 
   describe('getLocaleInformation', () => {
-    let client
+    let client: Client
     beforeEach(() => {
       server.use(http.get(`${VALID_URL}/languages`, languagesHandler))
 
@@ -117,9 +122,7 @@ describe('libretranslate client', () => {
     )
 
     it('throws Error for network error', async () => {
-      server.use(
-        http.get(`${VALID_URL}/languages`, () => HttpResponse.networkError())
-      )
+      server.use(http.get(`${VALID_URL}/languages`, () => HttpResponse.error()))
 
       expect(async () => client.getLocaleInformation()).rejects.toThrow(
         'Did not receive response'
@@ -128,7 +131,7 @@ describe('libretranslate client', () => {
   })
 
   describe('translateText', () => {
-    let client
+    let client: Client
     beforeEach(() => {
       server.use(http.post(`${VALID_URL}/translate`, translateHandler))
       server.use(http.get(`${VALID_URL}/languages`, languagesHandler))
@@ -156,7 +159,7 @@ describe('libretranslate client', () => {
       )
 
       expect(
-        client.translateText('text', 'source', 'target', 'format')
+        client.translateText('text', 'source', 'target', 'text')
       ).resolves.not.toThrow()
     })
 
@@ -177,7 +180,7 @@ describe('libretranslate client', () => {
         )
 
         expect(
-          client.translateText(text, source, target, format)
+          client.translateText(text, source, target, format as any)
         ).resolves.not.toThrow()
       }
     )
@@ -198,7 +201,7 @@ describe('libretranslate client', () => {
 
     it('throws Error for network error', async () => {
       server.use(
-        http.post(`${VALID_URL}/translate`, () => HttpResponse.networkError())
+        http.post(`${VALID_URL}/translate`, () => HttpResponse.error())
       )
 
       expect(async () =>
@@ -208,7 +211,7 @@ describe('libretranslate client', () => {
   })
 
   describe('parseLocales', () => {
-    let client
+    let client: Client
     beforeEach(() => {
       server.use(http.get(`${VALID_URL}/languages`, languagesHandler))
 

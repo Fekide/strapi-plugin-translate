@@ -1,15 +1,10 @@
 import { Data, Modules, Struct, UID } from '@strapi/strapi'
-import { cleanData } from '../../utils/clean-data'
 import {
   batchContentTypeUid,
   TRANSLATE_PRIORITY_BATCH_TRANSLATION,
 } from '../../utils/constants'
-import { filterAllDeletedFields } from '../../utils/delete-fields'
 import { getService } from '../../utils/get-service'
 import { populateAll } from '../../utils/populate-all'
-import { getAllTranslatableFields } from '../../utils/translatable-fields'
-import { translateRelations } from '../../utils/translate-relations'
-import { updateUids } from '../../utils/update-uids'
 import { differenceBy, intersectionBy } from 'lodash'
 import { BatchTranslateJob } from '@shared/types/batch-translate-job'
 

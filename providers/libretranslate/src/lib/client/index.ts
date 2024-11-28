@@ -1,6 +1,4 @@
-'use strict'
-
-const axios = require('axios')
+import axios, { AxiosResponse } from 'axios'
 
 const defaultLocales = [
   'en',
@@ -35,8 +33,32 @@ const defaultLocales = [
   'uk',
 ]
 
-class Client {
-  constructor(url, apiKey = undefined) {
+export type LanguagesResponse = {
+  code: string
+  name: string
+  targets: string[]
+}
+
+export interface TranslateRequest {
+  q: string | string[]
+  source: string
+  target: string
+  format?: 'html' | 'text'
+  alternatives?: number
+  api_key?: string
+}
+
+export type TranslateResponse =
+  | {
+      translatedText: string | string[]
+    }
+  | { error: string }
+
+export class Client {
+  baseURL: string
+  apiKey: undefined | string
+  localeInformation: { code: string; targets: string[] }[]
+  constructor(url: string, apiKey?: string) {
     this.baseURL = url
     this.apiKey = apiKey
 
@@ -56,25 +78,26 @@ class Client {
   async getLocaleInformation() {
     const url = `${this.baseURL}/languages`
     try {
-      const response = await axios.get(url)
+      const response = await axios.get<LanguagesResponse>(url)
       if (!response?.data) throw new Error(`Request to ${url} failed`)
       return response.data
     } catch (error) {
-      if (error.response) {
-        // Server responded with non 2XX Status
-        throw new Error(
-          `Request to ${url} failed with ${error.response.status}`
-        )
-      } else if (error.request) {
-        throw new Error(`Did not receive response from ${url}`)
-      } else {
-        throw new Error(`Failed to make request to ${url}`)
+      if (error instanceof axios.AxiosError) {
+        if (error.response) {
+          // Server responded with non 2XX Status
+          throw new Error(
+            `Request to ${url} failed with ${error.response.status}`
+          )
+        } else if (error.request) {
+          throw new Error(`Did not receive response from ${url}`)
+        }
       }
+      throw new Error(`Failed to make request to ${url}`)
     }
   }
 
-  parseLocales(source, target) {
-    function lowerLanguageCode(locale) {
+  parseLocales(source: string, target: string) {
+    function lowerLanguageCode(locale: string) {
       const upperCase = locale.toLowerCase()
       const [stripped] = upperCase.split('-')
 
@@ -108,32 +131,42 @@ class Client {
     return { source: strippedSource, target: strippedTarget }
   }
 
-  async translateText(text, source, target, format = 'text') {
+  async translateText(
+    text: string | string[],
+    source: string,
+    target: string,
+    format: 'html' | 'text' = 'text'
+  ): Promise<string | string[]> {
     const url = `${this.baseURL}/translate`
     try {
-      const response = await axios.post(url, {
+      const response = await axios.post<
+        TranslateResponse,
+        AxiosResponse<TranslateResponse>,
+        TranslateRequest
+      >(url, {
         q: text,
         source,
         target,
         format,
         api_key: this.apiKey,
       })
-      if (!response?.data?.translatedText)
+      const data = response?.data
+      if ('error' in data || !data.translatedText) {
         throw new Error(`Request to ${url} failed`)
-      return response.data.translatedText
-    } catch (error) {
-      if (error.response) {
-        // Server responded with non 2XX Status
-        throw new Error(
-          `Request to ${url} failed with ${error.response.status}`
-        )
-      } else if (error.request) {
-        throw new Error(`Did not receive response from ${url}`)
-      } else {
-        throw new Error(`Failed to make request to ${url}`)
       }
+      return data.translatedText
+    } catch (error) {
+      if (error instanceof axios.AxiosError) {
+        if (error.response) {
+          // Server responded with non 2XX Status
+          throw new Error(
+            `Request to ${url} failed with ${error.response.status}`
+          )
+        } else if (error.request) {
+          throw new Error(`Did not receive response from ${url}`)
+        }
+      }
+      throw new Error(`Failed to make request to ${url}`)
     }
   }
 }
-
-module.exports = { Client }

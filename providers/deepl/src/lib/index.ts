@@ -1,22 +1,24 @@
-'use strict'
+import { SourceLanguageCode, TargetLanguageCode, Translator } from 'deepl-node'
+import Bottleneck from 'bottleneck'
+import { TranslateProvider } from 'strapi-plugin-translate/shared'
 
-const deepl = require('deepl-node')
-const Bottleneck = require('bottleneck/es5')
-
-const {
+import {
   DEEPL_PRIORITY_DEFAULT,
   DEEPL_API_MAX_TEXTS,
   DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
-  DEEPL_APP_INFO
-} = require('./constants')
-const { parseLocale } = require('./parse-locale')
-const { getService } = require('./get-service')
+  DEEPL_APP_INFO,
+} from './constants'
+import { parseLocale } from './parse-locale'
+import { getService } from './get-service'
 
-/**
- * Module dependencies
- */
+export type DeepLProviderOptions = {
+  apiKey?: string
+  apiUrl?: string
+  localeMap?: Record<string, string>
+  apiOptions?: Record<string, string>
+}
 
-module.exports = {
+export default {
   provider: 'deepl',
   name: 'DeepL',
 
@@ -32,9 +34,9 @@ module.exports = {
         ? providerOptions.apiOptions
         : {}
 
-    const client = new deepl.Translator(apiKey, {
+    const client = new Translator(apiKey, {
       serverUrl: apiUrl,
-      appInfo: DEEPL_APP_INFO
+      appInfo: DEEPL_APP_INFO,
     })
 
     const limiter = new Bottleneck({
@@ -42,19 +44,17 @@ module.exports = {
       maxConcurrent: 5,
     })
 
-    const rateLimitedTranslate = limiter.wrap(client.translateText.bind(client))
+    type translateText = typeof client.translateText
+
+    const rateLimitedTranslate = limiter.wrap<
+      ReturnType<translateText>,
+      Parameters<translateText>[0],
+      Parameters<translateText>[1],
+      Parameters<translateText>[2],
+      Parameters<translateText>[3]
+    >(client.translateText.bind(client))
 
     return {
-      /**
-       * @param {{
-       *  text:string|string[],
-       *  sourceLocale: string,
-       *  targetLocale: string,
-       *  priority: number,
-       *  format?: 'plain'|'markdown'|'html'
-       * }} options all translate options
-       * @returns {string[]} the input text(s) translated
-       */
       async translate({ text, priority, sourceLocale, targetLocale, format }) {
         if (!text) {
           return []
@@ -68,10 +68,10 @@ module.exports = {
 
         const tagHandling = format === 'plain' ? undefined : 'html'
 
-        let textArray = Array.isArray(text) ? text : [text]
+        let textArray: string[] = Array.isArray(text) ? text : [text]
 
         if (format === 'markdown') {
-          textArray = formatService.markdownToHtml(textArray)
+          textArray = formatService.markdownToHtml(textArray) as string[]
         }
 
         const { chunks, reduceFunction } = chunksService.split(textArray, {
@@ -90,11 +90,21 @@ module.exports = {
                       : DEEPL_PRIORITY_DEFAULT,
                 },
                 texts,
-                parseLocale(sourceLocale, localeMap, 'source'),
-                parseLocale(targetLocale, localeMap, 'target'),
+                parseLocale(
+                  sourceLocale,
+                  localeMap,
+                  'source'
+                ) as SourceLanguageCode,
+                parseLocale(
+                  targetLocale,
+                  localeMap,
+                  'target'
+                ) as TargetLanguageCode,
                 { ...apiOptions, tagHandling }
               )
-              return result.map((value) => value.text)
+              return Array.isArray(result)
+                ? result.map((value) => value.text)
+                : [result.text]
             })
           )
         )
@@ -110,4 +120,4 @@ module.exports = {
       },
     }
   },
-}
+} satisfies TranslateProvider<DeepLProviderOptions>
