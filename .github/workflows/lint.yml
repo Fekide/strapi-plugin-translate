@@ -4,16 +4,37 @@ jobs:
   eslint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
       - name: Install modules
         run: yarn
       - name: Run ESLint
         run: yarn lint
 
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      - name: Install modules
+        run: yarn
+      - name: Build strapi-plugin-translate
+        run: yarn workspace strapi-plugin-translate build
+      - name: Verify plugin with strapi-plugin
+        run: yarn workspace strapi-plugin-translate verify
+
   commitlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v5

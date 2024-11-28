@@ -1,0 +1,12 @@
+{
+  "extends": "@strapi/typescript-utils/tsconfigs/admin",
+  "include": ["./src", "./custom.d.ts", "../shared"],
+  "compilerOptions": {
+    "rootDir": "../",
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
+  }
+}

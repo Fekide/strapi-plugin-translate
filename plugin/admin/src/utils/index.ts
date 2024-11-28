@@ -1,0 +1,1 @@
+export { getTranslation } from './getTranslation'

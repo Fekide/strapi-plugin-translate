@@ -67,8 +67,8 @@ function getFileData(fileName) {
   const mimeType = mime.lookup(ext)
 
   return {
-    path: filePath,
-    name: fileName,
+    filepath: filePath,
+    originalFilename: fileName,
     size,
     type: mimeType,
   }
@@ -80,7 +80,7 @@ async function createEntry({ model, entry, files }) {
     if (files) {
       for (const [key, file] of Object.entries(files)) {
         // Get file name without the extension
-        const [fileName] = file.name.split('.')
+        const [fileName] = file.originalFilename.split('.')
         // Upload each individual file
         const uploadedFile = await strapi
           .plugin('upload')
@@ -102,12 +102,11 @@ async function createEntry({ model, entry, files }) {
     }
 
     // Actually create the entry in Strapi
-    const createdEntry = await strapi.entityService.create(
-      `api::${model}.${model}`,
-      {
+    const createdEntry = await strapi
+      .documents(`api::${model}.${model}`)
+      .create({
         data: entry,
-      }
-    )
+      })
   } catch (e) {
     console.log('model', entry, e)
   }
