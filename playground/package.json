@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "cypress": "^13.6.4",
-    "start-server-and-test": "^2.0.3"
+    "start-server-and-test": "^2.0.8"
   },
   "engines": {
     "node": ">=14 <=20",
