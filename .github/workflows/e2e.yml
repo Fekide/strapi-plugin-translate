@@ -34,8 +34,9 @@ jobs:
       - name: Run e2e tests
         run: yarn e2e
         working-directory: e2e
-      - uses: actions/upload-artifact@v3
-        if: always()
+      - name: Upload cypress results on failure
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
         with:
           name: cypress results (node=${{ matrix.node }},strapi=${{ matrix.strapi }})
           path: |
