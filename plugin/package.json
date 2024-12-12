@@ -27,11 +27,11 @@
       "default": "./dist/server/index.js"
     },
     "./shared": {
-      "types": "./dist/shared/src/index.d.ts",
-      "source": "./shared/src/index.ts",
-      "import": "./dist/shared/index.mjs",
-      "require": "./dist/shared/index.js",
-      "default": "./dist/shared/index.js"
+      "types": "./dist/shared/index.d.ts",
+      "source": "./shared/index.ts",
+      "import": "./dist/server/index.mjs",
+      "require": "./dist/server/index.js",
+      "default": "./dist/server/index.js"
     }
   },
   "files": [
