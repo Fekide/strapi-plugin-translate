@@ -14,9 +14,10 @@ jobs:
           cache: 'yarn'
       - run: yarn
       - run: yarn test
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./plugin/coverage/clover.xml,./providers/deepl/coverage/clover.xml,./providers/libretranslate/coverage/clover.xml
           flags: unittests
           name: codecov-umbrella
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
