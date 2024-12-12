@@ -1,0 +1,31 @@
+import { UID } from '@strapi/strapi'
+import { Locale } from './locale'
+import { BatchTranslateJob } from './batch-translate-job'
+
+export interface SingleLocaleTranslationReport {
+  /**
+   * Count of entries for this locale
+   */
+  count: number
+  /**
+   * True if all entries are translated
+   */
+  complete: boolean
+  job: BatchTranslateJob
+}
+
+export interface ContentTypeTranslationReport {
+  /**
+   * The content type UID
+   */
+  contentType: UID.ContentType
+  /**
+   * The display name of the content type
+   */
+  collection: string
+  localeReports: Record<string, SingleLocaleTranslationReport>
+}
+export interface ReportData {
+  contentTypes: ContentTypeTranslationReport[]
+  locales: Locale[]
+}
