@@ -13,8 +13,12 @@ jobs:
         with:
           node-version: ${{ matrix.version }}
           cache: 'yarn'
-      - run: yarn
-      - run: yarn test
+      - name: Install dependencies
+        run: yarn
+      - name: Build strapi-plugin-translate
+        run: yarn workspace strapi-plugin-translate build
+      - name: run tests
+        run: yarn test
       - uses: codecov/codecov-action@v5
         with:
           files: ./plugin/coverage/clover.xml,./providers/deepl/coverage/clover.xml,./providers/libretranslate/coverage/clover.xml
