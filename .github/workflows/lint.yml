@@ -28,8 +28,16 @@ jobs:
         run: yarn
       - name: Build strapi-plugin-translate
         run: yarn workspace strapi-plugin-translate build
+      - name: Build strapi-provider-translate-deepl
+        run: yarn workspace strapi-provider-translate-deepl build
+      - name: Build strapi-provider-translate-libretranslate
+        run: yarn workspace strapi-provider-translate-libretranslate build
       - name: Verify plugin with strapi-plugin
         run: yarn workspace strapi-plugin-translate verify
+      - name: Verify strapi-provider-translate-deepl
+        run: yarn workspace strapi-provider-translate-deepl verify
+      - name: Verify strapi-provider-translate-libretranslate
+        run: yarn workspace strapi-provider-translate-libretranslate verify
 
   commitlint:
     runs-on: ubuntu-latest
