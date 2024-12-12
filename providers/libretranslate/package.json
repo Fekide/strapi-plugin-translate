@@ -48,7 +48,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "pack-up build"
+    "build": "pack-up build",
+    "verify": "pack-up check"
   },
   "dependencies": {
     "axios": ">=0.21.2 <1.2.0 || >=1.2.1",
