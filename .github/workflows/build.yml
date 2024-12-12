@@ -31,6 +31,12 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: yarn
+      - name: Build strapi-plugin-translate
+        run: yarn workspace strapi-plugin-translate build
+      - name: Build strapi-provider-translate-deepl
+        run: yarn workspace strapi-provider-translate-deepl build
+      - name: Build strapi-provider-translate-libretranslate
+        run: yarn workspace strapi-provider-translate-libretranslate build
       - name: Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
