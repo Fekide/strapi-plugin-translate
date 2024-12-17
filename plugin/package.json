@@ -29,7 +29,9 @@
   "dependencies": {
     "@strapi/helper-plugin": "^4.15.0",
     "axios": "^1.7.4",
+    "blocks-html-renderer": "^1.0.5",
     "bottleneck": "^2.19.5",
+    "cache-manager": "^6.1.0",
     "jsdom": "^25.0.0",
     "showdown": "^2.1.0"
   },
