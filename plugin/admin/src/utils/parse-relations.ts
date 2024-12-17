@@ -1,6 +1,6 @@
 import { Data, Schema, UID } from '@strapi/strapi'
 import { EditLayout } from '@strapi/content-manager/strapi-admin'
-import _, { cloneDeep, flatten, flattenDeep, get, has, set, unset } from 'lodash'
+import _, { cloneDeep, flattenDeep, get, has, set, unset } from 'lodash'
 
 /**
  * Function is copied from https://github.com/strapi/strapi/blob/v4.5.3/packages/core/admin/admin/src/content-manager/components/RelationInputDataManager/utils/getRelationLink.js
@@ -22,10 +22,7 @@ export function getRelationLink(targetModel: string, documentId?: string) {
  */
 const normalizeRelation = (
   relation: any,
-  {
-    mainFieldName,
-    targetModel,
-  }: { mainFieldName: string; targetModel: string }
+  { mainFieldName, targetModel }: { mainFieldName: string; targetModel: string }
 ) => {
   const nextRelation = { ...relation }
   nextRelation.href = getRelationLink(targetModel, nextRelation.documentId)
@@ -56,7 +53,11 @@ function parseRelation(
  */
 export default function parseRelations(
   data: Data.Entity,
-  schema: { contentType: Schema.ContentType; components: Schema.Components; editLayout: EditLayout },
+  schema: {
+    contentType: Schema.ContentType
+    components: Schema.Components
+    editLayout: EditLayout
+  },
   component: UID.Component | null = null
 ) {
   const result: any = cloneDeep(data)
@@ -84,8 +85,7 @@ export default function parseRelations(
           set(
             result,
             `${attribute}.connect`,
-            value
-            .map((r, index) => ({
+            value.map((r, index) => ({
               __temp_key__: `a${index}`,
               ...parseRelation(r, relationEditLayout),
             }))
