@@ -3,8 +3,8 @@
 const showdown = require('showdown')
 const jsdom = require('jsdom')
 const cacheManager = require('cache-manager')
-const { TRANSLATE_BLOCKS_IMAGE_CACHE_TTL } = require('../utils/constants')
 const renderBlock = require('blocks-html-renderer').renderBlock
+const { TRANSLATE_BLOCKS_IMAGE_CACHE_TTL } = require('../utils/constants')
 
 
 const dom = new jsdom.JSDOM()
