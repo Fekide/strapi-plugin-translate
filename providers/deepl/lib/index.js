@@ -31,6 +31,7 @@ module.exports = {
       typeof providerOptions.apiOptions === 'object'
         ? providerOptions.apiOptions
         : {}
+    const omitPlaceholders = providerOptions.omitPlaceholders || false
 
     const client = new deepl.Translator(apiKey, {
       serverUrl: apiUrl,
@@ -77,12 +78,23 @@ module.exports = {
 
         let textArray = Array.isArray(input) ? input : [input]
 
+        let placeholderTexts = [];
+
+        if (omitPlaceholders) {
+          textArray = textArray.map((text) =>
+            text.replace(/{{(.*?)}}/g, (match) => {
+              placeholderTexts.push(match)
+              return `<m id=${placeholderTexts.length - 1} />`
+            })
+          )
+        }
+
         const { chunks, reduceFunction } = chunksService.split(textArray, {
           maxLength: DEEPL_API_MAX_TEXTS,
           maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
         })
 
-        const result = reduceFunction(
+        let result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
               const result = await rateLimitedTranslate.withOptions(
@@ -101,7 +113,13 @@ module.exports = {
             })
           )
         )
-        
+
+        if (omitPlaceholders) {
+          result = result.map((text) =>
+            text.replace(/<m id=(.*?) \/>/g, (_, id) => placeholderTexts[id])
+          )
+        }
+
         if (format === 'jsonb') {
           return formatService.htmlToBlock(result)
         }

@@ -21,6 +21,8 @@ module.exports = {
           // use uppercase here!
           EN: 'EN-US',
         },
+        // controls if placeholder text inside double curly brackets should be omitted from translation
+        omitPlaceholders: false,
         apiOptions: {
           // see <https://github.com/DeepLcom/deepl-node#text-translation-options> for supported options.
           // note that tagHandling Mode cannot be set this way.
