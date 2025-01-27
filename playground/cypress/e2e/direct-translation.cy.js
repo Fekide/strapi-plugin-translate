@@ -1,6 +1,6 @@
 describe('direct translation', () => {
   beforeEach(() => {
-    cy.exec('yarn reset')
+    cy.exec('npm run reset')
   })
 
   it('single article', () => {
@@ -24,6 +24,7 @@ describe('direct translation', () => {
     // Save and Publish
     cy.contains('button', 'Save').click()
     cy.contains('Saved document').should('be.visible')
+    cy.wait(1000)
     cy.contains('button', 'Publish').click()
     cy.contains('Published document').should('be.visible')
 
@@ -56,6 +57,7 @@ describe('direct translation', () => {
     // Save
     cy.contains('button', 'Save').click()
     cy.contains('Saved document').should('be.visible')
+    cy.wait(1000)
 
     cy.get('nav[aria-label="Content Manager"]').contains('Article').click()
 
@@ -78,6 +80,7 @@ describe('direct translation', () => {
     // Save and Publish
     cy.contains('button', 'Save').click()
     cy.contains('Saved document').should('be.visible')
+    cy.wait(2000)
     cy.contains('button', 'Publish').click()
     cy.contains('Published document').should('be.visible')
 

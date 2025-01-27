@@ -9,9 +9,10 @@
   },
   "scripts": {
     "build": "strapi build",
+    "cy": "cypress",
     "cy:run": "cypress run",
     "develop": "strapi develop",
-    "e2e": "ENV_PATH='./.env.test' start-server-and-test 'yarn start' http://0.0.0.0:1337 'yarn cy:run'",
+    "e2e": "ENV_PATH='./.env.test' start-server-and-test 'npm run start' http://0.0.0.0:1337 'npm run cy:run'",
     "reset": "node scripts/reset.js",
     "start": "strapi start",
     "strapi": "strapi",
@@ -34,7 +35,7 @@
     "start-server-and-test": "^2.0.3"
   },
   "engines": {
-    "node": ">=14 <=20",
+    "node": ">=18 <=22",
     "npm": ">=6.0.0"
   },
   "strapi": {

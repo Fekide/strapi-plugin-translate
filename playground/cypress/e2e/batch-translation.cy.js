@@ -1,6 +1,6 @@
 describe('batch translation', () => {
   beforeEach(() => {
-    cy.exec('yarn reset')
+    cy.exec('npm run reset')
   })
 
   it('should translate all articles', () => {
@@ -19,11 +19,11 @@ describe('batch translation', () => {
     cy.get('button[data-cy="api::article.article.de.translate"]').click()
 
     // Complete dialog
-    cy.get('div[role=alertdialog] div[role=combobox]')
+    cy.get('div[role=dialog] div[role=combobox]')
       .filter(':contains("English (en)")')
       .should('be.visible')
 
-    cy.get('div[role=alertdialog] button')
+    cy.get('div[role=dialog] button')
       .filter(':contains("Translate")')
       .click()
 
@@ -55,11 +55,11 @@ describe('batch translation', () => {
     cy.get('button[data-cy="api::article.article.de.translate"]').click()
 
     // Complete dialog
-    cy.get('div[role=alertdialog] div[role=combobox]')
+    cy.get('div[role=dialog] div[role=combobox]')
       .filter(':contains("English (en)")')
       .should('be.visible')
     cy.get('input[name=auto-publish]').click()
-    cy.get('div[role=alertdialog] button')
+    cy.get('div[role=dialog] button')
       .filter(':contains("Translate")')
       .click()
 

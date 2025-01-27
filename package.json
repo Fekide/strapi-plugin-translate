@@ -44,5 +44,6 @@
   "lint-staged": {
     "*.(js|jsx|ts|tsx)": "eslint --fix",
     "*.(js|jsx|ts|tsx|json|yml|yaml|md|css|html)": "prettier -w"
-  }
+  },
+  "packageManager": "npm@10.8.2"
 }

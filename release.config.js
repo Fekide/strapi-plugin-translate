@@ -12,7 +12,6 @@ module.exports = {
       },
     ],
     '@semantic-release/release-notes-generator',
-    '@feki.de/semantic-release-yarn',
     '@semantic-release/github',
     '@semantic-release/git',
   ],

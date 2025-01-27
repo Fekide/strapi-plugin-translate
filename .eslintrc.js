@@ -3,6 +3,7 @@ module.exports = {
     ecmaVersion: 2020,
     requireConfigFile: false,
   },
+  ignorePatterns: ["**/build", "**/dist", "**/node_modules"],
   overrides: [
     {
       files: ['plugin/server/**/*.js', 'providers/**/lib/**/*.js'],

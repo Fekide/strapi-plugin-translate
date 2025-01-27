@@ -1,2 +1,2 @@
 diff ./README.md plugin/README.md && echo READMEs match
-diff ./playground/package.json ./playground/templates/template.package.json -I '@strapi/.*' && echo playground/package.json match
+diff ./playground/package.json ./playground/templates/template.package.json -I '@strapi/.*' -I 'strapi-plugin-translate' -I 'strapi-provider-translate' && echo playground/package.json match

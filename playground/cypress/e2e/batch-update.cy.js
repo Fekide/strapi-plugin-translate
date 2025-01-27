@@ -1,6 +1,6 @@
 describe('batch update', () => {
   beforeEach(() => {
-    cy.exec('yarn reset')
+    cy.exec('npm run reset')
   })
 
   it('should add an update entry when a translated entity is updated', () => {

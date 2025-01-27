@@ -9,11 +9,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
+          cache: 'npm'
       - name: Install modules
-        run: yarn
+        run: npm ci
       - name: Run ESLint
-        run: yarn lint
+        run: npm run lint
 
   verify:
     runs-on: ubuntu-latest
@@ -23,21 +23,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
+          cache: 'npm'
       - name: Install modules
-        run: yarn
+        run: npm ci
       - name: Build strapi-plugin-translate
-        run: yarn workspace strapi-plugin-translate build
+        run: npm run build --workspace strapi-plugin-translate
       - name: Build strapi-provider-translate-deepl
-        run: yarn workspace strapi-provider-translate-deepl build
+        run: npm run build --workspace strapi-provider-translate-deepl
       - name: Build strapi-provider-translate-libretranslate
-        run: yarn workspace strapi-provider-translate-libretranslate build
+        run: npm run build --workspace strapi-provider-translate-libretranslate
       - name: Verify plugin with strapi-plugin
-        run: yarn workspace strapi-plugin-translate verify
+        run: npm run verify --workspace strapi-plugin-translate
       - name: Verify strapi-provider-translate-deepl
-        run: yarn workspace strapi-provider-translate-deepl verify
+        run: npm run verify --workspace strapi-provider-translate-deepl
       - name: Verify strapi-provider-translate-libretranslate
-        run: yarn workspace strapi-provider-translate-libretranslate verify
+        run: npm run verify --workspace strapi-provider-translate-libretranslate
 
   commitlint:
     runs-on: ubuntu-latest
