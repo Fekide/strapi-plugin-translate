@@ -1,12 +1,12 @@
-import { Data, Modules, Struct, UID } from '@strapi/strapi'
+import { Data, Struct, UID } from '@strapi/strapi'
 import {
   batchContentTypeUid,
   TRANSLATE_PRIORITY_BATCH_TRANSLATION,
 } from '../../utils/constants'
 import { getService } from '../../utils/get-service'
 import { populateAll } from '../../utils/populate-all'
-import { differenceBy, intersectionBy } from 'lodash'
 import { BatchTranslateJob } from '@shared/types/batch-translate-job'
+import { isContentTypeUID, isLocalizedContentType } from '../../utils/content-type'
 
 export class BatchTranslateJobExecutor {
   totalEntities: number
@@ -44,8 +44,11 @@ export class BatchTranslateJobExecutor {
     this.id = documentId
     this.autoPublish = autoPublish
     this.contentType = contentType
+    if (!isContentTypeUID(contentType)) {
+      throw new Error('translate.batch-translate.content-type-not-exist')
+    }
     this.contentTypeSchema = strapi.contentTypes[contentType]
-    if (!this.contentTypeSchema.pluginOptions?.i18n['localized']) {
+    if (!isLocalizedContentType(contentType)) {
       throw new Error('translate.batch-translate.content-type-not-localized')
     }
     this.sourceLocale = sourceLocale
@@ -77,7 +80,7 @@ export class BatchTranslateJobExecutor {
     }
 
     // Cancel-path scenario
-    console.log('Cancelled translation')
+    strapi.log.warn('Cancelled translation')
 
     await this.updateStatus('cancelled')
   }
@@ -88,51 +91,49 @@ export class BatchTranslateJobExecutor {
     }
   }
 
-  async updateStatus(status, additionalData = {}) {
+  async updateStatus(
+    status: BatchTranslateJob['status'],
+    additionalData: Partial<
+      Pick<BatchTranslateJob, 'failureReason' | 'progress'>
+    > = {}
+  ) {
+    const data: Partial<Omit<BatchTranslateJob, 'documentId'>> = {
+      status,
+      ...additionalData,
+    }
     this.status = status
     await strapi
-      .service(batchContentTypeUid)
-      .update(this.id, { data: { status, ...additionalData } })
+      .documents(batchContentTypeUid)
+      .update({ documentId: this.id, data })
   }
 
   async updateProgress() {
-    await strapi.service(batchContentTypeUid).update(this.id, {
-      data: { progress: this.translatedEntities / this.totalEntities },
+    const data: Partial<Omit<BatchTranslateJob, 'documentId'>> = {
+      progress: this.translatedEntities / this.totalEntities,
+    }
+    await strapi.documents(batchContentTypeUid).update({
+      documentId: this.id,
+      data: data,
     })
   }
 
   async setup() {
     await this.updateStatus('setup')
     if (!this.documentIds) {
-      const sourceEntities = await strapi
-        .documents(this.contentType)
-        .findMany({ locale: this.sourceLocale })
-      const translatedEntities = await strapi
-        .documents(this.contentType)
-        .findMany({
-          locale: this.targetLocale,
-        })
-
-      this.documentIds = differenceBy(
-        sourceEntities,
-        translatedEntities,
-        'documentId'
-      ).map((e) => e.documentId)
-
-      this.translatedEntities = intersectionBy(
-        sourceEntities,
-        translatedEntities,
-        'documentId'
-      ).length
-    } else {
-      // entity Ids were provided to the job, so the job is restricted to handling just those
-      this.translatedEntities = await strapi.documents(this.contentType).count({
-        locale: this.sourceLocale,
-        filters: {
-          documentId: { $in: this.documentIds },
-        },
+      this.documentIds = await getService(
+        'untranslated'
+      ).getUntranslatedDocumentIDs({
+        uid: this.contentType,
+        targetLocale: this.targetLocale,
+        sourceLocale: this.sourceLocale,
       })
     }
+    this.translatedEntities = await strapi.documents(this.contentType).count({
+      locale: this.sourceLocale,
+      filters: {
+        documentId: { $in: this.documentIds },
+      },
+    })
     this.totalEntities = this.documentIds.length
 
     // TODO: Initialize variables (which ids have to be translated, how many etc)
@@ -157,11 +158,11 @@ export class BatchTranslateJobExecutor {
     }
 
     await this.setup().catch((error) => {
-      this.updateStatus('failed', error)
+      this.updateStatus('failed', { failureReason: error })
       throw error
     })
 
-    let entity = null
+    let entity: Data.Entity | null = null
 
     const populate = populateAll(this.contentTypeSchema)
     while (this.status === 'running') {
@@ -181,8 +182,9 @@ export class BatchTranslateJobExecutor {
             )
             entity = null
           } else if (
-            entity?.localizations?.filter((l) => l.locale === this.targetLocale)
-              .length > 0
+            entity?.localizations?.filter(
+              (l: Data.Entity) => l.locale === this.targetLocale
+            ).length > 0
           ) {
             strapi.log.warn(
               `Entity ${nextId} of ${this.contentType} already has a translation for ${this.sourceLocale}, skipping it...`
