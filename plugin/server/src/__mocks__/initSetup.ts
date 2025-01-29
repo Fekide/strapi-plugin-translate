@@ -88,6 +88,9 @@ const initSetup = async ({
   const documents: Core.Strapi['documents'] = function documents(
     uid: UID.ContentType
   ) {
+    if (!contentTypes[uid]) {
+      throw new Error(`Content Type ${uid} does not exist`)
+    }
     return {
       findOne: (params) =>
         mock.db.query(uid).findOne({
