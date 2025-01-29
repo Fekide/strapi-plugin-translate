@@ -39,6 +39,9 @@ export function populateAll<
     populateRelations: false,
   })
   const attributesSchema = schema['attributes']
+  if (!attributesSchema) {
+    return undefined
+  }
   const populateResult: PopulateRule<TSchemaUID> | {} = {}
 
   keys(attributesSchema).forEach((attr) => {
