@@ -1,130 +1,114 @@
-import { Core } from '@strapi/strapi';
-import service from '../untranslated';
+import { Core } from '@strapi/strapi'
+import service from '../untranslated'
+
+const uid = 'api::post.post'
 
 describe('untranslated service', () => {
   describe('getUntranslatedEntity', () => {
-    it('throws Error if Metadata is not found', () => {
+    it('throws Error if ContentType is not found', () => {
       const strapi = {
-        db: {
-          metadata: {
-            get: jest.fn(() => null),
-          },
-        },
-      } as any as Core.Strapi;
+        contentTypes: {},
+      } as any as Core.Strapi
 
-      const untranslatedService = service({ strapi });
+      Object.defineProperty(global, 'strapi', { value: strapi, writable: true })
+
+      const untranslatedService = service({ strapi })
 
       return expect(async () =>
         untranslatedService.getUntranslatedEntity(
-          { uid: 'uid', sourceLocale: 'en', targetLocale: 'de' },
+          { uid, sourceLocale: 'en', targetLocale: 'de' },
           { populate: {} }
         )
-      ).rejects.toThrow('Content Type does not exist');
-    });
+      ).rejects.toThrow('Content Type does not exist')
+    })
 
-    it('throws Error if content table is not localized', () => {
+    it('throws Error if Content Type is not localized', () => {
       const strapi = {
-        db: {
-          metadata: {
-            get: jest.fn(() => ({
-              attributes: {
-                localizations: {},
-              },
-            })),
-          },
+        contentTypes: {
+          [uid]: { pluginOptions: { i18n: { localized: false } } },
         },
-      } as any as Core.Strapi;
+      } as any as Core.Strapi
 
-      const untranslatedService = service({ strapi });
+      Object.defineProperty(global, 'strapi', { value: strapi, writable: true })
+
+      const untranslatedService = service({ strapi })
 
       return expect(async () =>
         untranslatedService.getUntranslatedEntity(
-          { uid: 'uid', sourceLocale: 'en', targetLocale: 'de' },
+          { uid, sourceLocale: 'en', targetLocale: 'de' },
           { populate: {} }
         )
-      ).rejects.toThrow('Content Type not localized');
-    });
-  });
+      ).rejects.toThrow('Content Type not localized')
+    })
+  })
 
   describe('getUntranslatedEntityIDs', () => {
-    it('throws Error if Metadata is not found', () => {
+    it('throws Error if Content Type is not found', () => {
       const strapi = {
-        db: {
-          metadata: {
-            get: jest.fn(() => null),
-          },
-        },
-      } as any as Core.Strapi;
+        contentTypes: {},
+      } as any as Core.Strapi
 
-      const untranslatedService = service({ strapi });
+      Object.defineProperty(global, 'strapi', { value: strapi, writable: true })
+
+      const untranslatedService = service({ strapi })
 
       return expect(async () =>
         untranslatedService.getUntranslatedEntity(
-          { uid: 'uid', sourceLocale: 'en', targetLocale: 'de' },
+          { uid, sourceLocale: 'en', targetLocale: 'de' },
           { populate: {} }
         )
-      ).rejects.toThrow('Content Type does not exist');
-    });
+      ).rejects.toThrow('Content Type does not exist')
+    })
 
-    it('throws Error if content table is not localized', () => {
+    it('throws Error if Content Type is not localized', () => {
       const strapi = {
-        db: {
-          metadata: {
-            get: jest.fn(() => ({
-              attributes: {
-                localizations: {},
-              },
-            })),
-          },
+        contentTypes: {
+          [uid]: { pluginOptions: { i18n: { localized: false } } },
         },
-      } as any as Core.Strapi;
+      } as any as Core.Strapi
 
-      const untranslatedService = service({ strapi });
+      Object.defineProperty(global, 'strapi', { value: strapi, writable: true })
+
+      const untranslatedService = service({ strapi })
 
       return expect(async () =>
         untranslatedService.getUntranslatedEntity(
-          { uid: 'uid', sourceLocale: 'en', targetLocale: 'de' },
+          { uid, sourceLocale: 'en', targetLocale: 'de' },
           { populate: {} }
         )
-      ).rejects.toThrow('Content Type not localized');
-    });
-  });
+      ).rejects.toThrow('Content Type not localized')
+    })
+  })
 
   describe('isFullyTranslated', () => {
-    it('throws Error if Metadata is not found', () => {
+    it('throws Error if Content Type is not found', () => {
       const strapi = {
-        db: {
-          metadata: {
-            get: jest.fn(() => null),
-          },
-        },
-      } as any as Core.Strapi;
+        contentTypes: {},
+      } as any as Core.Strapi
 
-      const untranslatedService = service({ strapi });
+      Object.defineProperty(global, 'strapi', { value: strapi, writable: true })
 
-      return expect(async () => untranslatedService.isFullyTranslated('uid', {})).rejects.toThrow(
-        'Content Type does not exist'
-      );
-    });
+      const untranslatedService = service({ strapi })
 
-    it('throws Error if content table is not localized', () => {
+      return expect(async () =>
+        untranslatedService.isFullyTranslated(uid, 'de')
+      ).rejects.toThrow('Content Type does not exist')
+    })
+
+    it('throws Error if Content Type is not localized', () => {
       const strapi = {
-        db: {
-          metadata: {
-            get: jest.fn(() => ({
-              attributes: {
-                localizations: {},
-              },
-            })),
-          },
+        contentTypes: {
+          [uid]: { pluginOptions: { i18n: { localized: false } } },
         },
-      } as any as Core.Strapi;
+      } as any as Core.Strapi
 
-      const untranslatedService = service({ strapi });
+      Object.defineProperty(global, 'strapi', { value: strapi, writable: true })
 
-      return expect(async () => untranslatedService.isFullyTranslated('uid', {})).rejects.toThrow(
-        'Content Type not localized'
-      );
-    });
-  });
-});
+      const untranslatedService = service({ strapi })
+
+      return expect(async () =>
+        untranslatedService.isFullyTranslated(uid, 'de')
+      ).rejects.toThrow('Content Type not localized')
+    })
+  })
+})
