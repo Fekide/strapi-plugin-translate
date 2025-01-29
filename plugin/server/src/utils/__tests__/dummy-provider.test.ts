@@ -1,18 +1,16 @@
-'use strict'
-
-const { provider, name, init } = require('../dummy-provider')
+import dummyProvider from '../dummy-provider'
 
 describe('Dummy Provider', () => {
   it('meta data is correct', () => {
-    expect(provider).toBe('dummy')
-    expect(name).toBe('Dummy')
+    expect(dummyProvider.provider).toBe('dummy')
+    expect(dummyProvider.name).toBe('Dummy')
   })
 
   describe('translation function', () => {
     let translate
 
     beforeAll(() => {
-      translate = init().translate
+      translate = dummyProvider.init({}).translate
     })
 
     it('throws if targetLocale is not defined', () => {
@@ -55,7 +53,7 @@ describe('Dummy Provider', () => {
   })
 
   it('usage function is static', async () => {
-    let { usage, translate } = init()
+    let { usage, translate } = dummyProvider.init({})
 
     const usageResult1 = await usage()
 
