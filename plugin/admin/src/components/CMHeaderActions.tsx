@@ -27,6 +27,7 @@ import { Modules, UID } from '@strapi/strapi'
 import parseRelations from '../utils/parse-relations'
 import { unset } from 'lodash'
 import useUsage from '../Hooks/useUsage'
+import useAlert from '../Hooks/useAlert'
 
 interface I18nBaseQuery {
   plugins?: {
@@ -91,6 +92,8 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
   const { edit: editLayout } = useDocumentLayout(model)
   const { data: locales } = useGetI18NLocalesQuery()
 
+  const {handleNotification} = useAlert()
+
   const availableLocales = Array.isArray(locales)
     ? locales.filter((locale) =>
         meta?.availableLocales.some((l) => l.locale === locale.code)
@@ -152,7 +155,16 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
       sourceLocale: localeSelected,
       targetLocale: currentDesiredLocale,
     })
-    if ('error' in response || !response.data.data) {
+    if ('error' in response) {
+      handleNotification({
+        id: response.error.message || "CMEditViewTranslateLocale.translate-failure",
+        defaultMessage: response.error.message || "An unknown error occured",
+        type: 'danger',
+      })
+      setLoading(false)
+      return
+    }
+    if (!response.data.data) {
       setLoading(false)
       return
     }
