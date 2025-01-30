@@ -24,7 +24,7 @@ describe('direct translation', () => {
     // Save and Publish
     cy.contains('button', 'Save').click()
     cy.contains('Saved document').should('be.visible')
-    cy.wait(1000)
+    cy.wait(2000)
     cy.contains('button', 'Publish').click()
     cy.contains('Published document').should('be.visible')
 
@@ -129,9 +129,16 @@ describe('direct translation', () => {
 
     cy.contains('"subtitle"').should('be.visible')
 
+
+    cy.contains('button', 'Category - Latest news').click()
+    cy.contains('span', 'news').should('be.visible')
+
+    cy.contains('button', 'Content - What\'s happening right now').click()
     cy.contains(
       'This is a blog post about the latest news in the world. Stay tuned!'
     ).should('be.visible')
+
+    cy.contains('button', 'Content - Next up on this Website').click()
     cy.contains('We will talk about the latest tech news, stay tuned!').should(
       'be.visible'
     )
@@ -185,7 +192,7 @@ describe('direct translation', () => {
 
     // Verify
     cy.contains('button', 'News').click()
-    cy.contains('span', 'news')
+    cy.contains('span', 'news').should('be.visible')
     cy.contains('button', 'Save').should('be.disabled')
   })
 })
