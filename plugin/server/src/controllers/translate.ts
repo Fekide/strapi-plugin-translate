@@ -86,51 +86,17 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
       return ctx.notFound('corresponding content type not found')
     }
 
-    const contentSchema = strapi.contentTypes[contentType]
-
-    const populateRule = populateAll(contentSchema, {
-      populateMedia: true,
-      populateRelations: true,
-    })
-
-    const fullyPopulatedData = isCollection
-      ? await strapi.documents(contentType).findOne({
-          documentId,
-          locale: sourceLocale,
-          populate: populateRule,
-        })
-      : await strapi.documents(contentType).findFirst({
-          locale: sourceLocale,
-          populate: populateRule,
-        })
-
-    const fieldsToTranslate = await getAllTranslatableFields(
-      fullyPopulatedData,
-      contentSchema
-    )
     try {
-      const translatedData = await getService('translate').translate({
-        data: fullyPopulatedData,
+      const translatedData = await getService('translate').translateEntity({
+        documentId,
+        contentType,
         sourceLocale,
         targetLocale,
-        fieldsToTranslate,
+        create: false,
         priority: TRANSLATE_PRIORITY_DIRECT_TRANSLATION,
       })
 
-      const translatedRelations = await translateRelations(
-        strapi.config.get<TranslateConfig>('plugin::translate').regenerateUids
-          ? await updateUids(translatedData, contentType)
-          : translatedData,
-        contentSchema,
-        targetLocale
-      )
-      const withFieldsDeleted = filterAllDeletedFields(
-        translatedRelations,
-        contentSchema
-      )
-      const cleanedData = cleanData(withFieldsDeleted, contentSchema, true)
-
-      return { data: cleanedData }
+      return { data: translatedData }
     } catch (error) {
       return handleContextError(ctx, error, 'TranslateEntity.error')
     }
