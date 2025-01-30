@@ -10,6 +10,7 @@ module.exports = defineConfig({
       // implement node event listeners here
     },
     baseUrl: `http://${process.env.HOST}:${process.env.PORT}`,
+    defaultCommandTimeout: 10000,
   },
   env: {
     ADMIN_MAIL: process.env.INIT_ADMIN_EMAIL,
