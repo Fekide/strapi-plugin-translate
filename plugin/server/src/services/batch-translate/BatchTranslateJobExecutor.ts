@@ -6,7 +6,10 @@ import {
 import { getService } from '../../utils/get-service'
 import { populateAll } from '../../utils/populate-all'
 import { BatchTranslateJob } from '@shared/types/batch-translate-job'
-import { isContentTypeUID, isLocalizedContentType } from '../../utils/content-type'
+import {
+  isContentTypeUID,
+  isLocalizedContentType,
+} from '../../utils/content-type'
 
 export class BatchTranslateJobExecutor {
   totalEntities: number
@@ -129,19 +132,31 @@ export class BatchTranslateJobExecutor {
       })
     }
     this.translatedEntities = await strapi.documents(this.contentType).count({
-      locale: this.sourceLocale,
+      locale: this.targetLocale,
       filters: {
         documentId: { $in: this.documentIds },
       },
     })
     this.totalEntities = this.documentIds.length
 
-    // TODO: Initialize variables (which ids have to be translated, how many etc)
+    if (this.totalEntities === 0) {
+      strapi.log.warn("No entities to translate, job can't be started", {
+        label: 'BatchTranslateJobExecutor',
+      })
+      await this.updateStatus('finished')
+      return
+    }
+
     if (this.status !== 'setup') {
       // Job was cancelled before setup was complete, should not continue here then
       // Promise should have already been rejected though (not sure if when then even get here?)
       return
     }
+
+    strapi.log.debug(
+      `Starting translation job for ${this.contentType} from ${this.sourceLocale} to ${this.targetLocale} with ${this.totalEntities} entities`,
+      { label: 'BatchTranslateJobExecutor' }
+    )
 
     await this.updateStatus('running')
     // The rest of the logic will now be executed using the interval
@@ -171,6 +186,10 @@ export class BatchTranslateJobExecutor {
         // Try until we get one or the list is empty
         while (!entity && this.documentIds.length > 0) {
           const nextId = this.documentIds.pop()
+          strapi.log.debug(
+            `Translating entity ${nextId} from ${this.sourceLocale} to ${this.targetLocale}`,
+            { label: 'BatchTranslateJobExecutor' }
+          )
           entity = await strapi.documents(this.contentType).findOne({
             documentId: nextId,
             locale: this.sourceLocale,
@@ -178,7 +197,8 @@ export class BatchTranslateJobExecutor {
           })
           if (entity?.locale !== this.sourceLocale) {
             strapi.log.warn(
-              `Entity ${nextId} of ${this.contentType} did not have the correct source locale ${this.sourceLocale}, skipping it...`
+              `Entity ${nextId} of ${this.contentType} did not have the correct source locale ${this.sourceLocale}, skipping it...`,
+              { label: 'BatchTranslateJobExecutor' }
             )
             entity = null
           } else if (
@@ -187,12 +207,17 @@ export class BatchTranslateJobExecutor {
             ).length > 0
           ) {
             strapi.log.warn(
-              `Entity ${nextId} of ${this.contentType} already has a translation for ${this.sourceLocale}, skipping it...`
+              `Entity ${nextId} of ${this.contentType} already has a translation for ${this.sourceLocale}, skipping it...`,
+              { label: 'BatchTranslateJobExecutor' }
             )
             entity = null
           }
         }
       } else {
+        strapi.log.debug(
+          'No entity ids provided, fetching next untranslated entity',
+          { label: 'BatchTranslateJobExecutor' }
+        )
         // Get an entity that was not translated yet
         entity = await getService('untranslated').getUntranslatedEntity(
           {
@@ -206,9 +231,14 @@ export class BatchTranslateJobExecutor {
 
       // Cancel if there is no matching entity or we have reached our initial limit
       if (!entity || this.totalEntities == this.translatedEntities) {
+        strapi.log.debug('No more entities to translate, finishing job')
         await this.updateStatus('finished')
         return
       }
+
+      strapi.log.debug(`Entity to translate: ${JSON.stringify(entity)}`, {
+        label: 'BatchTranslateJobExecutor',
+      })
 
       // Translate the entity
       try {
@@ -222,13 +252,19 @@ export class BatchTranslateJobExecutor {
           publish: this.autoPublish,
           priority: TRANSLATE_PRIORITY_BATCH_TRANSLATION,
         })
-
+        strapi.log.debug(`Entity ${entity.documentId} translated successfully`, {
+          label: 'BatchTranslateJobExecutor',
+        })
         this.translatedEntities++
         entity = null
       } catch (error) {
-        strapi.log.error(error)
+        strapi.log.error(`Translation of entity ${entity.documentId} failed`, {
+          label: 'BatchTranslateJobExecutor',
+        })
         if (error.details) {
-          strapi.log.debug(JSON.stringify(error.details))
+          strapi.log.warn(JSON.stringify(error), {
+            label: 'BatchTranslateJobExecutor',
+          })
         }
         await this.updateStatus('failed', {
           failureReason: {
