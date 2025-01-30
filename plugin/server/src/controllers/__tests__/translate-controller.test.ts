@@ -20,7 +20,7 @@ describe('translate controller', () => {
   beforeEach(async () => {
     jest.mock('../../services/translate', () => {
       return () => ({
-        translate: mockTranslateService,
+        translateEntity: mockTranslateService,
       })
     })
     await setup({

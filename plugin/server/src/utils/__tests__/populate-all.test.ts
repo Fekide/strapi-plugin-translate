@@ -125,7 +125,7 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ component: true })
+    expect(population).toEqual({ component: { fields: ['text'] } })
   })
 
   it('content type with repeatable component populate all', () => {
@@ -136,7 +136,7 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ component: true })
+    expect(population).toEqual({ component: { fields: ['text'] } })
   })
 
   it('content type with dynamic zone populate all', () => {
@@ -147,7 +147,14 @@ describe('populate all', () => {
     const population = populateAll(schema)
 
     // then
-    expect(population).toEqual({ dynamic_zone: true })
+    expect(population).toEqual({
+      dynamic_zone: {
+        on: {
+          simple: { fields: ['text'] },
+          'two-field': { fields: ['title', 'number'] },
+        },
+      },
+    })
   })
 
   it('content type with dynamic zone with component relation populate id', () => {
@@ -160,8 +167,11 @@ describe('populate all', () => {
     // then
     expect(population).toEqual({
       dynamic_zone: {
-        populate: { on: { 'with-relation': { related: { fields: ['id'] } } } },
-      },
+          on: {
+            simple: { fields: ['text'] },
+            'with-relation': { populate: { related: { fields: ['id'] } } },
+          },
+        },
     })
   })
 
@@ -174,7 +184,7 @@ describe('populate all', () => {
 
     // then
     expect(population).toEqual({
-      nested: { populate: { nested: { populate: true } } },
+      nested: { fields: ['text'], populate: { nested: { fields: ['text'] } } },
     })
   })
 
