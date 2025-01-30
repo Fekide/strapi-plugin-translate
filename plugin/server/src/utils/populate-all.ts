@@ -51,7 +51,7 @@ export function populateAll<
         maxDepth: maxDepth - 1,
         populateMedia,
       })
-      populateResult[attr] = rule ? { populate: rule } : true
+      populateResult[attr] = rule || true
     } else if (fieldSchema.type === 'dynamiczone') {
       const dynamicZonePopulate = fieldSchema.components.reduce(
         (combined: PopulateRule, component: UID.Component) => {
@@ -59,22 +59,17 @@ export function populateAll<
             maxDepth: maxDepth - 1,
             populateMedia,
           })
-          if (rule) {
-            return merge(combined, {
-              on: {
-                [component]: rule,
-              },
-            })
-          }
-          return combined
+          return merge(combined, {
+            on: {
+              [component]: rule,
+            },
+          })
         },
         {}
       )
       populateResult[attr] = isEmptyObject(dynamicZonePopulate)
         ? true
-        : {
-            populate: dynamicZonePopulate,
-          }
+        : dynamicZonePopulate
     } else if (['relation', 'media'].includes(fieldSchema.type)) {
       if (
         (fieldSchema.type === 'media' && populateMedia) ||
@@ -109,10 +104,17 @@ export function populateAll<
 function recursiveComponentPopulate(
   component: UID.Component,
   options: PopulateOptions
-): PopulateRule | true {
+): { populate?: PopulateRule; fields?: string[] } {
   const componentSchema = strapi.components[component]
+  // Include all fields cannot be populated
+  const fields = keys(componentSchema.attributes).filter(
+    (attr) =>
+      !['media', 'relation', 'component', 'dynamiczone'].includes(
+        componentSchema.attributes[attr].type
+      )
+  )
   if (options.maxDepth == 0) {
-    return true
+    return { fields }
   }
-  return populateAll(componentSchema, options)
+  return { populate: populateAll(componentSchema, options), fields }
 }
