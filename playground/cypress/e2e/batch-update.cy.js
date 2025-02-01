@@ -12,7 +12,7 @@ describe('batch update', () => {
     // Login and translate first category
     cy.login()
     cy.visit(
-      '/admin/content-manager/collectionType/api::category.category/create?plugins[i18n][locale]=de&plugins[i18n][relatedEntityId]=1'
+      '/admin/content-manager/collection-types/api::category.category/create?plugins[i18n][locale]=de&plugins[i18n][relatedEntityId]=1'
     )
     cy.get('#name').type('translation')
     cy.get('button[type=submit]').focus()
