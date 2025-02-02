@@ -1,7 +1,7 @@
-import { Page } from '@strapi/strapi/admin';
-import { Routes, Route } from 'react-router-dom';
+import { Page } from '@strapi/strapi/admin'
+import { Routes, Route } from 'react-router-dom'
 
-import { HomePage } from './HomePage';
+import { HomePage } from './HomePage'
 
 const App = () => {
   return (
@@ -9,7 +9,7 @@ const App = () => {
       <Route index element={<HomePage />} />
       <Route path="*" element={<Page.Error />} />
     </Routes>
-  );
-};
+  )
+}
 
-export default App;
+export default App

@@ -1,5 +1,3 @@
-
-
 import { get, cloneDeep, has, compact } from 'lodash'
 import { getConfig } from './get-config'
 import { Modules, UID } from '@strapi/strapi'
@@ -139,7 +137,7 @@ async function translateRelation(
     attributeSchema,
     'pluginOptions.translate.translate',
     'translate'
-  ) as TranslatePluginOptions["translate"]
+  ) as TranslatePluginOptions['translate']
 
   const relationIsBothWays =
     has(attributeSchema, 'inversedBy') || has(attributeSchema, 'mappedBy')

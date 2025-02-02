@@ -81,7 +81,10 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
   const { formatMessage } = useIntl()
   const [{ query }] = useQueryParams<I18nBaseQuery>()
   const currentDesiredLocale = query.plugins?.i18n?.locale
-  const setValues = useForm('TranslateFromAnotherLocale', (state) => state.setValues)
+  const setValues = useForm(
+    'TranslateFromAnotherLocale',
+    (state) => state.setValues
+  )
   const [translateEntity] = useTranslateEntityMutation()
   const { schema, components } = useDocument({
     model,
@@ -92,7 +95,7 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
   const { edit: editLayout } = useDocumentLayout(model)
   const { data: locales } = useGetI18NLocalesQuery()
 
-  const {handleNotification} = useAlert()
+  const { handleNotification } = useAlert()
 
   const availableLocales = Array.isArray(locales)
     ? locales.filter((locale) =>
@@ -100,10 +103,7 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
       )
     : []
 
-  
-  const [localeSelected, setLocaleSelected] = useState<string | null>(
-    null
-  )
+  const [localeSelected, setLocaleSelected] = useState<string | null>(null)
 
   useEffect(() => {
     const defaultLocale = availableLocales.find(
@@ -157,8 +157,10 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
     })
     if ('error' in response) {
       handleNotification({
-        id: response.error.message || "CMEditViewTranslateLocale.translate-failure",
-        defaultMessage: response.error.message || "An unknown error occured",
+        id:
+          response.error.message ||
+          'CMEditViewTranslateLocale.translate-failure',
+        defaultMessage: response.error.message || 'An unknown error occured',
         type: 'danger',
       })
       setLoading(false)

@@ -1,4 +1,4 @@
-import { FieldFormat } from "./formats"
+import { FieldFormat } from './formats'
 
 export interface TranslatableField {
   field: string

@@ -1,5 +1,3 @@
-
-
 /**
  * Calculate the length of a string in byte when it is encoded using `encodeURI`
  * @param {string} str String to get the byte length for

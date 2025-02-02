@@ -1,7 +1,7 @@
-import { Entity } from "./shared";
+import { Entity } from './shared'
 
 export interface Locale extends Entity {
-    code: string;
-    isDefault: boolean;
-    name: string;
+  code: string
+  isDefault: boolean
+  name: string
 }

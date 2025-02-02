@@ -59,9 +59,7 @@ const CollectionTable = () => {
     locales.find((l) => l.isDefault)?.code || null
   )
   useEffect(() => {
-    const defaultLocale = locales.find(
-      (locale) => locale.isDefault
-    )?.code
+    const defaultLocale = locales.find((locale) => locale.isDefault)?.code
     if (defaultLocale && !sourceLocale) {
       setSourceLocale(defaultLocale)
     }
@@ -111,8 +109,7 @@ const CollectionTable = () => {
   const handleToggleDialog = (newValue?: boolean) => {
     if (newValue !== undefined) {
       setDialogOpen(newValue)
-    } else
-    setDialogOpen((prev) => !prev)
+    } else setDialogOpen((prev) => !prev)
   }
 
   const handleSourceLocaleChange = (value: string | number) => {
@@ -134,7 +131,7 @@ const CollectionTable = () => {
   }
 
   const handleConfirm = async () => {
-        try {
+    try {
       switch (action) {
         case 'translate':
           setLoading(true)
@@ -265,7 +262,7 @@ const CollectionTable = () => {
       </Table>
       {dialogOpen && (
         <Modal.Root open={dialogOpen} onOpenChange={handleToggleDialog}>
-          <Modal.Content >
+          <Modal.Content>
             <Modal.Header>
               {formatMessage({
                 id: getTranslation(`batch-translate.dialog.${action}.title`),
@@ -388,8 +385,7 @@ const CollectionTable = () => {
                     <BatchUpdateTable
                       updates={updates.filter(
                         (update) =>
-                          update?.contentType ===
-                          collection.contentType
+                          update?.contentType === collection.contentType
                       )}
                       selectedUpdateIDs={selectedUpdateIDs}
                       setSelectedUpdateIDs={setSelectedUpdateIDs}
@@ -437,18 +433,18 @@ const CollectionTable = () => {
                   })}
                 </Button>
               </Modal.Close>
-                <Button
-                  variant="success"
-                  onClick={handleConfirm}
-                  loading={loading}
-                >
-                  {formatMessage({
-                    id: getTranslation(
-                      `batch-translate.dialog.${action}.submit-text`
-                    ),
-                    defaultMessage: 'Confirm',
-                  })}
-                </Button>
+              <Button
+                variant="success"
+                onClick={handleConfirm}
+                loading={loading}
+              >
+                {formatMessage({
+                  id: getTranslation(
+                    `batch-translate.dialog.${action}.submit-text`
+                  ),
+                  defaultMessage: 'Confirm',
+                })}
+              </Button>
             </Modal.Footer>
           </Modal.Content>
         </Modal.Root>

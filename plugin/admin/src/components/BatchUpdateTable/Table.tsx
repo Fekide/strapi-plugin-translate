@@ -21,7 +21,6 @@ const BatchUpdateTable = ({
   const { formatMessage } = useIntl()
   const { locales } = useCollection()
 
-  
   return (
     <Table rowCount={updates.length + 1} colCount={locales.length + 2}>
       <Thead>
@@ -61,6 +60,5 @@ const BatchUpdateTable = ({
     </Table>
   )
 }
-
 
 export default memo(BatchUpdateTable)

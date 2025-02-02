@@ -3,7 +3,7 @@ module.exports = {
     ecmaVersion: 2020,
     requireConfigFile: false,
   },
-  ignorePatterns: ["**/build", "**/dist", "**/node_modules"],
+  ignorePatterns: ['**/build', '**/dist', '**/node_modules'],
   overrides: [
     {
       files: ['plugin/server/**/*.js', 'providers/**/lib/**/*.js'],
@@ -57,7 +57,12 @@ module.exports = {
     {
       files: ['plugin/admin/src/**/*.js', 'playground/src/admin/**/*.js'],
       parser: '@babel/eslint-parser',
-      extends: ['eslint:recommended', 'plugin:react/recommended', 'prettier', 'plugin:jsx-a11y/recommended'],
+      extends: [
+        'eslint:recommended',
+        'plugin:react/recommended',
+        'prettier',
+        'plugin:jsx-a11y/recommended',
+      ],
       plugins: ['react', 'react-hooks', 'import'],
       env: {
         browser: true,

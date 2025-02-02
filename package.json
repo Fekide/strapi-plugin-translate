@@ -12,6 +12,8 @@
     "commit": "cz",
     "test": "jest",
     "lint": "eslint .",
+    "lint:prettier": "prettier --check .",
+    "lint:prettier:fix": "prettier --write .",
     "release": "multi-semantic-release --ignore-private-packages"
   },
   "devDependencies": {

@@ -1,8 +1,9 @@
 import setup from '../../../__mocks__/initSetup'
 import { BatchTranslateJobExecutor } from '../BatchTranslateJobExecutor'
 
-const nonTranslatedContentType = "api::nonTranslatedContentType.nonTranslatedContentType"
-const translatedContentType = "api::translatedContentType.translatedContentType"
+const nonTranslatedContentType =
+  'api::nonTranslatedContentType.nonTranslatedContentType'
+const translatedContentType = 'api::translatedContentType.translatedContentType'
 
 describe('BatchTranslateJob', () => {
   beforeEach(async () => {
@@ -17,10 +18,10 @@ describe('BatchTranslateJob', () => {
           pluginOptions: { i18n: { localized: true } },
           options: { draftAndPublish: true },
         },
-        "plugin::translate.batch-translate-job": {
+        'plugin::translate.batch-translate-job': {
           pluginOptions: { i18n: { localized: false } },
           options: { draftAndPublish: false },
-        }
+        },
       },
     })
   })

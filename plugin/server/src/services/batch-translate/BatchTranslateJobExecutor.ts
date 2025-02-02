@@ -252,9 +252,12 @@ export class BatchTranslateJobExecutor {
           publish: this.autoPublish,
           priority: TRANSLATE_PRIORITY_BATCH_TRANSLATION,
         })
-        strapi.log.debug(`Entity ${entity.documentId} translated successfully`, {
-          label: 'BatchTranslateJobExecutor',
-        })
+        strapi.log.debug(
+          `Entity ${entity.documentId} translated successfully`,
+          {
+            label: 'BatchTranslateJobExecutor',
+          }
+        )
         this.translatedEntities++
         entity = null
       } catch (error) {

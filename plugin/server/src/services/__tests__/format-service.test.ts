@@ -74,22 +74,14 @@ afterEach(() => {
 
 describe('format', () => {
   it('markdown to html', () => {
-    expect(
-      getService('format').markdownToHtml(markdown)
-    ).toEqual(html)
+    expect(getService('format').markdownToHtml(markdown)).toEqual(html)
   })
   it('markdown to html in list', () => {
-    expect(
-      getService('format').markdownToHtml([markdown])
-    ).toEqual([html])
+    expect(getService('format').markdownToHtml([markdown])).toEqual([html])
   })
   it('html to markdown in list', () => {
-    expect(
-      getService('format').htmlToMarkdown(html)
-    ).toEqual(markdown)
-    expect(
-      getService('format').htmlToMarkdown([html])
-    ).toEqual([markdown])
+    expect(getService('format').htmlToMarkdown(html)).toEqual(markdown)
+    expect(getService('format').htmlToMarkdown([html])).toEqual([markdown])
   })
   it('html to markdown and back', () => {
     const formatService = getService('format')
@@ -106,8 +98,6 @@ describe('format', () => {
   it('block to html and back', async () => {
     const formatService = getService('format')
     const html = await formatService.blockToHtml(block)
-    await expect(
-      formatService.htmlToBlock(html)
-    ).resolves.toEqual(block)
+    await expect(formatService.htmlToBlock(html)).resolves.toEqual(block)
   })
 })

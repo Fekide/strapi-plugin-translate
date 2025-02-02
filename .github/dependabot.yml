@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: 'npm'
-    directories: 
+    directories:
       - '/'
       - '/plugin/'
       - '/providers/*'
@@ -16,4 +16,4 @@ updates:
     groups:
       strapi:
         patterns:
-          - "@strapi/*"
+          - '@strapi/*'

@@ -1,4 +1,3 @@
-
 export const actions = [
   {
     section: 'plugins',
@@ -19,4 +18,3 @@ export const actions = [
     uid: 'usage',
   },
 ]
-

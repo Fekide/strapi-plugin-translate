@@ -16,37 +16,38 @@ afterEach(() => {
 
 describe('provider service', () => {
   describe('translate', () => {
-    beforeEach(async () =>
-      await setup({
-        provider: {
-          provider: 'dummy',
-          name: 'Dummy',
-          init() {
-            return {
-              async translate({ text, sourceLocale, targetLocale, format }) {
-                if (!['plain', 'html', 'markdown'].includes(format)) {
-                  throw new Error(`Unknown format ${format}`)
-                }
-                if (!text) {
-                  return []
-                }
-                if (!sourceLocale || !targetLocale) {
-                  throw new Error('source and target locale must be defined')
-                }
+    beforeEach(
+      async () =>
+        await setup({
+          provider: {
+            provider: 'dummy',
+            name: 'Dummy',
+            init() {
+              return {
+                async translate({ text, sourceLocale, targetLocale, format }) {
+                  if (!['plain', 'html', 'markdown'].includes(format)) {
+                    throw new Error(`Unknown format ${format}`)
+                  }
+                  if (!text) {
+                    return []
+                  }
+                  if (!sourceLocale || !targetLocale) {
+                    throw new Error('source and target locale must be defined')
+                  }
 
-                const textArray = Array.isArray(text) ? text : [text]
-                return textArray.map(() => translatedByFormat[format])
-              },
-              async usage() {
-                return {
-                  count: 1000,
-                  limit: 10000,
-                }
-              },
-            }
+                  const textArray = Array.isArray(text) ? text : [text]
+                  return textArray.map(() => translatedByFormat[format])
+                },
+                async usage() {
+                  return {
+                    count: 1000,
+                    limit: 10000,
+                  }
+                },
+              }
+            },
           },
-        },
-      })
+        })
     )
 
     it('single field', async () => {
@@ -58,7 +59,9 @@ describe('provider service', () => {
       }
       const sourceLocale = 'en'
       const targetLocale = 'de'
-      const fieldsToTranslate: TranslatableField[] = [{ field: 'title', format: 'plain' }]
+      const fieldsToTranslate: TranslatableField[] = [
+        { field: 'title', format: 'plain' },
+      ]
 
       // when
       const result = await getService('translate').translate({

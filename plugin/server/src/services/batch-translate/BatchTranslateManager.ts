@@ -1,5 +1,3 @@
-
-
 import { Data, Modules } from '@strapi/strapi'
 import { batchContentTypeUid } from '../../utils/constants'
 import { BatchTranslateJobExecutor } from './BatchTranslateJobExecutor'
@@ -40,9 +38,9 @@ export class BatchTranslateManagerImpl implements BatchTranslateManager {
     if (sameEntities.length > 0) {
       throw new Error('translate.batch-translate.job-already-exists')
     }
-    const entity = await strapi
+    const entity = (await strapi
       .documents(batchContentTypeUid)
-      .create({ data: params }) as BatchTranslateJob
+      .create({ data: params })) as BatchTranslateJob
     const job = new BatchTranslateJobExecutor(entity)
 
     job
@@ -59,7 +57,9 @@ export class BatchTranslateManagerImpl implements BatchTranslateManager {
   async pauseJob(documentId: Data.DocumentID) {
     if (this.runningJobs.has(documentId)) {
       await this.runningJobs.get(documentId).pause()
-      return strapi.documents(batchContentTypeUid).findOne({documentId}) as Promise<BatchTranslateJob>
+      return strapi
+        .documents(batchContentTypeUid)
+        .findOne({ documentId }) as Promise<BatchTranslateJob>
     } else {
       throw new Error('translate.batch-translate.job-not-running')
     }
@@ -67,7 +67,9 @@ export class BatchTranslateManagerImpl implements BatchTranslateManager {
 
   async resumeJob(documentId: Data.DocumentID) {
     if (!this.runningJobs.has(documentId)) {
-      const entity = await strapi.documents(batchContentTypeUid).findOne({documentId}) as BatchTranslateJob
+      const entity = (await strapi
+        .documents(batchContentTypeUid)
+        .findOne({ documentId })) as BatchTranslateJob
       if (!entity) {
         throw new Error('translate.batch-translate.job-does-not-exist')
       }
@@ -101,7 +103,9 @@ export class BatchTranslateManagerImpl implements BatchTranslateManager {
   async cancelJob(documentId: Data.DocumentID) {
     if (this.runningJobs.has(documentId)) {
       await this.runningJobs.get(documentId).cancel()
-      return strapi.documents(batchContentTypeUid).findOne({documentId}) as Promise<BatchTranslateJob>
+      return strapi
+        .documents(batchContentTypeUid)
+        .findOne({ documentId }) as Promise<BatchTranslateJob>
     } else {
       throw new Error('translate.batch-translate.job-not-running')
     }

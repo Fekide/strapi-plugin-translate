@@ -1,8 +1,8 @@
-import { UntranslatedService } from '@shared/services/untranslated';
-import { Locale } from '@shared/types/locale';
+import { UntranslatedService } from '@shared/services/untranslated'
+import { Locale } from '@shared/types/locale'
 import { Core } from '@strapi/strapi'
-import { geti18nService } from '../utils/get-service';
-import { isContentTypeUID, isLocalizedContentType } from '../utils/content-type';
+import { geti18nService } from '../utils/get-service'
+import { isContentTypeUID, isLocalizedContentType } from '../utils/content-type'
 
 export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
   return {
@@ -17,7 +17,11 @@ export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
       { uid, targetLocale, sourceLocale },
       { populate }
     ) {
-      const allUntranslatedDocuments = await this.getUntranslatedDocumentIDs({ uid, targetLocale, sourceLocale })
+      const allUntranslatedDocuments = await this.getUntranslatedDocumentIDs({
+        uid,
+        targetLocale,
+        sourceLocale,
+      })
       if (allUntranslatedDocuments.length === 0) {
         return null
       }
@@ -76,7 +80,7 @@ export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
         fields: ['documentId'],
       })
       const targetIDs = targetEntities.map((entity) => entity.documentId)
-      const locales = await geti18nService("locales").find() as Locale[]
+      const locales = (await geti18nService('locales').find()) as Locale[]
       const localeCodes = locales.map((locale) => locale.code)
 
       for (const locale of localeCodes) {

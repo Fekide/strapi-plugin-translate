@@ -21,7 +21,13 @@ interface CollectionRowProps {
   index: number
 }
 
-const CollectionRow = ({ entry, locales, onAction, updateCount, index }: CollectionRowProps) => {
+const CollectionRow = ({
+  entry,
+  locales,
+  onAction,
+  updateCount,
+  index,
+}: CollectionRowProps) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -85,19 +91,20 @@ const CollectionRow = ({ entry, locales, onAction, updateCount, index }: Collect
                           defaultMessage: 'Unknown error',
                         })
                       }
-                    ><div>
-                      <Badge
-                        marginLeft={1}
-                        textColor="neutral100"
-                        backgroundColor={'danger500'}
-                      >
-                        {formatMessage({
-                          id: getTranslation(
-                            `batch-translate.table.job-status.${job.status}`
-                          ),
-                          defaultMessage: `Job ${job.status}`,
-                        })}
-                      </Badge>
+                    >
+                      <div>
+                        <Badge
+                          marginLeft={1}
+                          textColor="neutral100"
+                          backgroundColor={'danger500'}
+                        >
+                          {formatMessage({
+                            id: getTranslation(
+                              `batch-translate.table.job-status.${job.status}`
+                            ),
+                            defaultMessage: `Job ${job.status}`,
+                          })}
+                        </Badge>
                       </div>
                     </Tooltip>
                   ))}
@@ -172,7 +179,7 @@ const CollectionRow = ({ entry, locales, onAction, updateCount, index }: Collect
           </Td>
         )
       })}
-            <Td>
+      <Td>
         <Typography textColor="neutral800">
           {updateCount > 0 && (
             <Button

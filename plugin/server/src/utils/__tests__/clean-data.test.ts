@@ -1,10 +1,4 @@
-import {
-  describe,
-  expect,
-  it,
-  afterEach,
-  beforeEach,
-} from '@jest/globals'
+import { describe, expect, it, afterEach, beforeEach } from '@jest/globals'
 import { cleanData } from '../clean-data'
 
 import {

@@ -167,11 +167,11 @@ describe('populate all', () => {
     // then
     expect(population).toEqual({
       dynamic_zone: {
-          on: {
-            simple: { fields: ['text'] },
-            'with-relation': { populate: { related: { fields: ['id'] } } },
-          },
+        on: {
+          simple: { fields: ['text'] },
+          'with-relation': { populate: { related: { fields: ['id'] } } },
         },
+      },
     })
   })
 

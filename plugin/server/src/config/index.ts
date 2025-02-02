@@ -1,16 +1,18 @@
-import { FieldFormat } from '../../../shared/types/formats';
-import { TranslateProviderOptions } from '../../../shared/types/provider';
+import { FieldFormat } from '../../../shared/types/formats'
+import { TranslateProviderOptions } from '../../../shared/types/provider'
 
-export type TranslatedFieldType = string | { type: string; format?: FieldFormat };
+export type TranslatedFieldType =
+  | string
+  | { type: string; format?: FieldFormat }
 
 export type TranslateConfig = {
-  provider: string;
-  providerOptions: TranslateProviderOptions;
-  translatedFieldTypes: Array<TranslatedFieldType>;
-  translateRelations: boolean;
-  ignoreUpdatedContentTypes: string[];
-  regenerateUids: boolean;
-};
+  provider: string
+  providerOptions: TranslateProviderOptions
+  translatedFieldTypes: Array<TranslatedFieldType>
+  translateRelations: boolean
+  ignoreUpdatedContentTypes: string[]
+  regenerateUids: boolean
+}
 
 export default {
   default() {
@@ -74,4 +76,4 @@ export default {
       throw new Error('providerOptions has to be an object if it is defined')
     }
   },
-};
+}

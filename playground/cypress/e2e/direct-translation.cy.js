@@ -129,11 +129,10 @@ describe('direct translation', () => {
 
     cy.contains('"subtitle"').should('be.visible')
 
-
     cy.contains('button', 'Category - Latest news').click()
     cy.contains('span', 'news').should('be.visible')
 
-    cy.contains('button', 'Content - What\'s happening right now').click()
+    cy.contains('button', "Content - What's happening right now").click()
     cy.contains(
       'This is a blog post about the latest news in the world. Stay tuned!'
     ).should('be.visible')

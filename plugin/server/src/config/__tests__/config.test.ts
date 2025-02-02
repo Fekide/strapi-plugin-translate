@@ -11,15 +11,17 @@ describe('config', () => {
   it('default provider is dummy', async () => {
     await setup({})
 
-    expect(strapi.config.get<TranslateConfig>('plugin::translate').provider).toEqual('dummy')
+    expect(
+      strapi.config.get<TranslateConfig>('plugin::translate').provider
+    ).toEqual('dummy')
   })
 
   it('setting translate relations to false', async () => {
     await setup({ config: { translateRelations: false } })
 
-    expect(strapi.config.get<TranslateConfig>('plugin::translate').translateRelations).toEqual(
-      false
-    )
+    expect(
+      strapi.config.get<TranslateConfig>('plugin::translate').translateRelations
+    ).toEqual(false)
   })
 
   it('changing translated field types', async () => {
@@ -31,9 +33,10 @@ describe('config', () => {
     ]
     await setup({ config: { translatedFieldTypes } })
 
-    expect(strapi.config.get<TranslateConfig>('plugin::translate').translatedFieldTypes).toEqual(
-      translatedFieldTypes
-    )
+    expect(
+      strapi.config.get<TranslateConfig>('plugin::translate')
+        .translatedFieldTypes
+    ).toEqual(translatedFieldTypes)
   })
 
   it('fails with translated field types not array', () => {

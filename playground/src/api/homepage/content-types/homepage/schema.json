@@ -54,10 +54,7 @@
         }
       },
       "type": "dynamiczone",
-      "components": [
-        "shared.content",
-        "shared.category"
-      ]
+      "components": ["shared.content", "shared.category"]
     }
   }
 }

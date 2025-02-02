@@ -10,7 +10,6 @@ import { Attribute } from '@strapi/types/dist/schema'
 import { TranslatableField } from '@shared/types/utils'
 import { Modules, UID } from '@strapi/strapi'
 
-
 /**
  * Get the field or fields to translate of a content type
  *
@@ -18,10 +17,9 @@ import { Modules, UID } from '@strapi/strapi'
  * @param {object} schema The schema of the content type
  * @returns all attributes that can be translated
  */
-export async function getAllTranslatableFields<TSchemaUID extends UID.ContentType>(
-  data: Modules.Documents.Document<TSchemaUID>,
-  schema: ContentTypeSchema
-) {
+export async function getAllTranslatableFields<
+  TSchemaUID extends UID.ContentType,
+>(data: Modules.Documents.Document<TSchemaUID>, schema: ContentTypeSchema) {
   const attributesSchema = _.get(schema, 'attributes', [])
   return flatten_and_compact(
     await Promise.all(
@@ -96,7 +94,9 @@ export async function getTranslateFields<TSchemaUID extends UID.ContentType>(
  * @param {object} data The data of the component
  * @returns A list of attributes to translate for this component
  */
-export async function recursiveComponentFieldsToTranslate<TSchemaUID extends UID.Component>(
+export async function recursiveComponentFieldsToTranslate<
+  TSchemaUID extends UID.Component,
+>(
   componentReference: Attribute.Component | Attribute.DynamicZone,
   data: Modules.Documents.Document<TSchemaUID>
 ) {

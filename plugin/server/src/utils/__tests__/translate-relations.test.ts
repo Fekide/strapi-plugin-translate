@@ -81,8 +81,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: {
                 documentId: 'a',
                 id: 2,
@@ -91,9 +91,11 @@ describe('relation', () => {
               },
             }
           : bothWays
-            ? { 
-              documentId: 'a',
-              id: 1,related: undefined }
+            ? {
+                documentId: 'a',
+                id: 1,
+                related: undefined,
+              }
             : data
         // if the relation is translated, the corresponding locale should be used,
         // otherwise it should stay the same if the relation is not both ways but be removed otherwise
@@ -119,8 +121,8 @@ describe('relation', () => {
         const result =
           relationIsLocalized || bothWays
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 related: undefined,
               }
             : data
@@ -169,8 +171,8 @@ describe('relation', () => {
         const result =
           relationIsLocalized || bothWays
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 related: undefined,
               }
             : data
@@ -248,8 +250,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: [
                 {
                   documentId: 'a',
@@ -260,9 +262,11 @@ describe('relation', () => {
               ],
             }
           : bothWays
-            ? { 
-              documentId: 'a',
-              id: 1,related: [] }
+            ? {
+                documentId: 'a',
+                id: 1,
+                related: [],
+              }
             : data
         // if the relation is translated, the corresponding locale should be used,
         // otherwise it should stay the same if the relation is not both ways but be removed otherwise
@@ -290,8 +294,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: [
                 {
                   documentId: 'a',
@@ -303,8 +307,8 @@ describe('relation', () => {
             }
           : bothWays
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 related: [],
               }
             : data
@@ -352,8 +356,8 @@ describe('relation', () => {
         const result =
           relationIsLocalized || bothWays
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 related: [],
               }
             : data
@@ -438,8 +442,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: {
                 documentId: 'a',
                 id: 2,
@@ -471,8 +475,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: undefined,
             }
           : data
@@ -520,8 +524,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: undefined,
             }
           : data
@@ -595,8 +599,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: [
                 {
                   documentId: 'a',
@@ -633,8 +637,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: [
                 {
                   documentId: 'a',
@@ -688,8 +692,8 @@ describe('relation', () => {
         // then
         const result = relationIsLocalized
           ? {
-            documentId: 'a',
-            id: 1,
+              documentId: 'a',
+              id: 1,
               related: [],
             }
           : data
@@ -770,8 +774,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 component: {
                   related: { documentId: 'a', id: 2, locale: targetLocale },
                 },
@@ -800,8 +804,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 component: { related: undefined },
               }
             : data
@@ -845,8 +849,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 component: { related: undefined },
               }
             : data
@@ -874,8 +878,8 @@ describe('relation', () => {
             // then
             const result = relationIsLocalized
               ? {
-                documentId: 'a',
-                id: 1,
+                  documentId: 'a',
+                  id: 1,
                   component: [
                     {
                       related: { documentId: 'a', id: 2, locale: targetLocale },
@@ -909,8 +913,8 @@ describe('relation', () => {
             // then
             const result = relationIsLocalized
               ? {
-                documentId: 'a',
-                id: 1,
+                  documentId: 'a',
+                  id: 1,
                   component: [
                     {
                       related: { documentId: 'a', id: 2, locale: targetLocale },
@@ -961,8 +965,8 @@ describe('relation', () => {
             // then
             const result = relationIsLocalized
               ? {
-                documentId: 'a',
-                id: 1,
+                  documentId: 'a',
+                  id: 1,
                   component: [{ related: undefined }],
                 }
               : data
@@ -1024,8 +1028,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 component: {
                   related: [{ documentId: 'a', id: 2, locale: targetLocale }],
                 },
@@ -1059,8 +1063,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 component: {
                   related: [{ documentId: 'a', id: 2, locale: 'de' }],
                 },
@@ -1106,8 +1110,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 component: { related: [] },
               }
             : data
@@ -1135,8 +1139,8 @@ describe('relation', () => {
             // then
             const result = relationIsLocalized
               ? {
-                documentId: 'a',
-                id: 1,
+                  documentId: 'a',
+                  id: 1,
                   component: [
                     {
                       related: [
@@ -1182,8 +1186,8 @@ describe('relation', () => {
             // then
             const result = relationIsLocalized
               ? {
-                documentId: 'a',
-                id: 1,
+                  documentId: 'a',
+                  id: 1,
                   component: [
                     {
                       related: [
@@ -1240,8 +1244,8 @@ describe('relation', () => {
             // then
             const result = relationIsLocalized
               ? {
-                documentId: 'a',
-                id: 1,
+                  documentId: 'a',
+                  id: 1,
                   component: [{ related: [] }],
                 }
               : data
@@ -1314,8 +1318,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
@@ -1360,8 +1364,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
@@ -1429,8 +1433,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
@@ -1509,8 +1513,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
@@ -1558,8 +1562,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
@@ -1630,8 +1634,8 @@ describe('relation', () => {
           // then
           const result = relationIsLocalized
             ? {
-              documentId: 'a',
-              id: 1,
+                documentId: 'a',
+                id: 1,
                 dynamic_zone: [
                   {
                     __component: 'shared.first',
@@ -1761,8 +1765,8 @@ describe('relation', () => {
             !bothWays && !relationIsLocalized
               ? data
               : {
-                documentId: 'a',
-                id: 1,
+                  documentId: 'a',
+                  id: 1,
                   related: undefined,
                 }
           // then

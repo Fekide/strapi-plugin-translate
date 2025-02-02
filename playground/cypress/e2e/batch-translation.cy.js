@@ -23,9 +23,7 @@ describe('batch translation', () => {
       .filter(':contains("English (en)")')
       .should('be.visible')
 
-    cy.get('div[role=dialog] button')
-      .filter(':contains("Translate")')
-      .click()
+    cy.get('div[role=dialog] button').filter(':contains("Translate")').click()
 
     // Verify translation finished
 
@@ -59,9 +57,7 @@ describe('batch translation', () => {
       .filter(':contains("English (en)")')
       .should('be.visible')
     cy.get('input[name=auto-publish]').click()
-    cy.get('div[role=dialog] button')
-      .filter(':contains("Translate")')
-      .click()
+    cy.get('div[role=dialog] button').filter(':contains("Translate")').click()
 
     // Verify translation finished
 

@@ -18,9 +18,10 @@ const i18nPluginOptionsSchema = z.object({
 })
 
 export function isLocalizedContentType(uid: UID.ContentType): boolean {
-  const {success, data: i18nPluginOptions} = i18nPluginOptionsSchema.safeParse(
-    strapi.contentTypes[uid]?.pluginOptions.i18n
-  )
+  const { success, data: i18nPluginOptions } =
+    i18nPluginOptionsSchema.safeParse(
+      strapi.contentTypes[uid]?.pluginOptions.i18n
+    )
   if (!success) {
     return false
   }

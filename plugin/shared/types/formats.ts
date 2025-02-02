@@ -1,1 +1,1 @@
-export type FieldFormat = 'plain' | 'markdown' | 'html';
+export type FieldFormat = 'plain' | 'markdown' | 'html'

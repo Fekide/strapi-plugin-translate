@@ -1,7 +1,7 @@
-import { Main } from '@strapi/design-system';
+import { Main } from '@strapi/design-system'
 
-import PluginHeader from '../components/PluginHeader';
-import PluginPage from '../components/PluginPage';
+import PluginHeader from '../components/PluginHeader'
+import PluginPage from '../components/PluginPage'
 
 const HomePage = () => {
   return (
@@ -9,7 +9,7 @@ const HomePage = () => {
       <PluginHeader />
       <PluginPage />
     </Main>
-  );
-};
+  )
+}
 
-export { HomePage };
+export { HomePage }
