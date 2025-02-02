@@ -1,0 +1,233 @@
+[
+  [
+    {
+      "type": "paragraph",
+      "children": [
+        {
+          "type": "text",
+          "text": "This is a new English Text."
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "children": [
+        {
+          "type": "text",
+          "text": "The "
+        },
+        {
+          "type": "text",
+          "text": "highlighted and ",
+          "bold": true,
+          "italic": true
+        },
+        {
+          "text": "not highlighted regions, should be persisted. ",
+          "type": "text"
+        },
+        {
+          "type": "link",
+          "url": "https://example.com/",
+          "children": [
+            {
+              "type": "text",
+              "text": "Links "
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "should work as well. "
+        },
+        {
+          "text": "Inline code",
+          "type": "text",
+          "code": true
+        },
+        {
+          "text": " should probably not be translated.",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "children": [
+        {
+          "type": "text",
+          "text": "Images should be preserved correctly:"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "image": {
+        "name": "default-image",
+        "alternativeText": "default-image",
+        "url": "http://localhost:1337/uploads/default_image_42c3f849b9.png",
+        "caption": "default-image",
+        "width": 1208,
+        "height": 715,
+        "formats": {
+          "thumbnail": {
+            "name": "thumbnail_default-image",
+            "hash": "thumbnail_default_image_42c3f849b9",
+            "ext": ".png",
+            "mime": "image/png",
+            "path": null,
+            "width": 245,
+            "height": 145,
+            "size": 23.28,
+            "url": "/uploads/thumbnail_default_image_42c3f849b9.png"
+          },
+          "medium": {
+            "name": "medium_default-image",
+            "hash": "medium_default_image_42c3f849b9",
+            "ext": ".png",
+            "mime": "image/png",
+            "path": null,
+            "width": 750,
+            "height": 444,
+            "size": 187.83,
+            "url": "/uploads/medium_default_image_42c3f849b9.png"
+          },
+          "small": {
+            "name": "small_default-image",
+            "hash": "small_default_image_42c3f849b9",
+            "ext": ".png",
+            "mime": "image/png",
+            "path": null,
+            "width": 500,
+            "height": 296,
+            "size": 77.77,
+            "url": "/uploads/small_default_image_42c3f849b9.png"
+          },
+          "large": {
+            "name": "large_default-image",
+            "hash": "large_default_image_42c3f849b9",
+            "ext": ".png",
+            "mime": "image/png",
+            "path": null,
+            "width": 1000,
+            "height": 592,
+            "size": 343.7,
+            "url": "/uploads/large_default_image_42c3f849b9.png"
+          }
+        },
+        "hash": "default_image_42c3f849b9",
+        "ext": ".png",
+        "mime": "image/png",
+        "size": 81.61,
+        "previewUrl": null,
+        "provider": "local",
+        "provider_metadata": null,
+        "createdAt": "2023-03-20T13:39:39.483Z",
+        "updatedAt": "2023-03-20T13:39:39.483Z"
+      },
+      "children": [
+        {
+          "type": "text",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "children": [
+        {
+          "type": "text",
+          "text": "Code blocks should also probably not be translated\nint variable = function(example);"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "children": [
+        {
+          "type": "text",
+          "text": "Headings should be preserved."
+        }
+      ],
+      "level": 3
+    },
+    {
+      "type": "paragraph",
+      "children": [
+        {
+          "type": "text",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "type": "quote",
+      "children": [
+        {
+          "type": "text",
+          "text": "Quotes are probably fine to translate?"
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "format": "ordered",
+      "children": [
+        {
+          "type": "list-item",
+          "children": [
+            {
+              "type": "text",
+              "text": "Lists should be"
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "children": [
+            {
+              "type": "text",
+              "text": "preserved"
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "children": [
+            {
+              "type": "text",
+              "text": "in their"
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "children": [
+            {
+              "type": "text",
+              "text": "order"
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "children": [
+            {
+              "type": "text",
+              "text": "but translated"
+            }
+          ]
+        },
+        {
+          "type": "list-item",
+          "children": [
+            {
+              "type": "text",
+              "text": "on their own"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+]
