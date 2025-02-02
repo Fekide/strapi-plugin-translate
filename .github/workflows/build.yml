@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - next
+      - "1.x"
 jobs:
   lint:
     uses: ./.github/workflows/lint.yml
