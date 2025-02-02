@@ -51,9 +51,7 @@
   "dependencies": {
     "@strapi/design-system": "^2.0.0-rc.11",
     "@strapi/icons": "^2.0.0-rc.9",
-    "axios": "^1.7.4",
     "blocks-html-renderer": "^1.0.5",
-    "bottleneck": "^2.19.5",
     "cache-manager": "^6.1.0",
     "jsdom": "^25.0.0",
     "react-intl": "^6.6.8",
@@ -71,19 +69,17 @@
     "@types/react-dom": "^18.3.0",
     "@types/showdown": "^2.0.6",
     "lodash": "^4.17.21",
-    "prettier": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.1",
     "styled-components": "^6.1.11",
-    "typescript": "^5.5.3",
-    "yalc": "^1.0.0-pre.53"
+    "typescript": "^5.5.3"
   },
   "peerDependencies": {
-    "@strapi/admin": "^5.0.0 || ^5.0.0-rc",
-    "@strapi/i18n": "^5.0.0 || ^5.0.0-rc",
+    "@strapi/admin": "^5.0.0",
+    "@strapi/i18n": "^5.0.0",
     "@strapi/sdk-plugin": "^5.0.0",
-    "@strapi/strapi": "^5.0.0-rc.11",
+    "@strapi/strapi": "^5.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.1",
