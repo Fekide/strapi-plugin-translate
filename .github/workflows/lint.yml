@@ -4,16 +4,45 @@ jobs:
   eslint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
       - name: Install modules
-        run: yarn
+        run: npm ci
       - name: Run ESLint
-        run: yarn lint
+        run: npm run lint
+
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install modules
+        run: npm ci
+      - name: Build strapi-plugin-translate
+        run: npm run build --workspace strapi-plugin-translate
+      - name: Build strapi-provider-translate-deepl
+        run: npm run build --workspace strapi-provider-translate-deepl
+      - name: Build strapi-provider-translate-libretranslate
+        run: npm run build --workspace strapi-provider-translate-libretranslate
+      - name: Verify plugin with strapi-plugin
+        run: npm run verify --workspace strapi-plugin-translate
+      - name: Verify strapi-provider-translate-deepl
+        run: npm run verify --workspace strapi-provider-translate-deepl
+      - name: Verify strapi-provider-translate-libretranslate
+        run: npm run verify --workspace strapi-provider-translate-libretranslate
 
   commitlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v5

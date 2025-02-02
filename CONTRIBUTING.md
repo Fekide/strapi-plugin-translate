@@ -116,20 +116,20 @@ Enhancement suggestions are tracked as [GitHub issues](https://github.com/Fekide
 
 #### Required tooling <!-- omit in toc -->
 
-- node 14-18
-- yarn
+- node 18-20
+- npm
 
 #### Setup <!-- omit in toc -->
 
 ```bash
-yarn install
+npm install
 ```
 
 #### Before commiting <!-- omit in toc -->
 
 ```bash
-yarn test
-yarn lint
+npm run test
+npm run lint
 ```
 
 <!-- TODO
@@ -150,7 +150,7 @@ Updating, improving and correcting the documentation
 
 We use [conventional-commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-Please follow these guidelines or execute `yarn commit` to trigger `commitizen`
+Please follow these guidelines or execute `npm run commit` to trigger `commitizen`
 
 ## Join The Project Team
 

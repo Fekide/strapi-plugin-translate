@@ -1,0 +1,12 @@
+{
+  "extends": "@strapi/typescript-utils/tsconfigs/server",
+  "include": ["src/lib", "src/__mocks__"],
+  "compilerOptions": {
+    "rootDir": "./",
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node16",
+    "module": "Node16"
+  }
+}

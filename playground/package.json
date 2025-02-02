@@ -9,33 +9,36 @@
   },
   "scripts": {
     "build": "strapi build",
+    "cy": "cypress",
     "cy:run": "cypress run",
     "develop": "strapi develop",
-    "e2e": "ENV_PATH='./.env.test' start-server-and-test 'yarn start' http://0.0.0.0:1337 'yarn cy:run'",
+    "e2e": "ENV_PATH='./.env.test' start-server-and-test 'npm run start' http://0.0.0.0:1337 'npm run cy:run'",
     "reset": "node scripts/reset.js",
     "start": "strapi start",
     "strapi": "strapi",
     "test": "echo no unittests"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "4.25.10",
-    "@strapi/plugin-users-permissions": "4.25.10",
-    "@strapi/strapi": "4.25.10",
+    "@strapi/plugin-users-permissions": "5.7.0",
+    "@strapi/strapi": "5.7.0",
     "better-sqlite3": "9.4.0",
     "dotenv": "^16.4.1",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^5.2.0",
-    "styled-components": "^5.2.1"
+    "react-router-dom": "^6.0.0",
+    "strapi-plugin-translate": "*",
+    "strapi-provider-translate-deepl": "*",
+    "strapi-provider-translate-libretranslate": "*",
+    "styled-components": "^6.0.0"
   },
   "devDependencies": {
     "cypress": "^13.6.4",
     "start-server-and-test": "^2.0.3"
   },
   "engines": {
-    "node": ">=14 <=20",
+    "node": ">=18 <=22",
     "npm": ">=6.0.0"
   },
   "strapi": {

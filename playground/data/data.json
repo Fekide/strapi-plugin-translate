@@ -45,7 +45,7 @@
         "display": "Latest news"
       },
       {
-        "__component":"shared.content",
+        "__component": "shared.content",
         "title": "What's happening right now",
         "content": "This is a blog post about the latest news in the world. Stay tuned!"
       },

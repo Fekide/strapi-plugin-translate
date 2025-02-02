@@ -1,0 +1,11 @@
+reports
+dist
+coverage
+.env
+exports
+*.cache
+build
+.strapi-updater.json
+playground/types
+.strapi
+playground/public

@@ -1,0 +1,12 @@
+{
+  "extends": "@strapi/typescript-utils/tsconfigs/server",
+  "include": ["./src", "src/__mocks__", "../shared"],
+  "compilerOptions": {
+    "rootDir": "../",
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
+  }
+}

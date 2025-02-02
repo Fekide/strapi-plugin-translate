@@ -88,7 +88,7 @@ module.exports = {
       // ignore updates for certain content types (default [], i.e. no content types are ignored)
       ignoreUpdatedContentTypes: ['api::category.category'],
       // wether to regenerate uids when batch updating (default false)
-      regenerateUids: true
+      regenerateUids: true,
     },
   },
   // ...

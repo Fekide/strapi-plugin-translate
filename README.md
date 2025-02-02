@@ -85,6 +85,10 @@ module.exports = {
       ],
       // If relations should be translated (default true)
       translateRelations: true,
+      // ignore updates for certain content types (default [], i.e. no content types are ignored)
+      ignoreUpdatedContentTypes: ['api::category.category'],
+      // wether to regenerate uids when batch updating (default false)
+      regenerateUids: true,
     },
   },
   // ...
@@ -177,6 +181,14 @@ Additional remarks:
 - If entities are added after the starting the translation, they will not be translated
 - UIDs are automatically translated in batch translation mode, since otherwise the entities could not be created/published
 - If an error occurs, this will be shown in the logs or the message can be accessed by hovering over the `Job failed` badge
+
+### Retranslating updated entities
+
+If a localized entity is updated, an entry is added to the batch update section of the admin page. This allows easy retranslation of updated entities.
+By default, uids will be ignored. You can opt to regenerate them by setting the `translate.config.regenerateUids` key of the plugin options to `true`.
+The `translate.config.ignoreUpdatedContentTypes` key of the plugin options can be used to define an array of content types for which such updates should not be recorded.
+
+Note that updates are only considered if they trigger the `afterUpdate` lifecycle hook provided by strapi.
 
 ### Schema for translating relations
 

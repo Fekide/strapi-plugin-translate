@@ -1,0 +1,51 @@
+* Unmerged path plugin/admin/src/components/CMEditViewTranslateLocale/index.tsx
+* Unmerged path plugin/admin/src/components/CMEditViewTranslateLocale/utils/parse-relations.ts
+diff --git a/plugin/admin/src/components/CMHeaderActions.tsx b/plugin/admin/src/components/CMHeaderActions.tsx
+index 6305b5d..c892c8b 100644
+--- a/plugin/admin/src/components/CMHeaderActions.tsx
++++ b/plugin/admin/src/components/CMHeaderActions.tsx
+@@ -27,6 +27,7 @@ import { Modules, UID } from '@strapi/strapi'
+ import parseRelations from '../utils/parse-relations'
+ import { unset } from 'lodash'
+ import useUsage from '../Hooks/useUsage'
++import flattenEntity from 'src/utils/flattenEntity'
+ 
+ interface I18nBaseQuery {
+   plugins?: {
+@@ -50,7 +51,7 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
+   const [localeSelected, setLocaleSelected] = React.useState<string | null>(
+     null
+   )
+-  const setValues = useForm('TranslateFromAnotherLocale', (state) => state.setValues)
++  const onChange = useForm('TranslateFromAnotherLocale', (state) => state.onChange)
+   const [translateEntity] = useTranslateEntityMutation()
+   const { schema, components } = useDocument({
+     model,
+@@ -135,17 +136,21 @@ export const TranslateFromAnotherLocaleAction: HeaderActionComponent = ({
+       parsedData[key] = document[key]
+     })
+ 
+-    for (const key in parsedData) {
+-      const attribute = schema.attributes[key]
++    const flattenedData = flattenEntity(parsedData, {contentType: schema, components, editLayout})
+ 
+-      if (attribute) {
+-        if (attribute.type === 'json') {
+-          parsedData[key] = JSON.stringify(parsedData[key], undefined, 2)
++    for (const key in flattenedData) {
++      if (Object.hasOwnProperty.call(flattenedData, key)) {
++        let { value, type } = flattenedData[key]
++
++        if (type) {
++          if (type === 'json') {
++            value = JSON.stringify(value)
++          }
++          onChange("",{ target: { name: key, value, type } })
+         }
+       }
+     }
+ 
+-    setValues(parsedData)
+     setLoading(false)
+   }
+ 

@@ -1,4 +1,4 @@
-const Strapi = require('@strapi/strapi')
+const createStrapi = require('@strapi/strapi').createStrapi
 const bootstrap = require('../src/bootstrap')
 let instance
 
@@ -11,7 +11,7 @@ const waitForServer = () =>
 async function setupStrapi() {
   if (!instance) {
     /** the following code is copied from `./node_modules/strapi/lib/Strapi.js` */
-    await Strapi({ serveAdminPanel: false }).load()
+    await createStrapi({ serveAdminPanel: false }).load()
     await waitForServer()
 
     instance = strapi // strapi is global now
