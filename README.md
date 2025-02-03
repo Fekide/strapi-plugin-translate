@@ -28,9 +28,10 @@
 
 This plugin requires the following, in order to work correctly:
 
-- Strapi v4 (this plugin is not compatible with v3)
-  - Plugin tested for `v4.19` to `v4.25`
-- The plugin **i18n** installed and enabled (`@strapi/plugin-i18n` [[npm](https://www.npmjs.com/package/@strapi/plugin-i18n)])
+- Strapi v5 (this plugin is not compatible with v3, for v4 use the 1.x releases)
+  - Plugin tested for `v5.6` to `v5.8`
+- The plugin **i18n** installed and enabled (`@strapi/i18n` [[npm](https://www.npmjs.com/package/@strapi/i18n)])
+  - This should be enabled by default in strapi v5
 - The content type to have internationalization enabled (advanced settings in the content type builder)
 - In the internationalization settings at least **two** locales
 - A translation provider that executes the actual translation (see [Configuration](#configuration))
