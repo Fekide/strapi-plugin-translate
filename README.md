@@ -3,7 +3,7 @@
 </p>
 
 <div align="center">
-  <h1>Strapi v4 - Translate plugin</h1>
+  <h1>Strapi v5 - Translate plugin</h1>
   <p>Manage and automate the translation of content fields.</p>
   <a href="https://www.npmjs.org/package/strapi-plugin-translate">
     <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/fekide/strapi-plugin-translate?filename=plugin%2Fpackage.json&label=npm&logo=npm">
