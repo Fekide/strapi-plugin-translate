@@ -524,12 +524,12 @@ describe('deepl provider', () => {
         if (!targetLang) {
           return new HttpResponse(null, { status: 400 })
         }
-        let glossary = params.get('glossary')
-        if (glossary) {
+        let glossary_id = params.get('glossary_id')
+        if (glossary_id) {
           return HttpResponse.json({
             translations: text.map((t) => ({
               detected_source_language: 'EN',
-              text: `${t} (glossary: ${glossary})`,
+              text: `${t} (glossary: ${glossary_id})`,
             })),
           })
         }
