@@ -507,4 +507,108 @@ describe('deepl provider', () => {
       })
     })
   })
+
+  describe('glossaries', () => {
+    const glossaryHandler = async ({ request }) => {
+      const body = await request.text()
+      const params = new URLSearchParams(body)
+      if (isAuthenticated(request)) {
+        let text = params.getAll('text')
+        if (text.length == 0) {
+          return new HttpResponse(null, { status: 400 })
+        }
+        if (text.length > 50) {
+          return new HttpResponse(null, { status: 413 })
+        }
+        let targetLang = params.get('target_lang')
+        if (!targetLang) {
+          return new HttpResponse(null, { status: 400 })
+        }
+        let glossary = params.get('glossary_id')
+        if (glossary) {
+          return HttpResponse.json({
+            translations: text.map((t) => ({
+              detected_source_language: 'EN',
+              text: `${t} (glossary: ${glossary})`,
+            })),
+          })
+        }
+        return HttpResponse.json({
+          translations: text.map((t) => ({
+            detected_source_language: 'EN',
+            text: t,
+          })),
+        })
+      }
+      return new HttpResponse(null, { status: 403 })
+    }
+
+    beforeEach(() => {
+      server.use(
+        http.post(`${DEEPL_FREE_API}/translate`, glossaryHandler),
+        http.post(`${DEEPL_PAID_API}/translate`, glossaryHandler)
+      )
+    })
+
+    it('uses the correct glossary for the given locale pair', async () => {
+      const deeplProvider = provider.init({
+        apiKey: authKey,
+        glossaries: [
+          {
+            id: 'glossary1',
+            source_lang: 'EN',
+            target_lang: 'DE',
+          },
+          {
+            id: 'glossary2',
+            source_lang: 'EN',
+            target_lang: 'FR',
+          },
+        ],
+      })
+
+      const params = {
+        sourceLocale: 'en',
+        targetLocale: 'de',
+        text: 'Some text',
+      }
+
+      const result = await deeplProvider.translate(params)
+
+      expect(result).toEqual(['Some text (glossary: glossary1)'])
+    })
+
+    it('ignores glossary in apiOptions and logs a warning', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+
+      const deeplProvider = provider.init({
+        apiKey: authKey,
+        glossaries: [
+          {
+            id: 'glossary1',
+            source_lang: 'EN',
+            target_lang: 'DE',
+          },
+        ],
+        apiOptions: {
+          glossary: 'someOtherGlossary',
+        },
+      })
+
+      const params = {
+        sourceLocale: 'en',
+        targetLocale: 'de',
+        text: 'Some text',
+      }
+
+      const result = await deeplProvider.translate(params)
+
+      expect(result).toEqual(['Some text (glossary: glossary1)'])
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Glossary provided in apiOptions will be ignored and overwritten by the actual glossary that should be used for this translation.'
+      )
+
+      consoleWarnSpy.mockRestore()
+    })
+  })
 })
