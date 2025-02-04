@@ -31,6 +31,10 @@ module.exports = {
       typeof providerOptions.apiOptions === 'object'
         ? providerOptions.apiOptions
         : {}
+    const glossaries =
+      Array.isArray(providerOptions.glossaries)
+        ? providerOptions.glossaries
+        : []
 
     const client = new deepl.Translator(apiKey, {
       serverUrl: apiUrl,
@@ -82,6 +86,17 @@ module.exports = {
           maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
         })
 
+        const parsedSourceLocale = parseLocale(sourceLocale, localeMap, 'source')
+        const parsedTargetLocale = parseLocale(targetLocale, localeMap, 'target')
+
+        const glossary = glossaries.find(
+          (g) => g.target_lang === parsedTargetLocale && g.source_lang === parsedSourceLocale
+        )?.id
+
+        if (apiOptions.glossary) {
+          console.warn('Glossary provided in apiOptions will be ignored and overwritten by the actual glossary that should be used for this translation.')
+        }
+
         const result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
@@ -93,9 +108,9 @@ module.exports = {
                       : DEEPL_PRIORITY_DEFAULT,
                 },
                 texts,
-                parseLocale(sourceLocale, localeMap, 'source'),
-                parseLocale(targetLocale, localeMap, 'target'),
-                { ...apiOptions, tagHandling }
+                parsedSourceLocale,
+                parsedTargetLocale,
+                { ...apiOptions, tagHandling, glossary }
               )
               return result.map((value) => value.text)
             })
