@@ -14,6 +14,7 @@ import { getService } from './get-service'
 export type DeepLProviderOptions = {
   apiKey?: string
   apiUrl?: string
+  glossaries?: { id: string; source_lang: string; target_lang: string }[]
   localeMap?: Record<string, string>
   apiOptions?: Record<string, string>
 }
@@ -33,6 +34,10 @@ export default {
       typeof providerOptions.apiOptions === 'object'
         ? providerOptions.apiOptions
         : {}
+    const glossaries =
+      Array.isArray(providerOptions.glossaries)
+        ? providerOptions.glossaries
+        : []
 
     const client = new Translator(apiKey, {
       serverUrl: apiUrl,
@@ -93,6 +98,17 @@ export default {
           maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
         })
 
+        const parsedSourceLocale = parseLocale(sourceLocale, localeMap, 'source')
+        const parsedTargetLocale = parseLocale(targetLocale, localeMap, 'target')
+
+        const glossary = glossaries.find(
+          (g) => g.target_lang === parsedTargetLocale && g.source_lang === parsedSourceLocale
+        )?.id
+
+        if (apiOptions.glossary) {
+          console.warn('Glossary provided in apiOptions will be ignored and overwritten by the actual glossary that should be used for this translation.')
+        }
+
         const result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
@@ -104,17 +120,9 @@ export default {
                       : DEEPL_PRIORITY_DEFAULT,
                 },
                 texts,
-                parseLocale(
-                  sourceLocale,
-                  localeMap,
-                  'source'
-                ) as SourceLanguageCode,
-                parseLocale(
-                  targetLocale,
-                  localeMap,
-                  'target'
-                ) as TargetLanguageCode,
-                { ...apiOptions, tagHandling }
+                parsedSourceLocale as SourceLanguageCode,
+                parsedTargetLocale as TargetLanguageCode,
+                { ...apiOptions, tagHandling, glossary }
               )
               return Array.isArray(result)
                 ? result.map((value) => value.text)
