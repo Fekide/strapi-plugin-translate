@@ -8,6 +8,7 @@ module.exports = {
       translatedFieldTypes: [
         { type: 'string', format: 'plain' },
         { type: 'text', format: 'plain' },
+        { type: 'blocks', format: 'jsonb' },
         { type: 'richtext', format: 'markdown' },
         'component',
         'dynamiczone',
