@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-translate-deepl",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "DeepL provider for translate plugin in Strapi 4",
   "keywords": [
     "strapi",
