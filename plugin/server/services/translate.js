@@ -44,6 +44,11 @@ module.exports = ({ strapi }) => ({
         const textsToTranslate = groupedFields[format].map(({ field }) =>
           get(data, field, '')
         )
+
+        if (textsToTranslate.length === 0) {
+          return
+        }
+
         const translateResult = await strapi
           .plugin('translate')
           .provider.translate({
