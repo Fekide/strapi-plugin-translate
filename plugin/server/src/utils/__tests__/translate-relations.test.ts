@@ -54,7 +54,8 @@ describe('relation', () => {
               'oneToOne',
               bothWays ? { mappedBy: 'related' } : {},
               relationIsLocalized,
-              'api::first.first'
+              'api::first.first',
+              'api::second.second'
             ),
           },
           database: {
@@ -150,33 +151,6 @@ describe('relation', () => {
           id: 1,
           related: undefined,
         })
-      })
-
-      it.skip('wrong locale of relation is not translated', async () => {
-        // given
-        const data = {
-          documentId: 'a',
-          id: 1,
-          related: { documentId: 'a', id: 2, related: undefined },
-        }
-        const schema = strapi.contentTypes['api::first.first']
-        const targetLocale = 'de'
-        // when
-        const relationsTranslated = await translateRelations(
-          data,
-          schema,
-          targetLocale
-        )
-        // then
-        const result =
-          relationIsLocalized || bothWays
-            ? {
-                documentId: 'a',
-                id: 1,
-                related: undefined,
-              }
-            : data
-        expect(relationsTranslated).toEqual(result)
       })
     }
   )
@@ -337,32 +311,6 @@ describe('relation', () => {
           related: [],
         })
       })
-      it.skip('wrong locale of relation is not translated', async () => {
-        // given
-        const data = {
-          documentId: 'a',
-          id: 1,
-          related: [{ documentId: 'a', id: 2, related: undefined }],
-        }
-        const schema = strapi.contentTypes['api::first.first']
-        const targetLocale = 'de'
-        // when
-        const relationsTranslated = await translateRelations(
-          data,
-          schema,
-          targetLocale
-        )
-        // then
-        const result =
-          relationIsLocalized || bothWays
-            ? {
-                documentId: 'a',
-                id: 1,
-                related: [],
-              }
-            : data
-        expect(relationsTranslated).toEqual(result)
-      })
     }
   )
 
@@ -504,32 +452,6 @@ describe('relation', () => {
           id: 1,
           related: undefined,
         })
-      })
-
-      it.skip('wrong locale of relation is not translated', async () => {
-        // given
-        const data = {
-          documentId: 'a',
-          id: 1,
-          related: { documentId: 'a', id: 2, related: undefined },
-        }
-        const schema = strapi.contentTypes['api::first.first']
-        const targetLocale = 'de'
-        // when
-        const relationsTranslated = await translateRelations(
-          data,
-          schema,
-          targetLocale
-        )
-        // then
-        const result = relationIsLocalized
-          ? {
-              documentId: 'a',
-              id: 1,
-              related: undefined,
-            }
-          : data
-        expect(relationsTranslated).toEqual(result)
       })
     }
   )
@@ -674,31 +596,6 @@ describe('relation', () => {
           related: [],
         })
       })
-      it.skip('wrong locale of relation is not translated', async () => {
-        // given
-        const data = {
-          documentId: 'a',
-          id: 1,
-          related: [{ documentId: 'a', id: 2, related: undefined }],
-        }
-        const schema = strapi.contentTypes['api::first.first']
-        const targetLocale = 'de'
-        // when
-        const relationsTranslated = await translateRelations(
-          data,
-          schema,
-          targetLocale
-        )
-        // then
-        const result = relationIsLocalized
-          ? {
-              documentId: 'a',
-              id: 1,
-              related: [],
-            }
-          : data
-        expect(relationsTranslated).toEqual(result)
-      })
     }
   )
 
@@ -831,32 +728,6 @@ describe('relation', () => {
           expect(relationsTranslated).toEqual(data)
         })
 
-        it.skip('wrong locale of relation is not translated', async () => {
-          // given
-          const data = {
-            documentId: 'a',
-            id: 1,
-            component: { related: { documentId: 'a', id: 2, locale: 'de' } },
-          }
-          const schema = strapi.contentTypes['api::first.notRepeated']
-          const targetLocale = 'de'
-          // when
-          const relationsTranslated = await translateRelations(
-            data,
-            schema,
-            targetLocale
-          )
-          // then
-          const result = relationIsLocalized
-            ? {
-                documentId: 'a',
-                id: 1,
-                component: { related: undefined },
-              }
-            : data
-          expect(relationsTranslated).toEqual(result)
-        })
-
         describe('repeatable', () => {
           it('is translated', async () => {
             // given
@@ -943,34 +814,6 @@ describe('relation', () => {
             )
             // then
             expect(relationsTranslated).toEqual(data)
-          })
-
-          it.skip('wrong locale of relation is not translated', async () => {
-            // given
-            const data = {
-              documentId: 'a',
-              id: 1,
-              component: [
-                { related: { documentId: 'a', id: 2, locale: 'de' } },
-              ],
-            }
-            const schema = strapi.contentTypes['api::first.repeated']
-            const targetLocale = 'de'
-            // when
-            const relationsTranslated = await translateRelations(
-              data,
-              schema,
-              targetLocale
-            )
-            // then
-            const result = relationIsLocalized
-              ? {
-                  documentId: 'a',
-                  id: 1,
-                  component: [{ related: undefined }],
-                }
-              : data
-            expect(relationsTranslated).toEqual(result)
           })
         })
       }
@@ -1092,32 +935,6 @@ describe('relation', () => {
           expect(relationsTranslated).toEqual(data)
         })
 
-        it.skip('wrong locale of relation is not translated', async () => {
-          // given
-          const data = {
-            documentId: 'a',
-            id: 1,
-            component: { related: [{ documentId: 'a', id: 2, locale: 'de' }] },
-          }
-          const schema = strapi.contentTypes['api::first.notRepeated']
-          const targetLocale = 'de'
-          // when
-          const relationsTranslated = await translateRelations(
-            data,
-            schema,
-            targetLocale
-          )
-          // then
-          const result = relationIsLocalized
-            ? {
-                documentId: 'a',
-                id: 1,
-                component: { related: [] },
-              }
-            : data
-          expect(relationsTranslated).toEqual(result)
-        })
-
         describe('repeatable', () => {
           it('is translated', async () => {
             // given
@@ -1222,34 +1039,6 @@ describe('relation', () => {
             )
             // then
             expect(relationsTranslated).toEqual(data)
-          })
-
-          it.skip('wrong locale of relation is not translated', async () => {
-            // given
-            const data = {
-              documentId: 'a',
-              id: 1,
-              component: [
-                { related: [{ documentId: 'a', id: 2, locale: 'de' }] },
-              ],
-            }
-            const schema = strapi.contentTypes['api::first.repeated']
-            const targetLocale = 'de'
-            // when
-            const relationsTranslated = await translateRelations(
-              data,
-              schema,
-              targetLocale
-            )
-            // then
-            const result = relationIsLocalized
-              ? {
-                  documentId: 'a',
-                  id: 1,
-                  component: [{ related: [] }],
-                }
-              : data
-            expect(relationsTranslated).toEqual(result)
           })
         })
       }
@@ -1404,50 +1193,6 @@ describe('relation', () => {
           )
           // then
           expect(relationsTranslated).toEqual(data)
-        })
-
-        it.skip('wrong locale of relation is not translated', async () => {
-          // given
-          const data = {
-            documentId: 'a',
-            id: 1,
-            dynamic_zone: [
-              {
-                __component: 'shared.first',
-                related: { documentId: 'a', id: 2, locale: 'de' },
-              },
-              {
-                __component: 'shared.second',
-                related: { documentId: 'a', id: 2, locale: 'de' },
-              },
-            ],
-          }
-          const schema = strapi.contentTypes['api::first.first']
-          const targetLocale = 'de'
-          // when
-          const relationsTranslated = await translateRelations(
-            data,
-            schema,
-            targetLocale
-          )
-          // then
-          const result = relationIsLocalized
-            ? {
-                documentId: 'a',
-                id: 1,
-                dynamic_zone: [
-                  {
-                    __component: 'shared.first',
-                    related: undefined,
-                  },
-                  {
-                    __component: 'shared.second',
-                    related: undefined,
-                  },
-                ],
-              }
-            : data
-          expect(relationsTranslated).toEqual(result)
         })
       }
     )
@@ -1605,50 +1350,6 @@ describe('relation', () => {
           )
           // then
           expect(relationsTranslated).toEqual(data)
-        })
-
-        it.skip('wrong locale of relation is not translated', async () => {
-          // given
-          const data = {
-            documentId: 'a',
-            id: 1,
-            dynamic_zone: [
-              {
-                __component: 'shared.first',
-                related: [{ documentId: 'a', id: 2, locale: 'de' }],
-              },
-              {
-                __component: 'shared.second',
-                related: [{ documentId: 'a', id: 2, locale: 'de' }],
-              },
-            ],
-          }
-          const schema = strapi.contentTypes['api::first.first']
-          const targetLocale = 'de'
-          // when
-          const relationsTranslated = await translateRelations(
-            data,
-            schema,
-            targetLocale
-          )
-          // then
-          const result = relationIsLocalized
-            ? {
-                documentId: 'a',
-                id: 1,
-                dynamic_zone: [
-                  {
-                    __component: 'shared.first',
-                    related: [],
-                  },
-                  {
-                    __component: 'shared.second',
-                    related: [],
-                  },
-                ],
-              }
-            : data
-          expect(relationsTranslated).toEqual(result)
         })
       }
     )

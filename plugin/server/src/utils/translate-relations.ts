@@ -19,7 +19,7 @@ async function getRelevantLocalization(
  * @param {object} schema The schema of the content-type
  * @param {string} targetLocale The target locale (iso-format)
  * @returns The input data with relations either
- *  - copied in the case they can be resued
+ *  - copied in the case they can be reused
  *  - deleted if they cannot be reused
  *  - translated if the relation target is localized and the related instance has the targetLocale created
  */
