@@ -79,6 +79,10 @@ export async function getTranslateFields<TSchemaUID extends UID.ContentType>(
         )
       )
     } else {
+      const fieldData = _.get(data, attr, undefined)
+      if (typeof fieldData === 'string' && fieldData.trim() === '') {
+        return null
+      }
       return {
         field: attr,
         format: getFieldTypeFormat(schema.type),
