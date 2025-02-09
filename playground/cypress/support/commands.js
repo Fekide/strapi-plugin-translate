@@ -27,6 +27,7 @@ Cypress.Commands.add('login', () => {
         )
       },
     })
+    verifyAdminPageHasLoaded()
   })
 })
 //
@@ -41,3 +42,17 @@ Cypress.Commands.add('login', () => {
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+function verifyAdminPageHasLoaded(maxAttempts = 3, attempts = 0) {
+  if (attempts > maxAttempts) {
+    throw new Error('Timed out waiting for admin page to load correctly')
+  }
+  cy.wait(5000)
+    .get('body')
+    .then(($body) => {
+      if (!$body.find('h1').length) {
+        cy.reload(true)
+        verifyAdminPageHasLoaded(maxAttempts, attempts + 1)
+      }
+    })
+}

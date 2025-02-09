@@ -310,7 +310,7 @@ describe('deepl provider', () => {
               expect(result).toEqual(params.text)
             })
 
-            it.skip('with fields larger than request size limit count of new lines preserved', async () => {
+            it('with fields larger than request size limit count of new lines preserved', async () => {
               // given
               const textLength = 10
               const params = {
@@ -320,7 +320,7 @@ describe('deepl provider', () => {
                   () =>
                     faker.lorem.paragraphs(
                       DEEPL_API_MAX_REQUEST_SIZE / 200,
-                      '\n'.repeat(faker.datatype.number({ min: 1, max: 3 }))
+                      '\n'.repeat(faker.number.int({ min: 1, max: 3 }))
                     ),
                   textLength
                 ),
