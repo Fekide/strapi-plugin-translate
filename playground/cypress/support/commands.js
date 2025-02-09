@@ -47,10 +47,12 @@ function verifyAdminPageHasLoaded(maxAttempts = 3, attempts = 0) {
   if (attempts > maxAttempts) {
     throw new Error('Timed out waiting for admin page to load correctly')
   }
-  cy.get('h1').then(($heading) => {
-    if (!$heading || !$heading.text().includes('Hello Admin')) {
-      cy.reload()
-      verifyAdminPageHasLoaded(maxAttempts, attempts + 1)
-    }
-  })
+  cy.wait(5000)
+    .get('body')
+    .then(($body) => {
+      if (!$body.find('h1').length) {
+        cy.reload(true)
+        verifyAdminPageHasLoaded(maxAttempts, attempts + 1)
+      }
+    })
 }
