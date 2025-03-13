@@ -5,7 +5,7 @@
   "CMEditViewTranslateLocale.ModalConfirm.content": "Ihr Inhalt wird gelöscht und mit der automatisch übersetzten Version der ausgewählten Sprache übersetzt:",
   "CMEditViewTranslateLocale.submit-text": "Ja, übersetzen",
   "plugin.name": "Übersetzen",
-  "Settings.locales.modal.locales.label": "Sprachen",
+  "translate.source-locale.label": "Ausgangssprache",
   "popUpWarning.button.cancel": "Nein, abbrechen",
   "translate.error.badRequest": "Anfrage zum Übersetzungs-Provider nicht korrekt",
   "translate.error.forbidden": "Autorisierung beim Übersetzungs-Provider fehlgeschlagen",

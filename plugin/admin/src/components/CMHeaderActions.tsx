@@ -48,8 +48,8 @@ const LocaleSelection: React.FC<{
     <Field.Root width="100%">
       <Field.Label>
         {formatMessage({
-          id: getTranslation('Settings.locales.modal.locales.label'),
-          defaultMessage: 'Locale',
+          id: getTranslation('translate.source-locale.label'),
+          defaultMessage: 'Source locale',
         })}
       </Field.Label>
       <SingleSelect
