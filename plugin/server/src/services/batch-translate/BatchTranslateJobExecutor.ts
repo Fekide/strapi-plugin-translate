@@ -278,7 +278,8 @@ export class BatchTranslateJobExecutor {
         })
         clearInterval(this.intervalId)
         throw new Error(
-          `Translation of entity ${entity.documentId} from ${this.sourceLocale} to ${this.targetLocale} failed`
+          `Translation of entity ${entity.documentId} from ${this.sourceLocale} to ${this.targetLocale} failed: ${error.message}`,
+          { cause: error }
         )
       }
       await this.updateProgress()
