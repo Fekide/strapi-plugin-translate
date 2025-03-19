@@ -45,6 +45,22 @@ module.exports = {
 
     const rateLimitedTranslate = limiter.wrap(client.translateText.bind(client))
 
+    let availableGlossaries = [];
+    let lastGlossariesFetch = new Date();
+
+    const fetchGlossaries = async () => {
+      availableGlossaries = await client.listGlossaries();
+      lastGlossariesFetch = new Date();
+    }
+    const findGlossary = providerOptions.findGlossary || ((glossaries, sourceLocale, targetLocale) => {
+      return glossaries.find((glossary) =>
+        glossary.sourceLang === sourceLocale && glossary.targetLang === targetLocale
+      );
+    });
+
+    if (providerOptions.fetchGlossaries)
+      fetchGlossaries();
+
     return {
       /**
        * @param {{
@@ -94,6 +110,14 @@ module.exports = {
           maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
         })
 
+        let glossary = undefined;
+
+        if (providerOptions.fetchGlossaries) {
+          if (new Date() - lastGlossariesFetch > (providerOptions.fetchGlossariesIntervalMs || 3600000))
+            await fetchGlossaries();
+          glossary = findGlossary(availableGlossaries, sourceLocale, targetLocale);
+        }
+
         let result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
@@ -107,7 +131,7 @@ module.exports = {
                 texts,
                 parseLocale(sourceLocale, localeMap, 'source'),
                 parseLocale(targetLocale, localeMap, 'target'),
-                { ...apiOptions, tagHandling }
+                { ...apiOptions, tagHandling, glossary: glossary?.glossaryId }
               )
               return result.map((value) => value.text)
             })
