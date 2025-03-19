@@ -32,6 +32,7 @@ module.exports = {
         ? providerOptions.apiOptions
         : {}
     const omitPlaceholders = providerOptions.omitPlaceholders || false
+    const omitTags = providerOptions.omitTags || false
 
     const client = new deepl.Translator(apiKey, {
       serverUrl: apiUrl,
@@ -95,12 +96,22 @@ module.exports = {
         let textArray = Array.isArray(input) ? input : [input]
 
         let placeholderTexts = [];
+        let placeholderTags = [];
 
         if (omitPlaceholders) {
           textArray = textArray.map((text) =>
             text.replace(/{{(.*?)}}/g, (match) => {
               placeholderTexts.push(match)
               return `<m id=${placeholderTexts.length - 1} />`
+            })
+          )
+        }
+
+        if (omitTags) {
+          textArray = textArray.map((text) =>
+            text.replace(/<\/?[^>]+(>|$)/g, (match) => {
+              placeholderTags.push(match)
+              return `<t id=${placeholderTags.length - 1} />`
             })
           )
         }
@@ -142,6 +153,12 @@ module.exports = {
           result = result.map((text) =>
             text.replace(/<m id=(.*?) \/>/g, (_, id) => placeholderTexts[id])
           )
+        }
+
+        if (omitTags) {
+          result = result.map((text) =>
+            text.replace(/<t id=(.*?) \/>/g, (_, id) => placeholderTags[id])
+        )
         }
 
         if (format === 'jsonb') {
