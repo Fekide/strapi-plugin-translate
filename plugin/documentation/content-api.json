@@ -1,0 +1,709 @@
+{
+  "paths": {
+    "/translate/usage": {
+      "get": {
+        "tags": ["Translate"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/usage/estimate": {
+      "post": {
+        "tags": ["Translate"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsageEstimateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/usage/estimate-collection": {
+      "post": {
+        "tags": ["Translate"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsageEstimateCollectionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/report": {
+      "get": {
+        "tags": ["Translate"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateReportResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/entity": {
+      "post": {
+        "tags": ["Translate"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslateUpdatedEntryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateUpdatedEntryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/batch": {
+      "post": {
+        "tags": ["Translate"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslateBatchTranslateJobRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateBatchTranslateJobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/batch/status/{id}": {
+      "get": {
+        "tags": ["Translate"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateBatchTranslateJobStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/batch/cancel/{id}": {
+      "post": {
+        "tags": ["Translate"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateBatchTranslateJobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/batch/pause/{id}": {
+      "post": {
+        "tags": ["Translate"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateBatchTranslateJobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/batch/resume/{id}": {
+      "post": {
+        "tags": ["Translate"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateBatchTranslateJobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/batch/updates": {
+      "post": {
+        "tags": ["Translate"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslateUpdatedEntryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateUpdatedEntryResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Translate"],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateUpdatedEntryListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translate/batch/updates/{id}": {
+      "delete": {
+        "tags": ["Translate"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslateUpdatedEntryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UsageEstimateRequest": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string"
+          },
+          "sourceLocale": {
+            "type": "string"
+          },
+          "documentId": {
+            "type": "string"
+          }
+        }
+      },
+      "UsageEstimateCollectionRequest": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string"
+          },
+          "sourceLocale": {
+            "type": "string"
+          },
+          "targetLocale": {
+            "type": "string"
+          }
+        }
+      },
+      "TranslateBatchTranslateJobRequest": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "required": ["contentType", "sourceLocale", "targetLocale"],
+            "type": "object",
+            "properties": {
+              "contentType": {
+                "type": "string"
+              },
+              "sourceLocale": {
+                "type": "string"
+              },
+              "targetLocale": {
+                "type": "string"
+              },
+              "entityIds": {},
+              "status": {
+                "type": "string",
+                "enum": [
+                  "created",
+                  "setup",
+                  "running",
+                  "paused",
+                  "finished",
+                  "cancelled",
+                  "failed"
+                ]
+              },
+              "failureReason": {},
+              "progress": {
+                "type": "number",
+                "format": "float"
+              },
+              "autoPublish": {
+                "type": "boolean"
+              },
+              "locale": {
+                "type": "string"
+              },
+              "localizations": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "example": "string or id"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TranslateBatchTranslateJobListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslateBatchTranslateJob"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "pagination": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "integer"
+                  },
+                  "pageSize": {
+                    "type": "integer",
+                    "minimum": 25
+                  },
+                  "pageCount": {
+                    "type": "integer",
+                    "maximum": 1
+                  },
+                  "total": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "TranslateBatchTranslateJob": {
+        "type": "object",
+        "required": ["contentType", "sourceLocale", "targetLocale"],
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sourceLocale": {
+            "type": "string"
+          },
+          "targetLocale": {
+            "type": "string"
+          },
+          "entityIds": {},
+          "status": {
+            "type": "string",
+            "enum": [
+              "created",
+              "setup",
+              "running",
+              "paused",
+              "finished",
+              "cancelled",
+              "failed"
+            ]
+          },
+          "failureReason": {},
+          "progress": {
+            "type": "number",
+            "format": "float"
+          },
+          "autoPublish": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TranslateBatchTranslateJobResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TranslateBatchTranslateJob"
+          },
+          "meta": {
+            "type": "object"
+          }
+        }
+      },
+      "TranslateBatchTranslateJobStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "created",
+              "setup",
+              "running",
+              "paused",
+              "finished",
+              "cancelled",
+              "failed"
+            ]
+          },
+          "progress": {
+            "type": "number",
+            "format": "float"
+          },
+          "failureReason": {}
+        }
+      },
+      "TranslateBatchTranslateJobStatusResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TranslateBatchTranslateJobStatus"
+          }
+        }
+      },
+      "TranslateSingleLocaleTranslationReport": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "complate": {
+            "type": "boolean"
+          },
+          "job": {
+            "$ref": "#/components/schemas/TranslateBatchTranslateJob"
+          }
+        }
+      },
+      "TranslateContentTypeTranslationReport": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string"
+          },
+          "collection": {
+            "type": "string"
+          },
+          "localeReports": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TranslateSingleLocaleTranslationReport"
+            }
+          }
+        }
+      },
+      "TranslateReportResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "contentTypes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TranslateContentTypeTranslationReport"
+                }
+              },
+              "locales": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "isDefault": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "TranslateUpdatedEntryRequest": {
+        "type": "object",
+        "required": ["contentType", "sourceLocale", "targetLocale"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "contentType": {
+                "type": "string"
+              },
+              "sourceLocale": {
+                "type": "string"
+              },
+              "targetLocale": {
+                "type": "string"
+              },
+              "documentId": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "TranslateUpdatedEntryListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslateUpdatedEntry"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "pagination": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "integer"
+                  },
+                  "pageSize": {
+                    "type": "integer",
+                    "minimum": 25
+                  },
+                  "pageCount": {
+                    "type": "integer",
+                    "maximum": 1
+                  },
+                  "total": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "TranslateUpdatedEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "groupID": {
+            "type": "string"
+          },
+          "localesWithUpdates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TranslateUpdatedEntryResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TranslateUpdatedEntry"
+          },
+          "meta": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}
