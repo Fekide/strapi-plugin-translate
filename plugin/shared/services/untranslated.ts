@@ -10,8 +10,4 @@ export interface UntranslatedService {
     targetLocale: string
     sourceLocale: string
   }): Promise<Data.DocumentID[]>
-  isFullyTranslated(
-    uid: UID.ContentType,
-    targetLocale: string
-  ): Promise<boolean>
 }

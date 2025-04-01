@@ -79,36 +79,4 @@ describe('untranslated service', () => {
       ).rejects.toThrow('Content Type not localized')
     })
   })
-
-  describe('isFullyTranslated', () => {
-    it('throws Error if Content Type is not found', () => {
-      const strapi = {
-        contentTypes: {},
-      } as any as Core.Strapi
-
-      Object.defineProperty(global, 'strapi', { value: strapi, writable: true })
-
-      const untranslatedService = service({ strapi })
-
-      return expect(async () =>
-        untranslatedService.isFullyTranslated(uid, 'de')
-      ).rejects.toThrow('Content Type does not exist')
-    })
-
-    it('throws Error if Content Type is not localized', () => {
-      const strapi = {
-        contentTypes: {
-          [uid]: { pluginOptions: { i18n: { localized: false } } },
-        },
-      } as any as Core.Strapi
-
-      Object.defineProperty(global, 'strapi', { value: strapi, writable: true })
-
-      const untranslatedService = service({ strapi })
-
-      return expect(async () =>
-        untranslatedService.isFullyTranslated(uid, 'de')
-      ).rejects.toThrow('Content Type not localized')
-    })
-  })
 })

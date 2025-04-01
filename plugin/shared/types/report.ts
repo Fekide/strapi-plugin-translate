@@ -29,3 +29,18 @@ export interface ReportData {
   contentTypes: ContentTypeTranslationReport[]
   locales: Locale[]
 }
+
+export interface TotalRows {
+  rows: {
+    locale: string
+    count: string
+  }[]
+}
+
+export interface TranslatedCountsRows {
+  rows: {
+    source: string
+    target: string
+    count: string
+  }[]
+}

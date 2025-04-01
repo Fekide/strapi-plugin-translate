@@ -1,7 +1,5 @@
 import { UntranslatedService } from '@shared/services/untranslated'
-import { Locale } from '@shared/types/locale'
 import { Core } from '@strapi/strapi'
-import { geti18nService } from '../utils/get-service'
 import { isContentTypeUID, isLocalizedContentType } from '../utils/content-type'
 
 export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
@@ -57,46 +55,6 @@ export default ({ strapi }: { strapi: Core.Strapi }): UntranslatedService => {
       const sourceIDs = sourceEntities.map((entity) => entity.documentId)
       const targetIDs = targetEntities.map((entity) => entity.documentId)
       return sourceIDs.filter((id) => !targetIDs.includes(id))
-    },
-
-    /**
-     * Calculate if a locale is fully translated,
-     * i.e. there are no other entities in any other locale
-     * that do not have a localization in this locale
-     *
-     * @param uid Content-Type-UID
-     * @param targetLocale the target locale
-     * @returns if the target locale is fully translated
-     */
-    async isFullyTranslated(uid, targetLocale) {
-      if (!isContentTypeUID(uid)) {
-        throw new Error('Content Type does not exist')
-      }
-      if (!isLocalizedContentType(uid)) {
-        throw new Error('Content Type not localized')
-      }
-      const targetEntities = await strapi.documents(uid).findMany({
-        locale: targetLocale,
-        fields: ['documentId'],
-      })
-      const targetIDs = targetEntities.map((entity) => entity.documentId)
-      const locales = (await geti18nService('locales').find()) as Locale[]
-      const localeCodes = locales.map((locale) => locale.code)
-
-      for (const locale of localeCodes) {
-        if (locale === targetLocale) {
-          continue
-        }
-        const otherEntities = await strapi.documents(uid).findMany({
-          locale,
-          fields: ['documentId'],
-        })
-        const otherIDs = otherEntities.map((entity) => entity.documentId)
-        if (otherIDs.some((documentId) => !targetIDs.includes(documentId))) {
-          return false
-        }
-      }
-      return true
     },
   }
 }

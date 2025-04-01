@@ -14,7 +14,7 @@ import { TranslateConfig } from '../config'
 import { keys } from '../utils/objects'
 import { TranslateService } from '@shared/services/translate'
 import { Locale } from '@shared/types/locale'
-import { SingleLocaleTranslationReport } from '@shared/types/report'
+import { SingleLocaleTranslationReport, TotalRows, TranslatedCountsRows } from '@shared/types/report'
 import {
   isCollectionType,
   isContentTypeUID,
@@ -248,61 +248,83 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateService => ({
     return { result: 'success' }
   },
   async contentTypes() {
-    const localizedContentTypes: UID.ContentType[] = keys(
-      strapi.contentTypes
-    ).filter(
-      (ct) =>
-        strapi.contentTypes[ct].pluginOptions?.i18n?.['localized'] === true
-    )
+    const localizedContentTypes: UID.ContentType[] = keys(strapi.contentTypes)
+      .filter((ct) => strapi.contentTypes[ct].pluginOptions?.i18n?.['localized'] === true)
 
     const locales: Locale[] = await geti18nService('locales').setIsDefault(
       await geti18nService('locales').find()
     )
 
-    const reports = await Promise.all(
-      localizedContentTypes.map(async (contentType) => {
-        // get jobs
-        const translateJobs = (await strapi
-          .documents('plugin::translate.batch-translate-job')
-          .findMany({
-            filters: { contentType: { $eq: contentType } },
-            sort: { updatedAt: 'desc' },
-          })) as BatchTranslateJob[]
+    async function getContentTypeReport(contentType: UID.ContentType) {
 
-        // calculate current translation statuses
-        const info = await Promise.all(
-          locales.map(async ({ code }) => {
-            const countPromise = strapi
-              .documents(contentType)
-              .count({ locale: code })
+      const translateJobs = (await strapi
+        .documents('plugin::translate.batch-translate-job')
+        .findMany({
+          filters: { contentType: { $eq: contentType } },
+          sort: { updatedAt: 'desc' },
+        })) as BatchTranslateJob[]
 
-            const complete = await getService('untranslated').isFullyTranslated(
-              contentType,
-              code
-            )
+      const collectionName = strapi.contentTypes[contentType].collectionName
 
-            return {
-              count: await countPromise,
-              complete,
-            }
-          })
-        )
+      // use raw query to get the total of documents group by locale
+      const { rows: totalRows } = await strapi.db.connection.raw<TotalRows>(`
+        SELECT locale, COUNT(*) as count 
+        FROM ${collectionName}
+        WHERE published_at IS NULL 
+        GROUP BY locale
+      `);
+      const totalMap = new Map(totalRows.map(row => [row.locale, parseInt(row.count)]));
+      const totals = locales.map(({ code }) => totalMap.get(code) || 0);
 
-        // create report
-        const localeReports: Record<string, SingleLocaleTranslationReport> = {}
-        locales.forEach(({ code }, index) => {
-          localeReports[code] = {
-            ...info[index],
-            job: translateJobs.find((job) => job.targetLocale === code),
-          }
-        })
-        return {
-          contentType,
-          collection: strapi.contentTypes[contentType].info.displayName,
-          localeReports,
+      // use raw query to get the count of translated documents group by source and target locale
+      const { rows: translatedCountsRows } = await strapi.db.connection.raw<TranslatedCountsRows>(`
+        SELECT t1.locale as source, t2.locale as target, COUNT(*) as count
+        FROM ${collectionName} t1
+        JOIN ${collectionName} t2
+        ON t1.document_id = t2.document_id
+          AND t1.locale != t2.locale
+        WHERE t1.published_at IS NULL
+          AND t2.published_at IS NULL
+        GROUP BY t1.locale, t2.locale
+      `);
+      const translatedCountsMap = new Map();
+      translatedCountsRows.forEach(row => {
+        translatedCountsMap.set(`${row.source}-${row.target}`, parseInt(row.count));
+      });
+
+      const completes = locales.map(({ code: targetLocale }) => {
+        const translatedCounts = locales.map(({ code: sourceLocale }, sourceIndex) => {
+          if (sourceLocale === targetLocale) return true;
+          const sourceCount = totals[sourceIndex];
+          const key = `${sourceLocale}-${targetLocale}`;
+          const translatedCount = translatedCountsMap.get(key) || 0;
+          return sourceCount === translatedCount;
+        });
+        const allTranslated = translatedCounts.every((translated) => translated);
+        return allTranslated;
+      });
+  
+      // create report
+      const localeReports: Record<string, SingleLocaleTranslationReport> = {}
+      locales.forEach(({ code }, index) => {
+        localeReports[code] = {
+          count: totals[index],
+          complete: completes[index],
+          job: translateJobs.find((job) => job.targetLocale === code),
         }
       })
-    )
+      return {
+        contentType,
+        collection: strapi.contentTypes[contentType].info.displayName,
+        localeReports,
+      }
+    }
+
+    const reports = await Promise.all(
+      localizedContentTypes.map((contentType) => {
+        return getContentTypeReport(contentType)
+      }
+    ))
 
     return { contentTypes: reports, locales }
   },
