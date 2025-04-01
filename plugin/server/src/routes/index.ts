@@ -1,4 +1,7 @@
-import translateRoutes from './translate'
-import providerRoutes from './provider'
+import admin from './admin';
+import contentApi from './content-api';
 
-export default [...translateRoutes, ...providerRoutes]
+export default {
+    admin: admin,
+    'content-api': contentApi,
+};
