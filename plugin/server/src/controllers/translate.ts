@@ -1,14 +1,9 @@
 import { Core } from '@strapi/strapi'
 import { getService } from '../utils/get-service'
 import { getAllTranslatableFields } from '../utils/translatable-fields'
-import { translateRelations } from '../utils/translate-relations'
 import { TRANSLATE_PRIORITY_DIRECT_TRANSLATION } from '../utils/constants'
-import { filterAllDeletedFields } from '../utils/delete-fields'
 import { populateAll } from '../utils/populate-all'
-import { cleanData } from '../utils/clean-data'
-import { updateUids } from '../utils/update-uids'
 import { z } from 'zod'
-import { TranslateConfig } from '../config'
 import { TranslateEntity } from '../../../shared/contracts/translate'
 import { isCollectionType, isContentTypeUID } from '../utils/content-type'
 import { handleContextError } from '../utils/handle-error'
@@ -39,10 +34,6 @@ const batchTranslateBodySchema = z.object({
   targetLocale: z.string(),
   autoPublish: z.boolean(),
   entityIds: z.array(z.string()).optional(),
-})
-
-const idQuerySchema = z.object({
-  documentId: z.string(),
 })
 
 const batchUpdateBodySchema = z.object({
@@ -127,14 +118,10 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
     }
   },
   async translateBatchPauseJob(ctx) {
-    const {
-      data: { documentId: id },
-      error,
-      success,
-    } = idQuerySchema.safeParse(ctx.query)
+    const id = ctx.params.id
 
-    if (!success) {
-      return ctx.badRequest({ message: 'id is missing', error })
+    if (!id) {
+      return ctx.badRequest({ message: 'id is missing' })
     }
 
     try {
@@ -153,14 +140,10 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
     }
   },
   async translateBatchResumeJob(ctx) {
-    const {
-      data: { documentId: id },
-      error,
-      success,
-    } = idQuerySchema.safeParse(ctx.query)
+    const id = ctx.params.id
 
-    if (!success) {
-      return ctx.badRequest({ message: 'id is missing', error })
+    if (!id) {
+      return ctx.badRequest({ message: 'id is missing' })
     }
 
     try {
@@ -179,14 +162,10 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
     }
   },
   async translateBatchCancelJob(ctx) {
-    const {
-      data: { documentId: id },
-      error,
-      success,
-    } = idQuerySchema.safeParse(ctx.query)
+    const id = ctx.params.id
 
-    if (!success) {
-      return ctx.badRequest({ message: 'id is missing', error })
+    if (!id) {
+      return ctx.badRequest({ message: 'id is missing' })
     }
 
     try {
@@ -205,14 +184,10 @@ export default ({ strapi }: { strapi: Core.Strapi }): TranslateController => ({
     }
   },
   async translateBatchJobStatus(ctx) {
-    const {
-      data: { documentId: id },
-      error,
-      success,
-    } = idQuerySchema.safeParse(ctx.query)
+    const id = ctx.params.id
 
-    if (!success) {
-      return ctx.badRequest({ message: 'id is missing', error })
+    if (!id) {
+      return ctx.badRequest({ message: 'id is missing' })
     }
 
     const job = await getService('batch-translate-job').findOne(id, {})

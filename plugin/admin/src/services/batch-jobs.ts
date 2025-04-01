@@ -13,7 +13,7 @@ const batchJobsApi = translateApi.injectEndpoints({
       TranslateBatchJobStatus.Request['query']
     >({
       query: ({ documentId }) => ({
-        url: `/batch/status/${documentId}`,
+        url: `/translate/batch/status/${documentId}`,
         method: 'GET',
       }),
       providesTags: (_result, _error, arg) => [
@@ -24,8 +24,8 @@ const batchJobsApi = translateApi.injectEndpoints({
       TranslateBatchPauseJob.Response,
       TranslateBatchPauseJob.Request['query']
     >({
-      query: (documentId) => ({
-        url: `/batch/pause/${documentId}`,
+      query: ({ documentId }) => ({
+        url: `/translate/batch/pause/${documentId}`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, arg) => [
@@ -37,8 +37,8 @@ const batchJobsApi = translateApi.injectEndpoints({
       TranslateBatchResumeJob.Response,
       TranslateBatchResumeJob.Request['query']
     >({
-      query: (documentId) => ({
-        url: `/batch/resume/${documentId}`,
+      query: ({ documentId }) => ({
+        url: `/translate/batch/resume/${documentId}`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, arg) => [
@@ -50,8 +50,8 @@ const batchJobsApi = translateApi.injectEndpoints({
       TranslateBatchCancelJob.Response,
       TranslateBatchCancelJob.Request['query']
     >({
-      query: (documentId) => ({
-        url: `/batch/cancel/${documentId}`,
+      query: ({ documentId }) => ({
+        url: `/translate/batch/cancel/${documentId}`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, arg) => [
