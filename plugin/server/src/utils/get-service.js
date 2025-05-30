@@ -1,5 +1,5 @@
 // Migrated util for Strapi 5
 
-export const getService = (name) => {
+exports.getService = (name) => {
   return strapi.plugin('translate').service(name);
 };

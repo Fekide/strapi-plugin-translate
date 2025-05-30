@@ -1,16 +1,16 @@
 // Strapi 5 plugin entrypoint (server)
-import register from './register';
-import bootstrap from './bootstrap';
-import destroy from './destroy';
-import config from './config';
-import contentTypes from './content-types';
-import controllers from './controllers';
-import routes from './routes';
-import services from './services';
-import policies from './policies';
-import middlewares from './middlewares';
+const register = require('./register');
+const bootstrap = require('./bootstrap');
+const destroy = require('./destroy');
+const config = require('./config');
+const contentTypes = require('./content-types');
+const controllers = require('./controllers');
+const routes = require('./routes');
+const services = require('./services');
+const policies = require('./policies');
+const middlewares = require('./middlewares');
 
-export default {
+module.exports = {
   register,
   bootstrap,
   destroy,

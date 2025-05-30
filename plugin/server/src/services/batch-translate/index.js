@@ -1,3 +1,4 @@
+// ...existing code...
 'use strict'
 
 const { BatchTranslateJob } = require('./BatchTranslateJob')
@@ -7,3 +8,4 @@ module.exports = {
   BatchTranslateJob,
   BatchTranslateManager,
 }
+// ...existing code...

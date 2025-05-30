@@ -1,4 +1,4 @@
 // Strapi 5 destroy phase
-export default ({ strapi }) => {
+module.exports = ({ strapi }) => {
   // Destroy logic here
 };

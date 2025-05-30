@@ -16,4 +16,4 @@ const providerRoutes = [
   },
 ];
 
-export default providerRoutes;
+module.exports = providerRoutes;

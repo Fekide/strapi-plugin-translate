@@ -5,4 +5,4 @@ const untranslatedService = ({ strapi }) => {
   };
 };
 
-export default untranslatedService;
+module.exports = untranslatedService;

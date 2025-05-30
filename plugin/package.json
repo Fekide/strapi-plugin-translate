@@ -43,7 +43,7 @@
     "lodash": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^6.22.3"
   },
   "peerDependencies": {
     "@strapi/plugin-i18n": "^4.25.0",

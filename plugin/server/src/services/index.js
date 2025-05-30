@@ -1,12 +1,12 @@
-import batchTranslateJob from './batch-translate-job.js';
-import chunks from './chunks.js';
-import provider from './provider.js';
-import translate from './translate.js';
-import untranslated from './untranslated.js';
-import format from './format.js';
-import updatedEntry from './updated-entry.js';
+const batchTranslateJob = require('./batch-translate-job');
+const chunks = require('./chunks');
+const provider = require('./provider');
+const translate = require('./translate');
+const untranslated = require('./untranslated');
+const format = require('./format');
+const updatedEntry = require('./updated-entry');
 
-export default {
+module.exports = {
   'batch-translate-job': batchTranslateJob,
   provider,
   translate,

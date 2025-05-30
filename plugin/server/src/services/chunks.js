@@ -1,7 +1,7 @@
-import { stringByteLengthEncoded } from '../utils/byte-length.js';
+const { stringByteLengthEncoded } = require('../utils/byte-length');
 
 function splitTextArray(textArray, { maxLength, maxByteSize } = {}) {
   // ...existing code...
 }
 
-export { splitTextArray };
+module.exports = { splitTextArray };

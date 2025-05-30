@@ -1,5 +1,5 @@
-import translateRoutes from './translate.js';
-import providerRoutes from './provider.js';
+const translateRoutes = require('./translate');
+const providerRoutes = require('./provider');
 
 const routes = {
   admin: {
@@ -11,4 +11,4 @@ const routes = {
   },
 };
 
-export default routes;
+module.exports = routes;

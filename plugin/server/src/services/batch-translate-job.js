@@ -1,3 +1,3 @@
-import { factories } from '@strapi/strapi';
+const { factories } = require('@strapi/strapi');
 
-export default factories.createCoreService('plugin::translate.batch-translate-job');
+module.exports = factories.createCoreService('plugin::translate.batch-translate-job');

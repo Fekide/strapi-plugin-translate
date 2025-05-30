@@ -1,4 +1,4 @@
 // Strapi 5 bootstrap phase
-export default ({ strapi }) => {
+module.exports = ({ strapi }) => {
   // Bootstrap logic here
 };

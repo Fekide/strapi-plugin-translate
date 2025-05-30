@@ -1,18 +1,17 @@
-import get from 'lodash/get';
-import set from 'lodash/set';
-import groupBy from 'lodash/groupBy';
-import { getService } from '../utils/get-service.js';
-import { getAllTranslatableFields } from '../utils/translatable-fields.js';
-import { filterAllDeletedFields } from '../utils/delete-fields.js';
-import { cleanData } from '../utils/clean-data.js';
-import { TRANSLATE_PRIORITY_BATCH_TRANSLATION } from '../utils/constants.js';
-import { updateUids } from '../utils/update-uids.js';
-import { removeUids } from '../utils/remove-uids.js';
-import { BatchTranslateManager } from './batch-translate.js';
+const get = require('lodash/get');
+const set = require('lodash/set');
+const groupBy = require('lodash/groupBy');
+const { getService } = require('../utils/get-service');
+const { getAllTranslatableFields } = require('../utils/translatable-fields');
+const { filterAllDeletedFields } = require('../utils/delete-fields');
+const { cleanData } = require('../utils/clean-data');
+const { TRANSLATE_PRIORITY_BATCH_TRANSLATION } = require('../utils/constants');
+const { updateUids } = require('../utils/update-uids');
+const { removeUids } = require('../utils/remove-uids');
+const { BatchTranslateManager } = require('./batch-translate/BatchTranslateManager');
 
 const translateService = ({ strapi }) => ({
   batchTranslateManager: new BatchTranslateManager(),
-  // ...existing code...
 });
 
-export default translateService;
+module.exports = translateService;

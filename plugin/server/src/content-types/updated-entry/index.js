@@ -1,5 +1,5 @@
-import schema from './schema.json' assert { type: 'json' };
+const schema = require('../../../content-types/updated-entry/schema.json');
 
-export default {
+module.exports = {
   schema,
 };

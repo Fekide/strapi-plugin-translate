@@ -1,4 +1,4 @@
 // Strapi 5 register phase
-export default ({ strapi }) => {
+module.exports = ({ strapi }) => {
   // Register logic here
 };

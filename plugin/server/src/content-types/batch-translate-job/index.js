@@ -1,5 +1,5 @@
-import schema from './schema.json' assert { type: 'json' };
+const schema = require('../../../content-types/batch-translate-job/schema.json');
 
-export default {
+module.exports = {
   schema,
 };

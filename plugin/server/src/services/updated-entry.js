@@ -1,6 +1,6 @@
-import { factories } from '@strapi/strapi';
+const { factories } = require('@strapi/strapi');
 
-export default factories.createCoreService('plugin::translate.updated-entry', () => ({
+module.exports = factories.createCoreService('plugin::translate.updated-entry', () => ({
   async create(params) {
     try {
       const {

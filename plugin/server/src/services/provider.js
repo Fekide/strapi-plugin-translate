@@ -8,4 +8,4 @@ const providerService = ({ strapi }) => ({
   },
 });
 
-export default providerService;
+module.exports = providerService;

@@ -1,5 +1,5 @@
 // Strapi 5 config
-export default {
+module.exports = {
   default: {
     // Example config
   },

@@ -1,10 +1,14 @@
-import { getService } from '../utils/get-service.js';
+const { getService } = require('../utils/get-service');
 
-const providerController = {
-  async usage(ctx) {
+function providerController(ctx) {
+  async function usage() {
     const data = await getService('provider').usage();
     ctx.body = { data };
-  },
-};
+  }
 
-export default providerController;
+  return {
+    usage,
+  };
+}
+
+module.exports = providerController;

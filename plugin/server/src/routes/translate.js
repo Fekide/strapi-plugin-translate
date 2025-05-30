@@ -59,4 +59,4 @@ const translateRoutes = [
   // ...otras rutas existentes...
 ];
 
-export default translateRoutes;
+module.exports = translateRoutes;

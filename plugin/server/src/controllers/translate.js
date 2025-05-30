@@ -1,11 +1,11 @@
-import { getService } from '../utils/get-service.js';
-import { getAllTranslatableFields } from '../utils/translatable-fields.js';
-import { translateRelations } from '../utils/translate-relations.js';
-import { TRANSLATE_PRIORITY_DIRECT_TRANSLATION } from '../utils/constants.js';
-import { filterAllDeletedFields } from '../utils/delete-fields.js';
-import { populateAll } from '../utils/populate-all.js';
-import { cleanData } from '../utils/clean-data.js';
-import { updateUids } from '../utils/update-uids.js';
+const { getService } = require('../utils/get-service');
+const { getAllTranslatableFields } = require('../utils/translatable-fields');
+const { translateRelations } = require('../utils/translate-relations');
+const { TRANSLATE_PRIORITY_DIRECT_TRANSLATION } = require('../utils/constants');
+const { filterAllDeletedFields } = require('../utils/delete-fields');
+const { populateAll } = require('../utils/populate-all');
+const { cleanData } = require('../utils/clean-data');
+const { updateUids } = require('../utils/update-uids');
 
 const translateController = {
   async translate(ctx) {
@@ -361,4 +361,4 @@ const translateController = {
   },
 };
 
-export default translateController;
+module.exports = translateController;

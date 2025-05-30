@@ -1,7 +1,7 @@
-import batchTranslateJob from './batch-translate-job/index.js';
-import updatedEntry from './updated-entry/index.js';
+const batchTranslateJob = require('./batch-translate-job');
+const updatedEntry = require('./updated-entry');
 
-export default {
+module.exports = {
   'batch-translate-job': batchTranslateJob,
   'updated-entry': updatedEntry,
 };

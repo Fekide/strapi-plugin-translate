@@ -1,9 +1,9 @@
-import batchTranslateJob from './batch-translate-job.js';
-import provider from './provider.js';
-import translate from './translate.js';
-import updatedEntry from './updated-entry.js';
+const batchTranslateJob = require('./batch-translate-job');
+const provider = require('./provider');
+const translate = require('./translate');
+const updatedEntry = require('./updated-entry');
 
-export default {
+module.exports = {
   'batch-translate-job': batchTranslateJob,
   provider,
   translate,

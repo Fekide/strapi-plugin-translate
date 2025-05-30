@@ -18,7 +18,7 @@
     "test": "echo no unittests"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "^5.0.0",
+    "@strapi/plugin-i18n": "^4.25.0",
     "@strapi/plugin-users-permissions": "^5.0.0",
     "@strapi/strapi": "^5.0.0",
     "better-sqlite3": "9.4.0",
@@ -27,8 +27,9 @@
     "mime-types": "^2.1.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^5.2.0",
-    "styled-components": "^5.2.1"
+    "react-router-dom": "^6.22.3",
+    "strapi-plugin-translate": "file:../plugin",
+    "styled-components": "^6.1.18"
   },
   "devDependencies": {
     "cypress": "^13.6.4",

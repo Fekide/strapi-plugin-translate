@@ -1,3 +1,3 @@
-import { factories } from '@strapi/strapi';
+const { factories } = require('@strapi/strapi');
 
-export default factories.createCoreController('plugin::translate.updated-entry');
+module.exports = factories.createCoreController('plugin::translate.updated-entry');
