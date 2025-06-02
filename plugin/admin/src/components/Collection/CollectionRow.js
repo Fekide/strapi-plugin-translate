@@ -71,11 +71,14 @@ const CollectionRow = ({ entry, locales, onAction, updateCount, index }) => {
                   ) : (
                     <Tooltip
                       description={
-                        job.failureReason?.message ||
-                        formatMessage({
-                          id: getTrad(`errors.unknown`),
-                          defaultMessage: 'Unknown error',
-                        })
+                        (job.failureReason.entityId
+                          ? 'ID: ' + job.failureReason.entityId + ' - '
+                          : '') +
+                        (job.failureReason?.message ||
+                          formatMessage({
+                            id: getTrad(`errors.unknown`),
+                            defaultMessage: 'Unknown error',
+                          }))
                       }
                     >
                       <Badge

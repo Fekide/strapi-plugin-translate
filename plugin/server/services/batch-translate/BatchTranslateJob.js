@@ -232,12 +232,16 @@ class BatchTranslateJob {
         this.translatedEntities++
         entity = null
       } catch (error) {
+        strapi.log.error(
+          `Error during batch-translate: failed to translate entity ${entity.id} of content type ${this.contentType}`
+        )
         strapi.log.error(error)
         if (error.details) {
           strapi.log.debug(JSON.stringify(error.details))
         }
         await this.updateStatus('failed', {
           failureReason: {
+            entityId: entity.id,
             message: error.message,
             stack: error.stack,
             name: error.name,
