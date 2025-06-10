@@ -338,10 +338,10 @@ module.exports = ({ strapi }) => ({
         contentTypeSchema
       )
 
-      sum = +(await getService('translate').estimateUsage({
+      sum += await getService('translate').estimateUsage({
         fieldsToTranslate,
         data: fullyPopulatedData,
-      }))
+      })
     }
 
     ctx.body = {
