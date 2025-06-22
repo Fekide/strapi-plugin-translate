@@ -7,13 +7,13 @@ import { Badge } from '@strapi/design-system/Badge'
 import { Stack } from '@strapi/design-system/Stack'
 import { useIntl } from 'react-intl'
 import { IconButton, IconButtonGroup } from '@strapi/design-system/IconButton'
-import { Tooltip } from '@strapi/design-system/Tooltip'
 import Earth from '@strapi/icons/Earth'
 import Cross from '@strapi/icons/Cross'
 import Clock from '@strapi/icons/Clock'
 import Play from '@strapi/icons/Play'
 import PropTypes from 'prop-types'
 import { getTrad } from '../../utils'
+import JobStatusBadge from './JobStatusBadge'
 
 const CollectionRow = ({ entry, locales, onAction, updateCount, index }) => {
   const { formatMessage } = useIntl()
@@ -48,53 +48,7 @@ const CollectionRow = ({ entry, locales, onAction, updateCount, index }) => {
                     defaultMessage: complete ? 'complete' : 'incomplete',
                   })}
                 </Badge>
-                {job &&
-                  ([
-                    'created',
-                    'setup',
-                    'running',
-                    'paused',
-                    'finished',
-                  ].includes(job.status) ? (
-                    <Badge
-                      marginLeft={1}
-                      textColor="neutral100"
-                      backgroundColor={'success500'}
-                    >
-                      {formatMessage({
-                        id: getTrad(
-                          `batch-translate.table.job-status.${job.status}`
-                        ),
-                        defaultMessage: `Job ${job.status}`,
-                      })}
-                    </Badge>
-                  ) : (
-                    <Tooltip
-                      description={
-                        (job.failureReason.entityId
-                          ? 'ID: ' + job.failureReason.entityId + ' - '
-                          : '') +
-                        (job.failureReason?.message ||
-                          formatMessage({
-                            id: getTrad(`errors.unknown`),
-                            defaultMessage: 'Unknown error',
-                          }))
-                      }
-                    >
-                      <Badge
-                        marginLeft={1}
-                        textColor="neutral100"
-                        backgroundColor={'danger500'}
-                      >
-                        {formatMessage({
-                          id: getTrad(
-                            `batch-translate.table.job-status.${job.status}`
-                          ),
-                          defaultMessage: `Job ${job.status}`,
-                        })}
-                      </Badge>
-                    </Tooltip>
-                  ))}
+                <JobStatusBadge job={job} />
               </Flex>
               <IconButtonGroup>
                 <IconButton
