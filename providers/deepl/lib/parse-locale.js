@@ -55,7 +55,7 @@ function parseLocale(strapiLocale, localeMap = {}, direction = 'target') {
     case 'TR':
     case 'UK':
     case 'ZH':
-      possiblyUnstrippedResult = localeMap[stripped] || stripped
+      possiblyUnstrippedResult = localeMap[unstripped] || localeMap[stripped] || stripped
       break
     case 'PT':
       if (unstripped == 'PT-PT') possiblyUnstrippedResult = unstripped
