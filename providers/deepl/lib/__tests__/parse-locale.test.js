@@ -74,4 +74,18 @@ describe('locale parser', () => {
   it('source language is parsed without specific locale even with locale map', () => {
     expect(parseLocale('en-GB', {}, 'source')).toEqual('EN')
   })
+    it('source language is parsed without specific locale for zh-Hant-tw', () => {
+        const localeMap = {
+            'ZH-HANT-TW': 'ZH-HANT',
+            'ZH-HANT': 'ZH-HANT',
+        };
+        expect(parseLocale('zh-Hant-tw', localeMap)).toEqual('ZH-HANT');
+    })
+    it('source language is parsed without specific locale for zh-Hant', () => {
+        const localeMap = {
+            'ZH-HANT-TW': 'ZH-HANT',
+            'ZH-HANT': 'ZH-HANT',
+        };
+        expect(parseLocale('zh-Hant', localeMap)).toEqual('ZH-HANT');
+    })
 })
