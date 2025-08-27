@@ -31,6 +31,8 @@ module.exports = {
       typeof providerOptions.apiOptions === 'object'
         ? providerOptions.apiOptions
         : {}
+    const omitPlaceholders = providerOptions.omitPlaceholders || false
+    const omitTags = providerOptions.omitTags || false
     const glossaries =
       Array.isArray(providerOptions.glossaries)
         ? providerOptions.glossaries
@@ -47,6 +49,22 @@ module.exports = {
     })
 
     const rateLimitedTranslate = limiter.wrap(client.translateText.bind(client))
+
+    let availableGlossaries = [];
+    let lastGlossariesFetch = new Date();
+
+    const fetchGlossaries = async () => {
+      availableGlossaries = await client.listGlossaries();
+      lastGlossariesFetch = new Date();
+    }
+    const findGlossary = providerOptions.findGlossary || ((glossaries, sourceLocale, targetLocale) => {
+      return glossaries.find((glossary) =>
+        glossary.sourceLang === sourceLocale && glossary.targetLang === targetLocale
+      );
+    });
+
+    if (providerOptions.fetchGlossaries)
+      fetchGlossaries();
 
     return {
       /**
@@ -81,6 +99,27 @@ module.exports = {
 
         let textArray = Array.isArray(input) ? input : [input]
 
+        let placeholderTexts = [];
+        let placeholderTags = [];
+
+        if (omitTags) {
+          textArray = textArray.map((text) =>
+            text.replace(/<\/?[^>]+(>|$)/g, (match) => {
+              placeholderTags.push(match)
+              return `<t id=${placeholderTags.length - 1} />`
+            })
+          )
+        }
+
+        if (omitPlaceholders) {
+          textArray = textArray.map((text) =>
+            text.replace(/{{(.*?)}}/g, (match) => {
+              placeholderTexts.push(match)
+              return `<m id=${placeholderTexts.length - 1} />`
+            })
+          )
+        }
+
         const { chunks, reduceFunction } = chunksService.split(textArray, {
           maxLength: DEEPL_API_MAX_TEXTS,
           maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
@@ -89,7 +128,9 @@ module.exports = {
         const parsedSourceLocale = parseLocale(sourceLocale, localeMap, 'source')
         const parsedTargetLocale = parseLocale(targetLocale, localeMap, 'target')
 
-        const glossary = glossaries.find(
+        let glossary = undefined;
+
+        glossary = glossaries.find(
           (g) => g.target_lang === parsedTargetLocale && g.source_lang === parsedSourceLocale
         )?.id
 
@@ -97,7 +138,13 @@ module.exports = {
           console.warn('Glossary provided in apiOptions will be ignored and overwritten by the actual glossary that should be used for this translation.')
         }
 
-        const result = reduceFunction(
+        if (providerOptions.fetchGlossaries) {
+          if (new Date() - lastGlossariesFetch > (providerOptions.fetchGlossariesIntervalMs || 3600000))
+            await fetchGlossaries();
+          glossary = findGlossary(availableGlossaries, sourceLocale, targetLocale)?.glossaryId || glossary;
+        }
+
+        let result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
               const result = await rateLimitedTranslate.withOptions(
@@ -116,7 +163,19 @@ module.exports = {
             })
           )
         )
-        
+
+        if (omitPlaceholders) {
+          result = result.map((text) =>
+            text.replace(/<m id=(.*?) \/>/g, (_, id) => placeholderTexts[id])
+          )
+        }
+
+        if (omitTags) {
+          result = result.map((text) =>
+            text.replace(/<t id=(.*?) \/>/g, (_, id) => placeholderTags[id])
+        )
+        }
+
         if (format === 'jsonb') {
           return formatService.htmlToBlock(result)
         }
