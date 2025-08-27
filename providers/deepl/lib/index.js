@@ -102,20 +102,20 @@ module.exports = {
         let placeholderTexts = [];
         let placeholderTags = [];
 
-        if (omitPlaceholders) {
-          textArray = textArray.map((text) =>
-            text.replace(/{{(.*?)}}/g, (match) => {
-              placeholderTexts.push(match)
-              return `<m id=${placeholderTexts.length - 1} />`
-            })
-          )
-        }
-
         if (omitTags) {
           textArray = textArray.map((text) =>
             text.replace(/<\/?[^>]+(>|$)/g, (match) => {
               placeholderTags.push(match)
               return `<t id=${placeholderTags.length - 1} />`
+            })
+          )
+        }
+
+        if (omitPlaceholders) {
+          textArray = textArray.map((text) =>
+            text.replace(/{{(.*?)}}/g, (match) => {
+              placeholderTexts.push(match)
+              return `<m id=${placeholderTexts.length - 1} />`
             })
           )
         }
@@ -144,7 +144,7 @@ module.exports = {
           glossary = findGlossary(availableGlossaries, sourceLocale, targetLocale)?.glossaryId || glossary;
         }
 
-        const result = reduceFunction(
+        let result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
               const result = await rateLimitedTranslate.withOptions(
