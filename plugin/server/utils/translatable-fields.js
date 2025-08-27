@@ -70,6 +70,10 @@ async function getTranslateFields(data, schema, attr) {
         )
       )
     } else {
+      const fieldData = _.get(data, attr, undefined)
+      if (typeof fieldData === 'string' && fieldData.trim() === '') {
+        return null
+      }
       return {
         field: attr,
         format: getFieldTypeFormat(schema.type),

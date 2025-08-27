@@ -130,6 +130,50 @@ describe('translatable fields', () => {
       expect(translatedField).toBeNull()
     })
 
+    it('text field with empty string not translated', async () => {
+      // given
+      const data = { field: '' }
+      const schema = {
+        type: 'text',
+        pluginOptions: { translate: { translate: 'translate' } },
+      }
+      const attr = 'field'
+      const translatedFieldTypes = ['text']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toBeNull()
+    })
+
+    it('text field with whitespace string not translated', async () => {
+      // given
+      const data = { field: '   ' }
+      const schema = {
+        type: 'text',
+        pluginOptions: { translate: { translate: 'translate' } },
+      }
+      const attr = 'field'
+      const translatedFieldTypes = ['text']
+
+      // when
+      const translatedField = await getTranslateFields(
+        data,
+        schema,
+        attr,
+        translatedFieldTypes
+      )
+
+      // then
+      expect(translatedField).toBeNull()
+    })
+
     it('other field not translated', async () => {
       // given
       const data = { field: 'some text' }

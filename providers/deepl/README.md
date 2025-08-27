@@ -23,9 +23,17 @@ module.exports = {
         },
         // controls if placeholder text inside double curly brackets should be omitted from translation
         omitPlaceholders: false,
+        // Optional: Pass glossaries on translation. The correct glossary for each translation is selected by the target_lang and source_lang properties 
+        glossaries: [
+          {
+            id: "your-glossary-id",
+            target_lang: "DE",
+            source_lang: "EN",
+          }
+        ],
         apiOptions: {
           // see <https://github.com/DeepLcom/deepl-node#text-translation-options> for supported options.
-          // note that tagHandling Mode cannot be set this way.
+          // note that tagHandling Mode and glossary cannot be set this way.
           // use with caution, as non-default values may break translation of markdown
           formality: 'default',
           // ...

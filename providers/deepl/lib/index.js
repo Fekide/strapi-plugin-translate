@@ -33,6 +33,10 @@ module.exports = {
         : {}
     const omitPlaceholders = providerOptions.omitPlaceholders || false
     const omitTags = providerOptions.omitTags || false
+    const glossaries =
+      Array.isArray(providerOptions.glossaries)
+        ? providerOptions.glossaries
+        : []
 
     const client = new deepl.Translator(apiKey, {
       serverUrl: apiUrl,
@@ -121,15 +125,26 @@ module.exports = {
           maxByteSize: DEEPL_API_ROUGH_MAX_REQUEST_SIZE,
         })
 
+        const parsedSourceLocale = parseLocale(sourceLocale, localeMap, 'source')
+        const parsedTargetLocale = parseLocale(targetLocale, localeMap, 'target')
+
         let glossary = undefined;
+
+        glossary = glossaries.find(
+          (g) => g.target_lang === parsedTargetLocale && g.source_lang === parsedSourceLocale
+        )?.id
+
+        if (apiOptions.glossary) {
+          console.warn('Glossary provided in apiOptions will be ignored and overwritten by the actual glossary that should be used for this translation.')
+        }
 
         if (providerOptions.fetchGlossaries) {
           if (new Date() - lastGlossariesFetch > (providerOptions.fetchGlossariesIntervalMs || 3600000))
             await fetchGlossaries();
-          glossary = findGlossary(availableGlossaries, sourceLocale, targetLocale);
+          glossary = findGlossary(availableGlossaries, sourceLocale, targetLocale)?.glossaryId || glossary;
         }
 
-        let result = reduceFunction(
+        const result = reduceFunction(
           await Promise.all(
             chunks.map(async (texts) => {
               const result = await rateLimitedTranslate.withOptions(
@@ -140,9 +155,9 @@ module.exports = {
                       : DEEPL_PRIORITY_DEFAULT,
                 },
                 texts,
-                parseLocale(sourceLocale, localeMap, 'source'),
-                parseLocale(targetLocale, localeMap, 'target'),
-                { ...apiOptions, tagHandling, glossary: glossary?.glossaryId }
+                parsedSourceLocale,
+                parsedTargetLocale,
+                { ...apiOptions, tagHandling, glossary }
               )
               return result.map((value) => value.text)
             })
