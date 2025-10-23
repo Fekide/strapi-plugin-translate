@@ -83,6 +83,14 @@ export function cleanData<
       }
     }
   })
+
+  // Remove empty arrays after all processing
+  Object.keys(resultData).forEach((key) => {
+    if (Array.isArray(resultData[key]) && resultData[key].length === 0) {
+      delete resultData[key]
+    }
+  })
+
   return resultData as unknown as Utils.If<
     ForFrontend,
     Modules.Documents.Document<TSchemaUID>,
