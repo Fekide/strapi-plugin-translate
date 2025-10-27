@@ -42,16 +42,19 @@ function splitTextArray(textArray, { maxLength, maxByteSize } = {}) {
       strapi.log.warn(
         'There is a field being translated, that is itself longer than the maxByteSize parameter. ' +
           'This may result in issues because the field content needs to be split into multiple requests!' +
-          'Splitting is currently achieved by splitting at one or multiple new lines and joining back together with one new line.'
+          'If new lines are present, they will be used to split the string. Otherwise, sentence boundaries will be used.'
       )
 
       let splitTextField
-      let joinChar = '\n'
+      let joinChar
       let splitChar
 
-      if (textField.includes('\n')) {
-        // FIXME: Splitting at multiple newlines might be breaking content layout
-        splitTextField = textField.split(/\n+/)
+      if (textField.includes('\n\n')) {
+        splitTextField = textField.split(/\n\n+/)
+        joinChar = '\n\n'
+      } else if (textField.includes('\n')) {
+        splitTextField = textField.split(/\n/)
+        joinChar = '\n'
       } else if (textField.includes('. ')) {
         splitChar = '.'
       } else if (textField.includes('? ')) {
@@ -74,8 +77,7 @@ function splitTextArray(textArray, { maxLength, maxByteSize } = {}) {
       if (!splitTextField || splitTextField.length === 1) {
         strapi.log.warn(
           'The field being translated is too long and could not be split at new lines or sentence endings. ' +
-            'This may result in issues because the field content needs to be split into multiple requests!' +
-            'The field will be split in half which will break sentences.'
+            'The field will be split at the whitespace closest to the middle of the string, potentially breaking a sentence.'
         )
         const whitespace_closest_to_half = textField
           .split('')
@@ -169,7 +171,6 @@ function splitTextArray(textArray, { maxLength, maxByteSize } = {}) {
   return {
     chunks: chunkedText,
     reduceFunction,
-    reduceInformation,
   }
 }
 
