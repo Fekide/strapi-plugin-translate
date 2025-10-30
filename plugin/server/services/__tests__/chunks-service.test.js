@@ -129,4 +129,22 @@ describe('chunks', () => {
     })
     expect(mergedBack).toEqual(textArray)
   })
+
+  test('splitting fields works with unusual punctuation and whitespace at the end', () => {
+    // given
+    const text =
+      '. This is not a very long text.!.. But there is whitespace at the end. '
+    const textArray = [text]
+    const maxByteSize = 20 // small to force splitting
+
+    // when
+    const { chunks, reduceFunction } = strapi
+      .service('plugin::translate.chunks')
+      .split(textArray, { maxByteSize })
+
+    // then
+    // Reducing reconstructs original
+    const mergedBack = reduceFunction(chunks)
+    expect(mergedBack).toEqual(textArray)
+  })
 })
