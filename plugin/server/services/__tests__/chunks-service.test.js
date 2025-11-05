@@ -88,6 +88,21 @@ describe('chunks', () => {
     expect(mergedBack).toEqual(textArray)
   })
 
+  test('reduce function creates original array when fields are bigger than byteSize with different split chars', () => {
+    // given
+    const textArray = [
+      "This is a long text! It has multiple sentences.\nIt also contains a newline, but here at the very start, so it is not enough to achieve enough split. Also, some sentences, like this one, are so long that even splitting at sentence boundaries is not enough to keep the limit, thus this sentences needs to be split somewhere else. Therefore, the splitting needs to be done at sentence boundaries? Let's see how well this works.",
+    ]
+    const maxByteSize = 100
+    // when
+    const { chunks, reduceFunction } = strapi
+      .service('plugin::translate.chunks')
+      .split(textArray, { maxByteSize })
+    const mergedBack = reduceFunction(chunks)
+    // then
+    expect(mergedBack).toEqual(textArray)
+  })
+
   test('chunks are neither longer than maxLength nor bigger than maxByteSize', () => {
     // given
     const longTexts = faker.helpers.uniqueArray(
@@ -112,6 +127,24 @@ describe('chunks', () => {
       expect(byteSize).toBeLessThanOrEqual(maxByteSize)
       expect(chunk.length).toBeLessThanOrEqual(maxLength)
     })
+    expect(mergedBack).toEqual(textArray)
+  })
+
+  test('splitting fields works with unusual punctuation and whitespace at the end', () => {
+    // given
+    const text =
+      '. This is not a very long text.!.. But there is whitespace at the end. '
+    const textArray = [text]
+    const maxByteSize = 20 // small to force splitting
+
+    // when
+    const { chunks, reduceFunction } = strapi
+      .service('plugin::translate.chunks')
+      .split(textArray, { maxByteSize })
+
+    // then
+    // Reducing reconstructs original
+    const mergedBack = reduceFunction(chunks)
     expect(mergedBack).toEqual(textArray)
   })
 })
