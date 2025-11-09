@@ -82,12 +82,10 @@ export function cleanData<
         resultData[attr] = mediaFiles.id
       }
     }
-  })
 
-  // Remove empty arrays after all processing
-  Object.keys(resultData).forEach((key) => {
-    if (Array.isArray(resultData[key]) && resultData[key].length === 0) {
-      delete resultData[key]
+    // Remove attribute if it's an empty array
+    if (Array.isArray(resultData[attr]) && resultData[attr].length === 0) {
+      delete resultData[attr]
     }
   })
 
