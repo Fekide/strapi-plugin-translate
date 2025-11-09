@@ -6,43 +6,34 @@ const localizedPath = ['pluginOptions', 'i18n', 'localized']
 const translatePath = ['pluginOptions', 'translate', 'translate']
 
 const addTranslationToFields = (attributes: Schema.ContentType['attributes']) =>
-  Object.keys(attributes).reduce<Schema.ContentType['attributes']>(
-    (acc, current) => {
-      const currentAttribute = attributes[current]
+  Object.values(attributes).map((currentAttribute) => {
+    const attributeIsLocalized = get(currentAttribute, localizedPath, true)
 
-      const attributeIsLocalized = get(currentAttribute, localizedPath, true)
+    const attributeDefaultTranslated =
+      currentAttribute.type === 'relation' || attributeIsLocalized
 
-      const attributeDefaultTranslated =
-        currentAttribute.type === 'relation' || attributeIsLocalized
-
-      if (
-        attributeDefaultTranslated &&
-        TRANSLATABLE_FIELDS.includes(currentAttribute.type)
-      ) {
-        const translate = {
-          translate: get(
-            currentAttribute,
-            translatePath,
-            attributeDefaultTranslated ? 'translate' : 'copy'
-          ),
-        }
-
-        const pluginOptions = {
-          ...(currentAttribute.pluginOptions ?? {}),
-          translate,
-        }
-
-        acc[current] = { ...currentAttribute, pluginOptions }
-
-        return acc
+    if (
+      attributeDefaultTranslated &&
+      TRANSLATABLE_FIELDS.includes(currentAttribute.type)
+    ) {
+      const translate = {
+        translate: get(
+          currentAttribute,
+          translatePath,
+          attributeDefaultTranslated ? 'translate' : 'copy'
+        ),
       }
 
-      acc[current] = currentAttribute
+      const pluginOptions = {
+        ...(currentAttribute.pluginOptions ?? {}),
+        translate,
+      }
 
-      return acc
-    },
-    {}
-  )
+      return { ...currentAttribute, pluginOptions }
+    }
+
+    return currentAttribute
+  })
 
 type OmitByPath<T extends object, K extends string[]> = Pick<
   T,
