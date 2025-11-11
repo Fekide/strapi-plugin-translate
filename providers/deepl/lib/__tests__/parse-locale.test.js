@@ -9,6 +9,7 @@ function supportedLocale({ code, name }) {
   // Swiss German is not supported
   if (code.includes('gsw')) return false
   return [
+    "Arabic",
     'Bulgarian',
     'Czech',
     'Danish',
