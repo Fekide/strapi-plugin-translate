@@ -31,6 +31,7 @@ module.exports = {
       typeof providerOptions.apiOptions === 'object'
         ? providerOptions.apiOptions
         : {}
+    const enableBetaLanguages = providerOptions.enableBetaLanguages || apiOptions.enableBetaLanguages || false
     const glossaries =
       Array.isArray(providerOptions.glossaries)
         ? providerOptions.glossaries
@@ -110,7 +111,14 @@ module.exports = {
                 texts,
                 parsedSourceLocale,
                 parsedTargetLocale,
-                { ...apiOptions, tagHandling, glossary }
+                {   ...apiOptions, 
+                   tagHandling, 
+                   glossary,
+                   extraRequestParameters: {
+                    ...(apiOptions.extraRequestParameters || {}),
+                    ...(enableBetaLanguages ? { enable_beta_languages: '1' } : {})
+                  }
+                }
               )
               return result.map((value) => value.text)
             })
