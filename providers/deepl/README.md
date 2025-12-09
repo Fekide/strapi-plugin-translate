@@ -51,6 +51,21 @@ or use the default environment variables:
 
 To get an API key, register for free at [www.deepl.com/pro#developer](https://www.deepl.com/pro#developer).
 
+ ### Beta Languages
+
+  To enable DeepL beta languages (e.g., Croatian, Hindi), add:
+
+  \`\`\`javascript
+  providerOptions: {
+    enableBetaLanguages: true,
+    localeMap: {
+      HR: 'HR',  // Croatian (beta)
+    }
+  }
+  \`\`\`
+
+  Note: Beta languages must also be added to `localeMap` to bypass the locale validation.
+
 ## Limitations:
 
 - Only the [deepl supported languages](https://www.deepl.com/docs-api/translating-text/request/) can be translated
