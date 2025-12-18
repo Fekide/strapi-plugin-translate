@@ -5,7 +5,7 @@
   "CMEditViewTranslateLocale.ModalConfirm.content": "Votre contenu actuel sera effacé et remplacé par le contenu traduit de la région sélectionnée:",
   "CMEditViewTranslateLocale.submit-text": "Oui, remplissez",
   "plugin.name": "Traduction",
-  "Settings.locales.modal.locales.label": "Locales",
+  "translate.source-locale.label": "Locale source",
   "popUpWarning.button.cancel": "Non, annuler",
   "translate.error.badRequest": "Mauvaise demande à l'API du traduction prestataire",
   "translate.error.forbidden": "L'autorisation à l'API du traduction prestataire a échoué",

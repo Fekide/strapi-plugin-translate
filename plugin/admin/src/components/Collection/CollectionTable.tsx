@@ -286,9 +286,8 @@ const CollectionTable = () => {
                     <Field.Root>
                       <Field.Label>
                         {formatMessage({
-                          id: getTranslation(
-                            'Settings.locales.modal.locales.label'
-                          ),
+                          id: getTranslation('translate.source-locale.label'),
+                          defaultMessage: 'Source locale',
                         })}
                       </Field.Label>
                       <SingleSelect
@@ -362,7 +361,8 @@ const CollectionTable = () => {
                     <Field.Root>
                       <Field.Label>
                         {formatMessage({
-                          id: getTranslation('batch-update.sourceLocale'),
+                          id: getTranslation('translate.source-locale.label'),
+                          defaultMessage: 'Source locale',
                         })}
                       </Field.Label>
                       <SingleSelect
