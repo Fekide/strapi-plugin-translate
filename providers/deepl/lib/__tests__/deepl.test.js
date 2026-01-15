@@ -395,6 +395,27 @@ describe('deepl provider', () => {
         await expect(deeplProvider.usage()).resolves.toBeTruthy()
       })
 
+      it('omits placeholders when option used', async () => {
+        server.use(http.post(`${DEEPL_PAID_API}/translate`, translateHandler))
+
+        const deeplProvider = provider.init({
+          apiKey: authKey,
+          omitPlaceholders: true,
+        })
+
+        // given
+        const params = {
+          sourceLocale: 'en',
+          targetLocale: 'de',
+          text: 'Some text with a placeholder {{placeholder}} in it and an {{other}} one',
+        }
+        // when
+        const result = await deeplProvider.translate(params)
+
+        // then
+        expect(result).toEqual([params.text])
+      })
+
       describe('api options used', () => {
         const registerHandlerEnforceParams = (
           requiredParams,

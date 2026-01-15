@@ -21,6 +21,8 @@ module.exports = {
           // use uppercase here!
           EN: 'EN-US',
         },
+        // controls if placeholder text inside double curly brackets should be omitted from translation
+        omitPlaceholders: false,
         // Optional: Pass glossaries on translation. The correct glossary for each translation is selected by the target_lang and source_lang properties 
         glossaries: [
           {
