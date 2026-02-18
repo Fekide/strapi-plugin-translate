@@ -94,6 +94,7 @@ module.exports = {
 #### Available providers
 
 - [strapi-provider-translate-deepl](https://www.npmjs.com/package/strapi-provider-translate-deepl)
+- [strapi-provider-translate-langbly](https://www.npmjs.com/package/strapi-provider-translate-langbly)
 - [strapi-provider-translate-libretranslate](https://www.npmjs.com/package/strapi-provider-translate-libretranslate)
 
 ### Configure translation of individual fields/attributes
